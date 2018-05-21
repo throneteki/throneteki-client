@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const merge = require('webpack-merge');
 var AssetsPlugin = require('assets-webpack-plugin');
@@ -66,6 +67,9 @@ module.exports = (env) => {
         },
         output: { path: path.join(__dirname, clientBundleOutputDir) },
         plugins: [
+            new CopyWebpackPlugin([
+                { from: 'assets/img', to: 'img' }
+            ]),
             new webpack.ProvidePlugin({
                 $: 'jquery',
                 jQuery: 'jquery'
