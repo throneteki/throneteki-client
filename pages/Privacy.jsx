@@ -21,7 +21,7 @@ const Privacy = () => {
                     <ul>
                         <li>in order to verify that you are a real person and not an automated program(or 'bot').</li>
                         <li>to enchance the security and general environment of the site by allowing us to restrict people to one account per email address, or to prevent a user using the site.</li>
-                        <li>to provide your avatar picture via a service called Gravatar.  You email address is cryptographically hash and sent to Gravatar's servers for them to provide your profile image or a default placeholder.  This cryptographic hash is also sent to all users of the site.</li>
+                        <li>to provide your avatar picture via a service called Gravatar.  Your email address is cryptographically hashed and sent to Gravatar's servers for them to provide your profile image or a default placeholder.</li>
                         <li>to allow you to reset your password if you forget it</li>
                         <li>to send you critical updates about the site from time to time (We have to date never sent one of these)</li>
                     </ul>
