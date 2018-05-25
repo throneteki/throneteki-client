@@ -49,7 +49,7 @@ export class PlayerStats extends React.Component {
     render() {
         var playerAvatar = (
             <div className='player-avatar'>
-                <Avatar username={ this.props.user ? this.props.user.username : 'unknown' } />
+                <Avatar username={ this.props.user ? this.props.user.username : undefined } />
                 <b>{ this.props.user ? this.props.user.username : 'Noone' }</b>
             </div>);
 

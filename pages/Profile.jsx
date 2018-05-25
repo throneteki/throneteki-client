@@ -233,7 +233,7 @@ class Profile extends React.Component {
     }
 
     render() {
-        if(!this.props.user) {
+        if(!this.props.user || !this.state.promptedActionWindows) {
             return <AlertPanel type='error' message='You must be logged in to update your profile' />;
         }
 

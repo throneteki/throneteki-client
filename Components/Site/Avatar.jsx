@@ -8,6 +8,10 @@ class Avatar extends React.Component {
             'pull-left': this.props.float
         });
 
+        if(!this.props.username) {
+            return null;
+        }
+
         return (<img className={ className } src={ `/img/avatar/${this.props.username}.png` } />);
     }
 }
