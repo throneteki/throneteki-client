@@ -31,7 +31,8 @@ const placeholderPlayer = {
         hand: [],
         outOfGamePile: [],
         plotDeck: [],
-        plotDiscard: []
+        plotDiscard: [],
+        shadows: []
     },
     faction: null,
     firstPlayer: false,
@@ -322,6 +323,7 @@ export class GameBoard extends React.Component {
                         onMouseOut={ this.onMouseOut }
                         outOfGamePile={ otherPlayer.cardPiles.outOfGamePile }
                         username={ this.props.user.username }
+                        shadows={ otherPlayer.cardPiles.shadows }
                         showHand={ this.props.currentGame.showHand }
                         spectating={ this.state.spectating }
                         title={ otherPlayer.title }
@@ -387,6 +389,7 @@ export class GameBoard extends React.Component {
                         onDragDrop={ this.onDragDrop }
                         discardPile={ thisPlayer.cardPiles.discardPile }
                         deadPile={ thisPlayer.cardPiles.deadPile }
+                        shadows={ thisPlayer.cardPiles.shadows }
                         showHand={ this.props.currentGame.showHand }
                         spectating={ this.state.spectating }
                         title={ thisPlayer.title }
