@@ -289,6 +289,12 @@ export class GameBoard extends React.Component {
         this.setState(newState);
     }
 
+    defaultPlayerInfo(source) {
+        let player = Object.assign({}, placeholderPlayer, source);
+        player.cardPiles = Object.assign({}, placeholderPlayer.cardPiles, player.cardPiles);
+        return player;
+    }
+
     renderBoard(thisPlayer, otherPlayer) {
         if(this.props.rookeryDeck) {
             return (
@@ -422,7 +428,11 @@ export class GameBoard extends React.Component {
 
         let otherPlayer = Object.values(this.props.currentGame.players).find(player => {
             return player.name !== thisPlayer.name;
-        }) || placeholderPlayer;
+        });
+
+        // Default any missing information
+        thisPlayer = this.defaultPlayerInfo(thisPlayer);
+        otherPlayer = this.defaultPlayerInfo(otherPlayer);
 
         let boundActionCreators = bindActionCreators(actions, this.props.dispatch);
 
