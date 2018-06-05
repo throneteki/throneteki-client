@@ -206,10 +206,10 @@
       width: @card-width * 4;
       height: @card-height * 4;
     }
-  
+
     &.horizontal {
       width: @card-height * 4;
-      height: @card-width * 4;    
+      height: @card-width * 4;
     }
 }
 
@@ -500,4 +500,73 @@
 .drop-target {
   display: inline-block;
   position: relative;
+}
+
+.hover-card {
+  position: fixed;
+  top: 60px;
+  left: 10px;
+  z-index: @layer-top;
+}
+
+.card-cost {
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  background-color: orange;
+  line-height: 45px;
+  text-align: center;
+  color: white;
+  font-family: 'thronesdb';
+}
+
+.card-alt {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.card-text {
+  font-size: 0.9em;
+  font-family: 'thronesdb';
+}
+
+.card-type {
+  position: absolute;
+  top: 25px;
+}
+
+.card-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  text-align: center;
+  font-family: 'thronesdb';
+  font-size: 2em;
+  line-height: 45px;
+  color: white;
+
+  &.intrigue {
+    &:before {
+      content: "\e602";
+    }
+
+    background-color: @intrigue-icon-color;
+  }
+
+  &.power {
+    &:before {
+      content: "\e607";
+    }
+
+    background-color: @power-icon-color;
+  }
+
+  &.military {
+    &:before {
+      content: "\e605";
+    }
+
+    background-color: @military-icon-color;
+  }
 }

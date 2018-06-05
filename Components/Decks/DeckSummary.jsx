@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import DeckStatus from './DeckStatus';
+import CardText from '../GameBoard/CardText';
 
 class DeckSummary extends React.Component {
     constructor() {
@@ -28,7 +29,7 @@ class DeckSummary extends React.Component {
     }
 
     onCardMouseOut() {
-        this.setState({ cardToShow: undefined });
+        //this.setState({ cardToShow: undefined });
     }
 
     getBannersToRender() {
@@ -107,7 +108,11 @@ class DeckSummary extends React.Component {
 
         return (
             <div className='deck-summary col-xs-12'>
-                { this.state.cardToShow ? <img className='hover-image' src={ '/img/cards/' + this.state.cardToShow.code + '.png' } /> : null }
+                { this.state.cardToShow ?
+                    <div className='hover-card'>
+                        <img className='hover-image' src={ '/img/cards/' + this.state.cardToShow.code + '.png' } />
+                        <CardText card={ this.state.cardToShow } />
+                    </div> : null }
                 <div className='decklist'>
                     <div className='col-xs-2 col-sm-3 no-x-padding'>{ this.props.deck.faction ? <img className='img-responsive' src={ '/img/cards/' + this.props.deck.faction.value + '.png' } /> : null }</div>
                     <div className='col-xs-8 col-sm-6'>
