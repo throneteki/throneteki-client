@@ -522,6 +522,10 @@
   font-family: 'thronesdb';
 }
 
+.card-cost-number {
+  font-size: 2em;
+}
+
 .card-alt {
   position: absolute;
   top: 0;
@@ -531,6 +535,7 @@
   border-radius: 10px;
   background-color: black;
   opacity: 0.8;
+  z-index: @layer-bottom;
 }
 
 .card-text {
@@ -596,8 +601,8 @@
   margin-top: 5px;
   text-align: center;
   line-height: 50px;
+  font-size: 2em;
 }
-
 
 .card-name {
   font-size: 0.8em;
@@ -614,4 +619,112 @@
   &:before {
     content: "\e60b";
   }
+}
+
+.card-faction {
+  width: 40px;
+  height: 40px;
+  border-radius: 25px;
+  font-family: thronesdb;
+  font-size: 2.6em;
+  text-align: center;
+  line-height: 40px;
+  margin-right: 10px;
+  margin-top: 10px;
+
+  &.martell {
+    &:before {
+      content: "\e604";
+      color: @martell-foreground;
+    }
+
+    background-color: @martell-background;
+  }
+
+  &.tyrell {
+    &:before {
+      content: "\e60a";
+      color: @tyrell-foreground;
+    }
+
+    background-color: @tyrell-background;
+  }
+
+  &.thenightswatch {
+    font-size: 2em;
+
+    &:before {
+      content: "\e606";
+      color: @thenightswatch-foreground;
+    }
+
+    background-color: @thenightswatch-background;
+  }
+
+  &.lannister {
+    font-size: 2em;
+
+    &:before {
+      content: "\e603";
+      color: @lannister-foreground;
+    }
+
+    background-color: @lannister-background;
+  }
+
+  &.stark {
+
+    &:before {
+      content: "\e608";
+      color: @stark-foreground;
+    }
+
+    background-color: @stark-background;
+  }
+
+  &.baratheon {
+
+    &:before {
+      content: "\e600";
+      color: @baratheon-foreground;
+    }
+
+    background-color: @baratheon-background;
+  }
+
+  &.greyjoy {
+    font-size: 2em;
+
+    &:before {
+      content: "\e601";
+      color: @greyjoy-foreground;
+    }
+
+    background-color: @greyjoy-background;
+  }
+
+  &.targaryen {
+    font-size: 2em;
+
+    &:before {
+      content: "\e609";
+      color: @targaryen-foreground;
+    }
+
+    background-color: @targaryen-background;
+  }
+}
+
+.card-traits {
+  font-style: italic;
+  font-weight: bold;
+  text-align: center;
+  color: white;
+
+  margin-top: -15px;
+}
+
+.hover-image {
+  position: absolute;
+  z-index: @layer-top;
 }
