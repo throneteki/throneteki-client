@@ -30,7 +30,7 @@ class DeckSummary extends React.Component {
     }
 
     onCardMouseOut() {
-        //this.setState({ cardToShow: undefined });
+        this.setState({ cardToShow: undefined });
     }
 
     getBannersToRender() {
