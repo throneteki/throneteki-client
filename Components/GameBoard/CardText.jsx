@@ -30,21 +30,26 @@ class CardText extends React.Component {
 
         return (
             <div className='card-alt'>
-                <div className='card-cost'>
-                    <span className='card-cost-number'>{ this.props.card.cost }</span>
-                    <div className='card-type'>{ this.props.card.type }</div>
+                <div className='card-top-row'>
+                    <div className='card-cost'>
+                        <span className='card-cost-number'>{ this.props.card.cost }</span>
+                        <div className='card-type'>{ this.props.card.type }</div>
+                    </div>
+                    { ['event'].includes(this.props.card.type) ? <div className='card-name'>{ this.props.card.unique ? <span className='card-unique' /> : null } { this.props.card.name }</div> : <div className='card-name' /> }
+                    { ['attachment', 'event'].includes(this.props.card.type) && <div className={ `card-faction attachment ${this.props.card.faction}` } /> }
                 </div>
-                <div className='card-icons'>
+                <div className={ classNames('card-icons', { 'attachment': ['attachment', 'event'].includes(this.props.card.type) }) }>
                     { icons }
                 </div>
                 <div className={ classNames('card-name-row', { 'vertical': this.props.card.type === 'location' }) }>
                     { this.props.card.strength && <div className='card-strength'>{ this.props.card.strength }</div> }
-                    <div className='card-name'>{ this.props.card.unique ? <span className='card-unique' /> : null } { this.props.card.name }</div>
-                    <div className={ `card-faction ${this.props.card.faction}` } />
+                    { ['character', 'location'].includes(this.props.card.type) && <div className='card-name'>{ this.props.card.unique ? <span className='card-unique' /> : null } { this.props.card.name }</div> }
+                    { ['character', 'location'].includes(this.props.card.type) && <div className={ `card-faction ${this.props.card.faction}` } /> }
                 </div>
                 <div className='card-text'>
                     <div className='card-traits'>{ this.props.card.traits.join('. ') }{ this.props.card.traits.length > 0 ? '.' : null }</div>
-                    <span dangerouslySetInnerHTML={ {__html: cardText } }/> { /* eslint-disable-line */ }
+                    <span class='text-inner' dangerouslySetInnerHTML={ {__html: cardText } }/> { /* eslint-disable-line */ }
+                    { ['attachment'].includes(this.props.card.type) && <div className='card-name'>{ this.props.card.unique ? <span className='card-unique' /> : null } { this.props.card.name }</div> }
                 </div>
             </div>
         );

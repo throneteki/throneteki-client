@@ -520,6 +520,8 @@
   text-align: center;
   color: white;
   font-family: 'thronesdb';
+  display: flex;
+  flex-direction: column;
 }
 
 .card-cost-number {
@@ -538,20 +540,33 @@
   z-index: @layer-bottom;
 }
 
+.card-top-row {
+  display: flex;
+}
+
 .card-text {
   font-size: 0.9em;
   font-family: 'thronesdb';
-  margin-left: 10px;
-  margin-right: 10px;
+  margin-left: 30px;
+  margin-right: 30px;
+  display: flex;
+  flex-direction: column;
+
+  .text-inner {
+    min-height: 80px;
+  }
 }
 
 .card-type {
-  position: absolute;
-  top: 25px;
+  line-height: initial;
 }
 
 .card-icons {
   margin-left: 5px;
+
+  &.attachment {
+    min-height: 305px;
+  }
 }
 
 .card-icon {
@@ -738,6 +753,7 @@
   color: white;
 
   margin-top: -15px;
+  min-height: 20px;
 }
 
 .hover-image {
