@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 
 import DeckStatus from './DeckStatus';
-import CardText from '../GameBoard/CardText';
+import AltCard from '../GameBoard/AltCard';
 
 class DeckSummary extends React.Component {
     constructor() {
@@ -109,9 +110,9 @@ class DeckSummary extends React.Component {
         return (
             <div className='deck-summary col-xs-12'>
                 { this.state.cardToShow ?
-                    <div className='hover-card'>
+                    <div className={ classNames('hover-card', { 'horizontal': this.state.cardToShow.type === 'plot'}) }>
                         <img className='hover-image' src={ '/img/cards/' + this.state.cardToShow.code + '.png' } />
-                        <CardText card={ this.state.cardToShow } />
+                        <AltCard card={ this.state.cardToShow } />
                     </div> : null }
                 <div className='decklist'>
                     <div className='col-xs-2 col-sm-3 no-x-padding'>{ this.props.deck.faction ? <img className='img-responsive' src={ '/img/cards/' + this.props.deck.faction.value + '.png' } /> : null }</div>
