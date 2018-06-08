@@ -223,6 +223,7 @@
   top: 0;
   left: 0;
   border-radius: 12px;
+  z-index: @layer-top;
 }
 
 .attachment {
@@ -507,12 +508,12 @@
   top: 60px;
   left: 10px;
   z-index: @layer-top;
-  min-width: 300px;
-  min-height: 420px;
+  min-width: @card-width * 4;
+  min-height: @card-height * 4;
 
   &.horizontal {
-    min-height: 300px;
-    min-width: 420px;
+    min-height: @card-width * 4;
+    min-width: @card-height * 4;
   }
 }
 
@@ -590,7 +591,7 @@
 }
 
 .card-text {
-  font-size: 0.9em;
+  font-size: 0.8em;
   font-family: 'thronesdb';
   margin-left: 30px;
   margin-right: 30px;
@@ -600,6 +601,10 @@
   .text-inner {
     min-height: 80px;
   }
+
+  .card-name {
+    line-height: initial;
+  }
 }
 
 .card-type {
@@ -608,24 +613,25 @@
 
 .card-icons {
   margin-left: 5px;
+  margin-top: 15px;
 
   &.attachment {
-    min-height: 305px;
+    min-height: 170px;
   }
 
   &.plot {
-    min-height: 125px;
+    min-height: 90px;
   }
 }
 
 .challenge-icon {
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border-radius: 25px;
   text-align: center;
   font-family: 'thronesdb';
-  font-size: 2em;
-  line-height: 45px;
+  font-size: 1.8em;
+  line-height: 35px;
   color: white;
   margin-top: 10px;
 
@@ -659,7 +665,7 @@
 
   &.vertical {
     width: 50px;
-    height: 240px;
+    height: 185px;
     flex-direction: column;
     margin-bottom: 10px;
 
@@ -674,13 +680,13 @@
 .card-strength {
   background: url('/img/shield.png') no-repeat;
   background-size: cover;
-  width: 40px;
-  height: 50px;
+  width: 30px;
+  height: 35px;
   margin-left: 10px;
   margin-top: 5px;
   text-align: center;
-  line-height: 50px;
-  font-size: 2em;
+  line-height: 35px;
+  font-size: 1.8em;
 }
 
 .card-name {
@@ -806,5 +812,7 @@
 
 .hover-image {
   position: absolute;
+  width: 100%;
+  height: 100%;
   z-index: @layer-top;
 }
