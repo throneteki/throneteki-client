@@ -517,46 +517,34 @@
 }
 
 .card-cost {
-  width: 50px;
-  height: 50px;
-  line-height: 45px;
   background: url('/img/Gold.png') no-repeat;
-  background-size: cover;
   text-align: center;
-  color: white;
-  font-family: 'thronesdb';
   display: flex;
   flex-direction: column;
 }
 
-.plot-income {
+.card-icon {
   width: 40px;
   height: 40px;
   border-radius: 25px;
-  background: url('/img/Gold.png') no-repeat;
   background-size: cover;
   color: white;
   font-family: 'thronesdb';
+}
+
+.plot-income {
+  background-image: url('/img/Gold.png');
+  background-repeat: no-repeat;
 }
 
 .plot-initiative {
-  width: 40px;
-  height: 40px;
-  border-radius: 25px;
-  background: url('/img/Initiative.png') no-repeat;
-  background-size: cover;
-  color: white;
-  font-family: 'thronesdb';
+  background-image: url('/img/Initiative.png');
+  background-repeat: no-repeat;
 }
 
 .plot-claim {
-  width: 40px;
-  height: 40px;
-  border-radius: 25px;
-  background: url('/img/Claim.png') no-repeat;
-  background-size: cover;
-  color: white;
-  font-family: 'thronesdb';
+  background-image: url('/img/Claim.png');
+  background-repeat: no-repeat;
 }
 
 .plot-stats {
@@ -630,7 +618,7 @@
   }
 }
 
-.card-icon {
+.challenge-icon {
   width: 50px;
   height: 50px;
   border-radius: 25px;
@@ -679,7 +667,6 @@
       text-orientation: sideways;
       writing-mode: vertical-lr;
       transform: rotate(180deg);
-      //transform-origin: left top 0;
     }
   }
 }

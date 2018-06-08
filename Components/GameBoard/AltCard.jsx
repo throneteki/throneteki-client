@@ -9,9 +9,9 @@ class AltCard extends React.Component {
         if(this.props.card.icons) {
             for(let [icon, present] of Object.entries(this.props.card.icons)) {
                 if(present) {
-                    icons.push(<div className={ `card-icon ${icon}` } />);
+                    icons.push(<div className={ `challenge-icon ${icon}` } />);
                 } else {
-                    icons.push(<div className='card-icon' />);
+                    icons.push(<div className='challenge-icon' />);
                 }
             }
         }
@@ -31,16 +31,16 @@ class AltCard extends React.Component {
         return (
             <div className='card-alt'>
                 <div className='card-top-row'>
-                    { this.props.card.type !== 'plot' && <div className='card-cost'>
+                    { !['plot', 'agenda'].includes(this.props.card.type) && <div className='card-cost card-icon'>
                         <span className='card-cost-number'>{ this.props.card.cost }</span>
                         <div className='card-type'>{ this.props.card.type }</div>
                     </div>
                     }
-                    { ['event'].includes(this.props.card.type) ? <div className='card-name'>{ this.props.card.unique ? <span className='card-unique' /> : null } { this.props.card.name }</div> : <div className='card-name' /> }
+                    { ['event', 'agenda'].includes(this.props.card.type) ? <div className='card-name'>{ this.props.card.unique ? <span className='card-unique' /> : null } { this.props.card.name }</div> : <div className='card-name' /> }
                     { ['attachment', 'event'].includes(this.props.card.type) && <div className={ `card-faction attachment ${this.props.card.faction}` } /> }
                 </div>
                 <div className={ classNames('card-icons', {
-                    'attachment': ['attachment', 'event'].includes(this.props.card.type),
+                    'attachment': ['attachment', 'event', 'agenda'].includes(this.props.card.type),
                     'plot': this.props.card.type === 'plot'
                 }) }>
                     { icons }
@@ -49,9 +49,9 @@ class AltCard extends React.Component {
                     { this.props.card.strength && <div className='card-strength'>{ this.props.card.strength }</div> }
                     { this.props.card.type === 'plot' &&
                         <div className='plot-stats'>
-                            <div className='plot-income'>{ this.props.card.plotStats.income }</div>
-                            <div className='plot-initiative'>{ this.props.card.plotStats.initiative }</div>
-                            <div className='plot-claim'>{ this.props.card.plotStats.claim }</div>
+                            <div className='plot-income card-icon'>{ this.props.card.plotStats.income }</div>
+                            <div className='plot-initiative card-icon'>{ this.props.card.plotStats.initiative }</div>
+                            <div className='plot-claim card-icon'>{ this.props.card.plotStats.claim }</div>
                         </div>
                     }
                     { ['character', 'location', 'plot'].includes(this.props.card.type) && <div className='card-name'>{ this.props.card.unique ? <span className='card-unique' /> : null } { this.props.card.name }</div> }
