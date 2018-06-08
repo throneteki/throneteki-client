@@ -54,6 +54,10 @@ class DeckSummary extends React.Component {
 
         for(const card of combinedCards) {
             let typeCode = card.card.type;
+            if(!typeCode) {
+                continue;
+            }
+
             let type = typeCode[0].toUpperCase() + typeCode.slice(1);
 
             if(this.props.deck.agenda && this.props.deck.agenda.code === '05045') {
