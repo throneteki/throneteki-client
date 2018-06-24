@@ -30,7 +30,6 @@ export default function(state = defaultState, action) {
         case 'LOBBY_MESSAGE_RECEIVED':
             return handleMessage(action, state);
         case 'LOBBY_MESSAGE_DELETED':
-            console.info(action, state);
             return handleMessage(action, state);
         case 'JOIN_PASSWORD_GAME':
             return Object.assign({}, state, {
