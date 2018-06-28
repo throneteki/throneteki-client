@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import $ from 'jquery';
 
 import NewGame from './NewGame';
 import GameList from './GameList';
@@ -8,18 +9,31 @@ import PendingGame from './PendingGame';
 import PasswordGame from './PasswordGame';
 import AlertPanel from '../Site/AlertPanel';
 import Panel from '../Site/Panel';
+import Modal from '../Site/Modal';
 
 import * as actions from '../../actions';
+
+const GameState = Object.freeze({
+    None: 0,
+    NewGame: 1,
+    PendingGame: 2,
+    PasswordedGame: 3
+});
 
 class GameLobby extends React.Component {
     constructor() {
         super();
 
         this.onNewGameClick = this.onNewGameClick.bind(this);
+        this.onModalHidden = this.onModalHidden.bind(this);
 
         this.state = {
-            newGame: false
+            gameState: GameState.None
         };
+    }
+
+    componentDidMount() {
+        $('#pendingGameModal').on('hide.bs.modal', this.onModalHidden);
     }
 
     componentWillReceiveProps(props) {
@@ -30,6 +44,43 @@ class GameLobby extends React.Component {
         if(props.user) {
             this.setState({ errorMessage: undefined });
         }
+
+        if(props.passwordGame) {
+            this.setState({ gameState: GameState.PasswordedGame });
+        } else if(props.currentGame && !props.currentGame.started) {
+            this.setState({ gameState: GameState.PendingGame });
+        } else if(!props.currentGame && props.newGame && props.user) {
+            this.setState({ gameState: GameState.NewGame });
+        }
+
+        if(!this.isPendingGameStillCurrent(props) || this.isGameInProgress(props)) {
+            $('#pendingGameModal').modal('hide');
+            this.setState({ gameState: GameState.None });
+        } else if(props.currentGame && props.currentGame.owner !== props.user.username && !this.props.currentGame) {
+            // Joining a game
+            $('#pendingGameModal').modal('show');
+            this.setState({ gameState: GameState.PendingGame });
+        }
+    }
+
+    isPendingGameStillCurrent(props) {
+        if(this.props.newGame && !props.newGame) {
+            return false;
+        }
+
+        if(this.props.currentGame && !props.currentGame) {
+            return false;
+        }
+
+        return true;
+    }
+
+    isGameInProgress(props) {
+        if(props.currentGame && props.currentGame.started && (!this.props.currentGame || !this.props.currentGame.started)) {
+            return true;
+        }
+
+        return false;
     }
 
     onNewGameClick(event) {
@@ -41,16 +92,45 @@ class GameLobby extends React.Component {
             return;
         }
 
+        $('#pendingGameModal').modal('show');
+
         this.props.startNewGame();
     }
 
-    render() {
-        var rightside = null;
+    onModalHidden() {
+        switch(this.state.gameState) {
+            case GameState.NewGame:
+                this.props.cancelNewGame();
+                break;
+        }
+    }
 
-        if(this.props.passwordGame) {
-            rightside = <PasswordGame />;
-        } else if(this.props.currentGame && !this.props.currentGame.started) {
-            rightside = <PendingGame />;
+    render() {
+        let modalProps = {
+            id: 'pendingGameModal',
+            className: 'settings-popup row',
+            bodyClassName: 'col-xs-12',
+            title: ''
+        };
+        let modalBody = null;
+
+        switch(this.state.gameState) {
+            case GameState.None:
+            default:
+                break;
+            case GameState.NewGame:
+                modalProps.title = 'New Game';
+                modalProps.okButton = 'Create';
+                modalBody = <NewGame defaultGameName={ this.props.user.username + '\'s game' } />;
+                break;
+            case GameState.PendingGame:
+                modalProps.title = this.props.currentGame.name;
+                modalBody = <PendingGame />;
+                break;
+            case GameState.PasswordedGame:
+                modalProps.title = 'Password Required';
+                modalBody = <PasswordGame />;
+                break;
         }
 
         return (
@@ -58,16 +138,15 @@ class GameLobby extends React.Component {
                 { this.props.bannerNotice ? <AlertPanel type='error' message={ this.props.bannerNotice } /> : null }
                 { this.state.errorMessage ? <AlertPanel type='error' message={ this.state.errorMessage } /> : null }
 
-                <div className='col-sm-7 full-height'>
+                <div className='col-xs-offset-2 col-sm-8 full-height'>
                     <Panel title='Current Games'>
                         <button className='btn btn-primary' onClick={ this.onNewGameClick } disabled={ !!this.props.currentGame }>New Game</button>
                         { this.props.games.length === 0 ? <h4>No games are currently in progress</h4> : <GameList games={ this.props.games } /> }
                     </Panel>
                 </div>
-                <div className='col-sm-5'>
-                    { (!this.props.currentGame && this.props.newGame && this.props.user) ? <NewGame defaultGameName={ this.props.user.username + '\'s game' } /> : null }
-                    { rightside }
-                </div>
+                <Modal { ...modalProps }>
+                    { modalBody }
+                </Modal>
             </div>);
     }
 }
@@ -75,6 +154,7 @@ class GameLobby extends React.Component {
 GameLobby.displayName = 'GameLobby';
 GameLobby.propTypes = {
     bannerNotice: PropTypes.string,
+    cancelNewGame: PropTypes.func,
     currentGame: PropTypes.object,
     games: PropTypes.array,
     newGame: PropTypes.bool,

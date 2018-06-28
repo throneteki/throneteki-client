@@ -140,7 +140,11 @@ class PendingGame extends React.Component {
             return 'Waiting for players to select decks';
         }
 
-        return 'Ready to begin, click start to begin the game';
+        if(this.props.currentGame.owner === this.props.user.username) {
+            return 'Ready to begin, click start to begin the game';
+        }
+
+        return 'Ready to begin, waiting for opponent to start the game';
     }
 
     onLeaveClick(event) {
