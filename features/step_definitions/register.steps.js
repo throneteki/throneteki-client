@@ -70,8 +70,4 @@ Then('no email address errors should display', async function () {
     let elements = await this.driver.findElements(By.id('email-error'));
 
     assert.lengthOf(elements, 0);
-
-    if(elements.length !== 0) {
-        console.info(await elements[0].getText());
-    }
 });
