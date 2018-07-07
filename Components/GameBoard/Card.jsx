@@ -123,6 +123,10 @@ class InnerCard extends React.Component {
             counters.push({ name: 'challenge-icon-token', icon: icon, count: 0, cancel: true });
         }
 
+        for(const item of card.factionStatus || []) {
+            counters.push({ name: 'faction-token', icon: item.faction, count: 0, cancel: item.status === 'lost' });
+        }
+
         for(const [key, token] of Object.entries(card.tokens || {})) {
             counters.push({ name: key, count: token, fade: needsFade, shortName: this.shortNames[key] });
         }
@@ -380,6 +384,7 @@ InnerCard.propTypes = {
         controlled: PropTypes.bool,
         dupes: PropTypes.array,
         facedown: PropTypes.bool,
+        factionStatus: PropTypes.array,
         iconsAdded: PropTypes.array,
         iconsRemoved: PropTypes.array,
         inChallenge: PropTypes.bool,
