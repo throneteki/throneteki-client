@@ -116,11 +116,11 @@ class InnerCard extends React.Component {
         }
 
         for(const icon of card.iconsAdded || []) {
-            counters.push({ name: icon, count: 0, cancel: false });
+            counters.push({ name: 'challenge-icon-token', icon: icon, count: 0, cancel: false });
         }
 
         for(const icon of card.iconsRemoved || []) {
-            counters.push({ name: icon, count: 0, cancel: true });
+            counters.push({ name: 'challenge-icon-token', icon: icon, count: 0, cancel: true });
         }
 
         for(const [key, token] of Object.entries(card.tokens || {})) {
