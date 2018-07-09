@@ -34,11 +34,12 @@ class Messages extends React.Component {
 
     processKeywords(message) {
         let messages = [];
+        let i = 0;
 
         for(let token of message.split(' ')) {
             if(this.tokens[token]) {
                 let tokenEntry = this.tokens[token];
-                messages.push(<img className={ tokenEntry.className } src={ tokenEntry.imageSrc } />);
+                messages.push(<img key={ `${token}-${i++}` } className={ tokenEntry.className } src={ tokenEntry.imageSrc } />);
                 messages.push(' ');
             } else {
                 messages.push(token + ' ');
