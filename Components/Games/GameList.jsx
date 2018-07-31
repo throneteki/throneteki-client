@@ -127,18 +127,18 @@ class GameList extends React.Component {
                 [game.node]: game.node && isAdmin
             });
 
-            let labelClass = 'label';
-            switch(game.gameType) {
-                case 'beginner':
-                    labelClass += ' label-success';
-                    break;
-                case 'casual':
-                    labelClass += ' label-warning';
-                    break;
-                case 'competitive':
-                    labelClass += ' label-danger';
-                    break;
-            }
+            // let labelClass = 'label';
+            // switch(game.gameType) {
+            //     case 'beginner':
+            //         labelClass += ' label-success';
+            //         break;
+            //     case 'casual':
+            //         labelClass += ' label-warning';
+            //         break;
+            //     case 'competitive':
+            //         labelClass += ' label-danger';
+            //         break;
+            // }
 
             let timeDifference = moment().diff(moment(game.createdAt));
             if(timeDifference < 0) {
