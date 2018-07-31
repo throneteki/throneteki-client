@@ -9,16 +9,16 @@
 
 .game-list {
   margin-top: 15px;
+
+  hr {
+    border-top-color: @brand-primary;
+    margin: 0;
+  }
 }
 
 .game-row {
   min-height: 130px;
-  border-radius: 4px;
-  border-width: 1px;
-  border-color: @brand-primary;
-  border-style: solid;
-  padding: 5px;
-  margin-bottom: 5px;
+  padding: 15px 5px;
 }
 
 .player-name {
@@ -194,16 +194,77 @@
 }
 
 .game-middle-row {
-  margin-top: 5px;
+  margin-top: 15px;
+  margin-bottom: 10px;
   display: flex;
-}
-
-.game-row-buttons {
-  margin-left: 5px;
-  max-width: 160px;
+  justify-content: center;
+  align-items: center;
 }
 
 .gamelist-button {
   margin-left: 5px;
   margin-top: 5px;
+}
+
+.first-player {
+  .faction-mini {
+    margin-left: 10px;
+  }
+
+  .game-footer-row {
+    text-align: right;
+  }
+}
+
+.other-player {
+  .faction-mini {
+    margin-right: 10px;
+  }
+}
+
+.faction-mini {
+  width: 64px;
+  border-radius: 5px;
+}
+
+.agenda-mini {
+  width: 48px;
+
+  img {
+    border-radius: 5px;    
+  }
+}
+
+.game-player-row {
+  &.first-player {
+    margin-right: 10px;
+  }
+
+  &.other-player {
+    margin-left: 10px;
+  }
+}
+
+.game-faction-row {
+  display: flex;
+  min-height: 84px;
+
+  .gamelist-button {
+    height: 34px;
+    width: 122px;
+  }
+}
+
+.game-header-row {
+  text-align: center;
+  font-size: 1.1em;
+}
+
+.game-row-buttons {
+  text-align: center;
+}
+
+.game-footer-row {
+  margin-top: 10px;
+  font-size: 1.2em;
 }

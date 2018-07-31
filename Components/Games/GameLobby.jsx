@@ -46,6 +46,7 @@ class GameLobby extends React.Component {
         }
 
         if(props.passwordGame) {
+            $('#pendingGameModal').modal('show');
             this.setState({ gameState: GameState.PasswordedGame });
         } else if(props.currentGame && !props.currentGame.started) {
             this.setState({ gameState: GameState.PendingGame });

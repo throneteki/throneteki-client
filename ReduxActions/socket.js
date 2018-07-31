@@ -118,7 +118,7 @@ export function connectLobby() {
         let queryString = state.auth.token ? 'token=' + state.auth.token + '&' : '';
         queryString += 'version=' + version;
 
-        let socket = io.connect(/*window.location.origin*/'https://theironthrone.net', {
+        let socket = io.connect(window.location.origin, {
             reconnection: true,
             reconnectionDelay: 1000,
             reconnectionDelayMax: 5000,
