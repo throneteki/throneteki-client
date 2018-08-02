@@ -10,7 +10,7 @@ import PasswordGame from './PasswordGame';
 import AlertPanel from '../Site/AlertPanel';
 import Panel from '../Site/Panel';
 import Modal from '../Site/Modal';
-import CheckBox from '../Form/CheckBox';
+import Checkbox from '../Form/Checkbox';
 
 import * as actions from '../../actions';
 
@@ -185,9 +185,9 @@ class GameLobby extends React.Component {
                                 <button className='btn btn-primary' onClick={ this.onNewGameClick } disabled={ !!this.props.currentGame }>New Game</button>
                             </div>
                             <div className='col-xs-9 game-filter'>
-                                <CheckBox name='beginner' label='Beginner' fieldClass='col-xs-4' noGroup onChange={ this.onCheckboxChange.bind(this, 'beginner') } checked={ this.state.filter['beginner'] } />
-                                <CheckBox name='casual' label='Casual' fieldClass='col-xs-4' noGroup onChange={ this.onCheckboxChange.bind(this, 'casual') } checked={ this.state.filter['casual'] } />
-                                <CheckBox name='competitive' label='Competitive' fieldClass='col-xs-4' noGroup onChange={ this.onCheckboxChange.bind(this, 'competitive') } checked={ this.state.filter['competitive'] } />
+                                <Checkbox name='beginner' label='Beginner' fieldClass='col-xs-4' noGroup onChange={ this.onCheckboxChange.bind(this, 'beginner') } checked={ this.state.filter['beginner'] } />
+                                <Checkbox name='casual' label='Casual' fieldClass='col-xs-4' noGroup onChange={ this.onCheckboxChange.bind(this, 'casual') } checked={ this.state.filter['casual'] } />
+                                <Checkbox name='competitive' label='Competitive' fieldClass='col-xs-4' noGroup onChange={ this.onCheckboxChange.bind(this, 'competitive') } checked={ this.state.filter['competitive'] } />
                             </div>
                         </div>
                         { this.props.games.length === 0 ? <h4>No games are currently in progress</h4> : <GameList games={ this.props.games } gameFilter={ this.state.filter } /> }
