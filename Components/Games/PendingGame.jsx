@@ -150,9 +150,7 @@ class PendingGame extends React.Component {
     onLeaveClick(event) {
         event.preventDefault();
 
-        this.props.socket.emit('leavegame', this.props.currentGame.id);
-
-        this.props.gameSocketClose();
+        this.props.leaveGame(this.props.currentGame.id);
     }
 
     onStartClick(event) {
@@ -261,6 +259,7 @@ PendingGame.propTypes = {
     decks: PropTypes.array,
     gameSocketClose: PropTypes.func,
     host: PropTypes.string,
+    leaveGame: PropTypes.func,
     loadDecks: PropTypes.func,
     loadStandaloneDecks: PropTypes.func,
     loading: PropTypes.bool,

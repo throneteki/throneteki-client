@@ -45,22 +45,31 @@ class GameLobby extends React.Component {
             this.setState({ errorMessage: undefined });
         }
 
-        if(props.passwordGame) {
+        this.setGameState(props);
+
+        if(!this.isPendingGameStillCurrent(props) || this.isGameInProgress(props)) {
+            $('#pendingGameModal').modal('hide');
+            this.setState({ gameState: GameState.None });
+        } else if(!this.isPasswordGameStillCurrent(props) && !props.currentGame) {
+            $('#pendingGameModal').modal('hide');
+        } else if(!this.props.passwordGame && props.passwordGame) {
             $('#pendingGameModal').modal('show');
+        }
+
+        if(props.currentGame && props.currentGame.owner !== props.user.username && !this.props.currentGame) {
+            // Joining a game
+            $('#pendingGameModal').modal('show');
+            this.setState({ gameState: GameState.PendingGame });
+        }
+    }
+
+    setGameState(props) {
+        if(props.passwordGame) {
             this.setState({ gameState: GameState.PasswordedGame });
         } else if(props.currentGame && !props.currentGame.started) {
             this.setState({ gameState: GameState.PendingGame });
         } else if(!props.currentGame && props.newGame && props.user) {
             this.setState({ gameState: GameState.NewGame });
-        }
-
-        if(!this.isPendingGameStillCurrent(props) || this.isGameInProgress(props)) {
-            $('#pendingGameModal').modal('hide');
-            this.setState({ gameState: GameState.None });
-        } else if(props.currentGame && props.currentGame.owner !== props.user.username && !this.props.currentGame) {
-            // Joining a game
-            $('#pendingGameModal').modal('show');
-            this.setState({ gameState: GameState.PendingGame });
         }
     }
 
@@ -70,6 +79,14 @@ class GameLobby extends React.Component {
         }
 
         if(this.props.currentGame && !props.currentGame) {
+            return false;
+        }
+
+        return true;
+    }
+
+    isPasswordGameStillCurrent(props) {
+        if(this.props.passwordGame && !props.passwordGame) {
             return false;
         }
 
@@ -103,7 +120,15 @@ class GameLobby extends React.Component {
             case GameState.NewGame:
                 this.props.cancelNewGame();
                 break;
+            case GameState.PasswordedGame:
+                this.props.cancelPasswordJoin();
+                break;
+            case GameState.PendingGame:
+                this.props.leaveGame(this.props.currentGame.id);
+                break;
         }
+
+        this.setGameState(this.props);
     }
 
     render() {
@@ -125,8 +150,8 @@ class GameLobby extends React.Component {
                 modalBody = <NewGame defaultGameName={ this.props.user.username + '\'s game' } />;
                 break;
             case GameState.PendingGame:
-                modalProps.title = this.props.currentGame.name;
-                modalBody = <PendingGame />;
+                modalProps.title = this.props.currentGame ? this.props.currentGame.name : '';
+                modalBody = this.props.currentGame ? <PendingGame /> : null;
                 break;
             case GameState.PasswordedGame:
                 modalProps.title = 'Password Required';
@@ -156,8 +181,10 @@ GameLobby.displayName = 'GameLobby';
 GameLobby.propTypes = {
     bannerNotice: PropTypes.string,
     cancelNewGame: PropTypes.func,
+    cancelPasswordJoin: PropTypes.func,
     currentGame: PropTypes.object,
     games: PropTypes.array,
+    leaveGame: PropTypes.func,
     newGame: PropTypes.bool,
     passwordGame: PropTypes.object,
     setContextMenu: PropTypes.func,
