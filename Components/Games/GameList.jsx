@@ -6,6 +6,7 @@ import { toastr } from 'react-redux-toastr';
 import moment from 'moment';
 
 import Avatar from '../Site/Avatar';
+import AlertPanel from '../Site/AlertPanel';
 import * as actions from '../../actions';
 
 class GameList extends React.Component {
@@ -88,57 +89,49 @@ class GameList extends React.Component {
         return (<div className='game-footer-row'>
             <span className='bold'>{ player.name }</span>
             <span className='gamelist-avatar'><Avatar username={ player.name } /></span>
-        </div >);
+        </div>);
     }
 
-    render() {
-        let gameList = this.props.games.map(game => {
-            let firstPlayer = true;
-
-            let players = Object.values(game.players).map(player => {
-                let classes = classNames('game-player-row', {
-                    'first-player': firstPlayer,
-                    'other-player': !firstPlayer
-                });
-
-                let retPlayer = (<div key={ player.name } className={ classes }>
-                    { this.getPlayerCards(player, firstPlayer) }
-                    { this.getPlayerNameAndAvatar(player, firstPlayer) }
-                </div >);
-
-                firstPlayer = false;
-
-                return retPlayer;
+    getPlayers(game) {
+        let firstPlayer = true;
+        let players = Object.values(game.players).map(player => {
+            let classes = classNames('game-player-row', {
+                'first-player': firstPlayer,
+                'other-player': !firstPlayer
             });
 
-            if(players.length === 1) {
-                if(this.canJoin(game)) {
-                    players.push(
-                        <div className='game-faction-row other-player'>
-                            <button className='btn btn-primary gamelist-button img-responsive' onClick={ event => this.joinGame(event, game) }>Join</button>
-                        </div>);
-                } else {
-                    players.push(<div className='game-faction-row other-player' />);
-                }
+            let retPlayer = (<div key={ player.name } className={ classes }>
+                { this.getPlayerCards(player, firstPlayer) }
+                { this.getPlayerNameAndAvatar(player, firstPlayer) }
+            </div>);
+
+            firstPlayer = false;
+
+            return retPlayer;
+        });
+
+        if(players.length === 1) {
+            if(this.canJoin(game)) {
+                players.push(
+                    <div className='game-faction-row other-player'>
+                        <button className='btn btn-primary gamelist-button img-responsive' onClick={ event => this.joinGame(event, game) }>Join</button>
+                    </div>);
+            } else {
+                players.push(<div className='game-faction-row other-player' />);
             }
+        }
+
+        return players;
+    }
+
+    getGamesForType(gameType, games) {
+        let gameDisplay = games.map(game => {
+            let players = this.getPlayers(game);
 
             let isAdmin = this.props.user && this.props.user.permissions.canManageGames;
             let rowClass = classNames('game-row', {
                 [game.node]: game.node && isAdmin
             });
-
-            // let labelClass = 'label';
-            // switch(game.gameType) {
-            //     case 'beginner':
-            //         labelClass += ' label-success';
-            //         break;
-            //     case 'casual':
-            //         labelClass += ' label-warning';
-            //         break;
-            //     case 'competitive':
-            //         labelClass += ' label-danger';
-            //         break;
-            // }
 
             let timeDifference = moment().diff(moment(game.createdAt));
             if(timeDifference < 0) {
@@ -155,7 +148,6 @@ class GameList extends React.Component {
                             <span className='game-title'>
                                 <b>{ game.name }</b>
                             </span>
-                            { /* { <span className={ labelClass }>{ game.gameType }</span> } */ }
                             <span className='game-time'>{ `[${formattedTime}]` }</span>
                             <span className='game-icons'>
                                 { game.useRookery && <img src='/img/RavenIcon.png' className='game-list-icon' alt='Rookery format' /> }
@@ -176,8 +168,54 @@ class GameList extends React.Component {
             );
         });
 
+        let gameHeaderClass = 'game-header bold';
+        switch(gameType) {
+            case 'beginner':
+                gameHeaderClass += ' label-success';
+                break;
+            case 'casual':
+                gameHeaderClass += ' label-warning';
+                break;
+            case 'competitive':
+                gameHeaderClass += ' label-danger';
+                break;
+        }
+
         return (
-            <div className='game-list' >
+            <div>
+                <div className={ gameHeaderClass }>{ gameType } ({ gameDisplay.length })
+                </div>
+                { gameDisplay }
+            </div>);
+    }
+
+    render() {
+        let groupedGames = {};
+
+        for(const game of this.props.games) {
+            if(!groupedGames[game.gameType]) {
+                groupedGames[game.gameType] = [game];
+            } else {
+                groupedGames[game.gameType].push(game);
+            }
+        }
+
+        let gameList = [];
+
+        for(const gameType of ['beginner', 'casual', 'competitive']) {
+            if(this.props.gameFilter[gameType] && groupedGames[gameType]) {
+                gameList.push(this.getGamesForType(gameType, groupedGames[gameType]));
+            }
+        }
+
+        if(gameList.length === 0) {
+            return (<div className='game-list col-xs-12'>
+                <AlertPanel type='info' message='There are no games matching the filters you have selected' />
+            </div>);
+        }
+
+        return (
+            <div className='game-list col-xs-12'>
                 { gameList }
             </div>);
     }
@@ -186,6 +224,7 @@ class GameList extends React.Component {
 GameList.displayName = 'GameList';
 GameList.propTypes = {
     currentGame: PropTypes.object,
+    gameFilter: PropTypes.object,
     games: PropTypes.array,
     joinPasswordGame: PropTypes.func,
     showNodes: PropTypes.bool,

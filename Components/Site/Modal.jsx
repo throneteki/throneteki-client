@@ -27,7 +27,6 @@ Modal.propTypes = {
     children: PropTypes.node,
     className: PropTypes.string,
     id: PropTypes.string,
-    okButton: PropTypes.string,
     title: PropTypes.string
 };
 
