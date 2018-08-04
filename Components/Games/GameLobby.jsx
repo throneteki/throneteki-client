@@ -29,12 +29,17 @@ class GameLobby extends React.Component {
         this.onNewGameClick = this.onNewGameClick.bind(this);
         this.onModalHidden = this.onModalHidden.bind(this);
 
+        let savedFilter = localStorage.getItem('gameFilter');
+        if(savedFilter) {
+            savedFilter = JSON.parse(savedFilter);
+        }
+
         this.state = {
             gameState: GameState.None,
             filter: {
-                beginner: true,
-                casual: true,
-                competitive: true
+                beginner: savedFilter ? savedFilter.beginner : true,
+                casual: savedFilter ? savedFilter.casual : true,
+                competitive: savedFilter ? savedFilter.competitive : true
             }
         };
     }
@@ -153,6 +158,8 @@ class GameLobby extends React.Component {
         filter[field] = event.target.checked;
 
         this.setState({ filter: filter });
+
+        localStorage.setItem('gameFilter', JSON.stringify(filter));
     }
 
     render() {
