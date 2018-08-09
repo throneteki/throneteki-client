@@ -26,10 +26,6 @@ class SquishableCardPanel extends React.Component {
         let overflow = requiredWidth - overallDimensions.width;
         let offset = overflow / (handLength - 1);
 
-        if(!this.props.isMe) {
-            cards = [...this.props.cards].sort((a, b) => a.facedown && !b.facedown ? -1 : 1);
-        }
-
         let hand = cards.map(card => {
             let left = (cardWidth - offset) * cardIndex++;
 
