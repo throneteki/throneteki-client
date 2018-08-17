@@ -32,15 +32,19 @@ class GameLobby extends React.Component {
         let savedFilter = localStorage.getItem('gameFilter');
         if(savedFilter) {
             savedFilter = JSON.parse(savedFilter);
+        } else {
+            savedFilter = {};
         }
+
+        let filterDefaults = {
+            beginner: true,
+            casual: true,
+            competitive: true
+        };
 
         this.state = {
             gameState: GameState.None,
-            filter: {
-                beginner: savedFilter ? savedFilter.beginner : true,
-                casual: savedFilter ? savedFilter.casual : true,
-                competitive: savedFilter ? savedFilter.competitive : true
-            }
+            filter: Object.assign(filterDefaults, savedFilter)
         };
     }
 
