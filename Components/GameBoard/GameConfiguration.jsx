@@ -20,7 +20,6 @@ class GameConfiguration extends React.Component {
         ];
 
         this.state = {
-            promptDupes: this.props.promptDupes,
             windowTimer: this.props.timerSettings.windowTimer
         };
     }
@@ -28,7 +27,7 @@ class GameConfiguration extends React.Component {
     onToggle(option, value) {
         if(option === 'promptDupes') {
             if(this.props.onPromptDupesToggle) {
-                this.props.onPromptDupesToggle(value);
+                this.props.onPromptDupesToggle(!value);
             }
         } else if(this.props.onActionWindowToggle) {
             this.props.onActionWindowToggle(option, !value);
@@ -100,7 +99,7 @@ class GameConfiguration extends React.Component {
                             <Checkbox name='keywordSettings.chooseCards' noGroup label={ 'Make keywords optional' } fieldClass='col-sm-6'
                                 onChange={ this.onKeywordSettingToggle.bind(this, 'chooseCards') } checked={ this.props.keywordSettings.chooseCards } />
                             <Checkbox name='promptDupes' noGroup label={ 'Prompt before using dupes to save' } fieldClass='col-sm-6'
-                                onChange={ this.onToggle.bind(this, 'promptDupes') } checked={ this.state.promptDupes } />
+                                onChange={ this.onToggle.bind(this, 'promptDupes', this.props.promptDupes) } checked={ this.props.promptDupes } />
                         </div>
                     </Panel>
                 </form>
