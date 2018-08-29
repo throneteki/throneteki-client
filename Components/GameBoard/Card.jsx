@@ -168,12 +168,17 @@ class InnerCard extends React.Component {
 
         let index = 1;
         let dupes = this.props.card.dupes.map(dupe => {
-            var returnedDupe = (<Card key={ dupe.uuid } className={ classNames('card-dupe', `card-dupe-${index}`) }
+            if(this.props.card.facedown) {
+                dupe.facedown = true;
+            }
+
+            let returnedDupe = (<Card key={ dupe.uuid } className={ classNames('card-dupe', `card-dupe-${index}`) }
                 source={ this.props.source } card={ dupe } wrapped={ false }
                 onMouseOver={ this.props.disableMouseOver ? null : this.onMouseOver.bind(this, dupe) }
                 onMouseOut={ this.props.disableMouseOver ? null : this.onMouseOut }
                 onClick={ this.props.onClick }
-                size={ this.props.size } />);
+                size={ this.props.size }
+                facedown={ this.props.card.facedown } />);
 
             index += 1;
 
