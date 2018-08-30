@@ -177,6 +177,7 @@ class InnerCard extends React.Component {
                 onMouseOver={ this.props.disableMouseOver ? null : this.onMouseOver.bind(this, dupe) }
                 onMouseOut={ this.props.disableMouseOver ? null : this.onMouseOut }
                 onClick={ this.props.onClick }
+                onMenuItemClick={ this.props.onMenuItemClick }
                 size={ this.props.size }
                 facedown={ this.props.card.facedown } />);
 
