@@ -168,6 +168,7 @@ class InnerCard extends React.Component {
 
         let index = 1;
         let dupes = this.props.card.dupes.map(dupe => {
+            // If a dupe is dragged into play during setup, it will display faceup.  This fixes that by forcing it to the parent's state
             if(this.props.card.facedown) {
                 dupe.facedown = true;
             }
