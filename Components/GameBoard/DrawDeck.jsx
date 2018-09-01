@@ -9,34 +9,23 @@ class DrawDeck extends React.Component {
         super();
 
         this.handlePileClick = this.handlePileClick.bind(this);
-        this.handleShuffleClick = this.handleShuffleClick.bind(this);
         this.handleShowDeckClick = this.handleShowDeckClick.bind(this);
-        this.handleCloseClick = this.handleCloseClick.bind(this);
-        this.handleCloseAndShuffleClick = this.handleCloseAndShuffleClick.bind(this);
+        this.handleShuffleClick = this.handleShuffleClick.bind(this);
+        this.handlePopupChange = this.handlePopupChange.bind(this);
 
         this.state = {
             showDrawMenu: false
         };
     }
 
-    handleCloseClick() {
-        if(this.props.onDrawClick) {
-            this.props.onDrawClick();
-        }
-    }
-
-    handleCloseAndShuffleClick() {
-        if(this.props.onDrawClick) {
-            this.props.onDrawClick();
-        }
-
-        if(this.props.onShuffleClick) {
-            this.props.onShuffleClick();
-        }
-    }
-
     handlePileClick() {
         this.setState({ showDrawMenu: !this.state.showDrawMenu });
+    }
+
+    handleShowDeckClick() {
+        if(this.props.onPopupChange) {
+            this.props.onPopupChange({ visible: true });
+        }
     }
 
     handleShuffleClick() {
@@ -45,9 +34,9 @@ class DrawDeck extends React.Component {
         }
     }
 
-    handleShowDeckClick() {
-        if(this.props.onDrawClick) {
-            this.props.onDrawClick();
+    handlePopupChange(event) {
+        if(this.props.onPopupChange && !event.visible) {
+            this.props.onPopupChange({ visible: false });
         }
     }
 
@@ -62,7 +51,7 @@ class DrawDeck extends React.Component {
         ] : null;
 
         let drawDeckPopupMenu = [
-            { text: 'Close and Shuffle', handler: this.handleCloseAndShuffleClick }
+            { text: 'Close and Shuffle', handler: this.handleShuffleClick }
         ];
 
         let drawDeck = (<CardPile className='draw'
@@ -72,10 +61,10 @@ class DrawDeck extends React.Component {
             hiddenTopCard
             menu={ drawDeckMenu }
             onCardClick={ this.props.onCardClick }
-            onCloseClick={ this.handleCloseClick.bind(this) }
             onDragDrop={ this.props.onDragDrop }
             onMouseOut={ this.props.onMouseOut }
             onMouseOver={ this.props.onMouseOver }
+            onPopupChange={ this.handlePopupChange }
             popupLocation={ this.props.popupLocation }
             popupMenu={ drawDeckPopupMenu }
             size={ this.props.size }
@@ -92,13 +81,12 @@ DrawDeck.propTypes = {
     isMe: PropTypes.bool,
     onCardClick: PropTypes.func,
     onDragDrop: PropTypes.func,
-    onDrawClick: PropTypes.func,
     onMenuItemClick: PropTypes.func,
     onMouseOut: PropTypes.func,
     onMouseOver: PropTypes.func,
+    onPopupChange: PropTypes.func,
     onShuffleClick: PropTypes.func,
     popupLocation: PropTypes.oneOf(['top', 'bottom']),
-    showDrawDeck: PropTypes.bool,
     size: PropTypes.string,
     spectating: PropTypes.bool
 };

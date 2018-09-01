@@ -140,7 +140,7 @@ class PlayerRow extends React.Component {
             cards={ this.props.drawDeck }
             isMe={ this.props.isMe }
             numDrawCards={ this.props.numDrawCards }
-            onDrawClick={ this.props.onDrawClick }
+            onPopupChange={ this.props.onDrawPopupChange }
             onShuffleClick={ this.props.onShuffleClick }
             spectating={ this.props.spectating }
             { ...cardPileProps } />);
@@ -198,7 +198,7 @@ PlayerRow.propTypes = {
     numDrawCards: PropTypes.number,
     onCardClick: PropTypes.func,
     onDragDrop: PropTypes.func,
-    onDrawClick: PropTypes.func,
+    onDrawPopupChange: PropTypes.func,
     onMenuItemClick: PropTypes.func,
     onMouseOut: PropTypes.func,
     onMouseOver: PropTypes.func,
@@ -207,7 +207,6 @@ PlayerRow.propTypes = {
     plotDeck: PropTypes.array,
     power: PropTypes.number,
     shadows: PropTypes.array,
-    showDrawDeck: PropTypes.bool,
     side: PropTypes.oneOf(['top', 'bottom']),
     spectating: PropTypes.bool,
     title: PropTypes.object,

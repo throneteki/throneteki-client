@@ -49,7 +49,7 @@ export class GameBoard extends React.Component {
         this.onMouseOut = this.onMouseOut.bind(this);
         this.onMouseOver = this.onMouseOver.bind(this);
         this.onCardClick = this.onCardClick.bind(this);
-        this.onDrawClick = this.onDrawClick.bind(this);
+        this.handleDrawPopupChange = this.handleDrawPopupChange.bind(this);
         this.onDragDrop = this.onDragDrop.bind(this);
         this.onCommand = this.onCommand.bind(this);
         this.onConcedeClick = this.onConcedeClick.bind(this);
@@ -62,7 +62,6 @@ export class GameBoard extends React.Component {
 
         this.state = {
             cardToZoom: undefined,
-            showDrawDeck: false,
             spectating: true,
             showActionWindowsMenu: false,
             showCardMenu: {},
@@ -197,10 +196,8 @@ export class GameBoard extends React.Component {
         this.props.sendGameMessage('cardClicked', card.uuid);
     }
 
-    onDrawClick() {
-        this.props.sendGameMessage('showDrawDeck');
-
-        this.setState({ showDrawDeck: !this.state.showDrawDeck });
+    handleDrawPopupChange(event) {
+        this.props.sendGameMessage('showDrawDeck', event.visible);
     }
 
     sendChatMessage(message) {
@@ -389,10 +386,9 @@ export class GameBoard extends React.Component {
                         onMouseOver={ this.onMouseOver }
                         onMouseOut={ this.onMouseOut }
                         numDrawCards={ thisPlayer.numDrawCards }
-                        onDrawClick={ this.onDrawClick }
+                        onDrawPopupChange={ this.handleDrawPopupChange }
                         onShuffleClick={ this.onShuffleClick }
                         outOfGamePile={ thisPlayer.cardPiles.outOfGamePile }
-                        showDrawDeck={ this.state.showDrawDeck }
                         drawDeck={ thisPlayer.cardPiles.drawDeck }
                         onDragDrop={ this.onDragDrop }
                         discardPile={ thisPlayer.cardPiles.discardPile }
