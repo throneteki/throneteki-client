@@ -12,7 +12,7 @@ class CardPile extends React.Component {
         super(props);
 
         this.state = {
-            showPopup: false,
+            showPopup: !!props.cards && props.cards.some(card => card.selectable),
             showMenu: false
         };
 
