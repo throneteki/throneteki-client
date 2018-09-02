@@ -50,9 +50,9 @@ class DrawDeck extends React.Component {
             { text: 'Shuffle', handler: this.handleShuffleClick }
         ] : null;
 
-        let drawDeckPopupMenu = [
+        let drawDeckPopupMenu = this.props.showDeck ? [
             { text: 'Close and Shuffle', handler: this.handleShuffleClick }
-        ];
+        ] : null;
 
         let drawDeck = (<CardPile className='draw'
             cardCount={ this.props.cardCount }
@@ -87,6 +87,7 @@ DrawDeck.propTypes = {
     onPopupChange: PropTypes.func,
     onShuffleClick: PropTypes.func,
     popupLocation: PropTypes.oneOf(['top', 'bottom']),
+    showDeck: PropTypes.bool,
     size: PropTypes.string,
     spectating: PropTypes.bool
 };

@@ -394,6 +394,7 @@ export class GameBoard extends React.Component {
                         discardPile={ thisPlayer.cardPiles.discardPile }
                         deadPile={ thisPlayer.cardPiles.deadPile }
                         shadows={ thisPlayer.cardPiles.shadows }
+                        showDeck={ thisPlayer.showDeck }
                         spectating={ this.state.spectating }
                         title={ thisPlayer.title }
                         onMenuItemClick={ this.onMenuItemClick }

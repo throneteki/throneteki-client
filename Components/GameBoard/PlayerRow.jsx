@@ -142,6 +142,7 @@ class PlayerRow extends React.Component {
             numDrawCards={ this.props.numDrawCards }
             onPopupChange={ this.props.onDrawPopupChange }
             onShuffleClick={ this.props.onShuffleClick }
+            showDeck={ this.props.showDeck }
             spectating={ this.props.spectating }
             { ...cardPileProps } />);
         let discardPile = (<CardPile className='discard' title='Discard' source='discard pile' cards={ this.props.discardPile }
@@ -207,6 +208,7 @@ PlayerRow.propTypes = {
     plotDeck: PropTypes.array,
     power: PropTypes.number,
     shadows: PropTypes.array,
+    showDeck: PropTypes.bool,
     side: PropTypes.oneOf(['top', 'bottom']),
     spectating: PropTypes.bool,
     title: PropTypes.object,
