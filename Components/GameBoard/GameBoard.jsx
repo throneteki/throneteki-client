@@ -324,6 +324,7 @@ export class GameBoard extends React.Component {
                         numDrawCards={ otherPlayer.numDrawCards }
                         discardPile={ otherPlayer.cardPiles.discardPile }
                         deadPile={ otherPlayer.cardPiles.deadPile }
+                        drawDeck={ otherPlayer.cardPiles.drawDeck }
                         onCardClick={ this.onCardClick }
                         onMouseOver={ this.onMouseOver }
                         onMouseOut={ this.onMouseOut }

@@ -54,10 +54,12 @@ class DrawDeck extends React.Component {
             { text: 'Close and Shuffle', handler: this.handleShuffleClick }
         ] : null;
 
+        let hasCards = !!this.props.cards && this.props.cards.length !== 0;
+
         let drawDeck = (<CardPile className='draw'
             cardCount={ this.props.cardCount }
             cards={ this.props.cards }
-            disablePopup={ this.props.spectating || !this.props.isMe }
+            disablePopup={ !hasCards && (this.props.spectating || !this.props.isMe) }
             hiddenTopCard
             menu={ drawDeckMenu }
             onCardClick={ this.props.onCardClick }
