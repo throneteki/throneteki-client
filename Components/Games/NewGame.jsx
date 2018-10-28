@@ -159,29 +159,41 @@ class NewGame extends React.Component {
 
     render() {
         let charsLeft = GameNameMaxLength - this.state.gameName.length;
+        let content = [];
+
+        if(this.props.quickJoin) {
+            content =
+                (<div>
+                    <AlertPanel type='info' message="Select the type of game you'd like to play and either you'll join the next one available, or one will be created for you with default options." />
+                    { this.getMeleeOptions() }
+                    { this.getGameTypeOptions() }
+                </div>);
+        } else {
+            content = (<div>
+                <div className='row'>
+                    <div className='col-sm-8'>
+                        <label htmlFor='gameName'>Name</label>
+                        <label className='game-name-char-limit'>{ charsLeft >= 0 ? charsLeft : 0 }</label>
+                        <input className='form-control' placeholder='Game Name' type='text' onChange={ this.onNameChange } value={ this.state.gameName } maxLength={ GameNameMaxLength } />
+                    </div>
+                </div>
+                { this.getOptions() }
+                { this.getMeleeOptions() }
+                { this.getGameTypeOptions() }
+                <div className='row game-password'>
+                    <div className='col-sm-8'>
+                        <label>Password</label>
+                        <input className='form-control' type='password' onChange={ this.onPasswordChange } value={ this.state.password } />
+                    </div>
+                </div>
+            </div>);
+        }
+
         return this.props.socket ? (
             <div>
                 <Panel title={ this.props.quickJoin ? 'Join Existing or Start New Game' : 'New game' }>
                     <form className='form'>
-                        { this.props.quickJoin && <AlertPanel type='info' message="Select the type of game you'd like to play and either you'll join the next one available, or one will be created for you with default options." /> }
-                        { this.props.quickJoin || <div className='row'>
-                            <div className='col-sm-8'>
-                                <label htmlFor='gameName'>Name</label>
-                                <label className='game-name-char-limit'>{ charsLeft >= 0 ? charsLeft : 0 }</label>
-                                <input className='form-control' placeholder='Game Name' type='text' onChange={ this.onNameChange } value={ this.state.gameName } maxLength={ GameNameMaxLength } />
-                            </div>
-                        </div> }
-                        { this.props.quickJoin || this.getOptions() }
-                        { this.getMeleeOptions() }
-                        { this.getGameTypeOptions() }
-                        { this.props.quickJoin ||
-                            <div className='row game-password'>
-                                <div className='col-sm-8'>
-                                    <label>Password</label>
-                                    <input className='form-control' type='password' onChange={ this.onPasswordChange } value={ this.state.password } />
-                                </div>
-                            </div>
-                        }
+                        { content }
                         <div className='button-row'>
                             <button className='btn btn-primary' onClick={ this.onSubmitClick }>Start</button>
                             <button className='btn btn-primary' onClick={ this.onCancelClick }>Cancel</button>
