@@ -145,7 +145,7 @@ class GameLobby extends React.Component {
     onNewGameClick(event) {
         event.preventDefault();
 
-        this.setState({ joinOrStart: false });
+        this.setState({ quickJoin: false });
 
         this.startNewGame();
     }
