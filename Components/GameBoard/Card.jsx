@@ -103,20 +103,19 @@ class InnerCard extends React.Component {
 
     getCountersForCard(card) {
         let counters = [];
-        let needsFade = card.type === 'attachment' && !['rookery', 'full deck'].includes(this.props.source);
 
         if(card.power) {
-            counters.push({ name: 'card-power', count: card.power, fade: needsFade, shortName: 'P' });
+            counters.push({ name: 'card-power', count: card.power, shortName: 'P' });
         }
 
         // Only display psuedo-tokens for face up cards in play
         if(!card.facedown && this.props.source === 'play area') {
             if(card.type === 'character' && card.baseStrength !== card.strength) {
-                counters.push({ name: 'strength', count: card.strength, fade: needsFade, shortName: 'S' });
+                counters.push({ name: 'strength', count: card.strength, shortName: 'S' });
             }
 
             if(card.dupes && card.dupes.length > 0) {
-                counters.push({ name: 'dupe', count: card.dupes.length, fade: needsFade, shortName: 'D' });
+                counters.push({ name: 'dupe', count: card.dupes.length, shortName: 'D' });
             }
 
             for(const icon of card.iconsAdded || []) {
@@ -133,11 +132,12 @@ class InnerCard extends React.Component {
         }
 
         for(const [key, token] of Object.entries(card.tokens || {})) {
-            counters.push({ name: key, count: token, fade: needsFade, shortName: this.shortNames[key] });
+            counters.push({ name: key, count: token, shortName: this.shortNames[key] });
         }
 
         for(const attachment of card.attachments || []) {
-            counters = counters.concat(this.getCountersForCard(attachment));
+            let attachmentCounters = this.getCountersForCard(attachment).map(counter => Object.assign({ fade: true }, counter));
+            counters = counters.concat(attachmentCounters);
         }
 
         return counters.filter(counter => counter.count >= 0);
