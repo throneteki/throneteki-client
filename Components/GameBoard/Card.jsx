@@ -51,7 +51,8 @@ class InnerCard extends React.Component {
             ear: 'E',
             venom: 'M',
             kiss: 'K',
-            bell: 'L'
+            bell: 'L',
+            blood: 'D'
         };
     }
 
