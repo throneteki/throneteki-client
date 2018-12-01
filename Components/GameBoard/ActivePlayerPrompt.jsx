@@ -57,11 +57,11 @@ class ActivePlayerPrompt extends React.Component {
 
             let option = (
                 <button key={ button.command + buttonIndex.toString() }
-                    className='btn btn-default'
+                    className='btn btn-default prompt-button'
                     onClick={ clickCallback }
                     onMouseOver={ event => this.onMouseOver(event, button.card) }
                     onMouseOut={ event => this.onMouseOut(event, button.card) }
-                    disabled={ button.disabled }>{ button.text }</button>);
+                    disabled={ button.disabled }>{ button.text } { button.icon && <div className={ `thronesicon thronesicon-${button.icon}` } /> }</button>);
 
             buttonIndex++;
 

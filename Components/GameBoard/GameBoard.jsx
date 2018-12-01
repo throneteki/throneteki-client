@@ -73,6 +73,7 @@ export class GameBoard extends React.Component {
 
     componentDidMount() {
         this.updateContextMenu(this.props);
+        $('.modal-backdrop').remove();
     }
 
     componentWillReceiveProps(props) {
