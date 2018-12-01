@@ -61,7 +61,7 @@ class ActivePlayerPrompt extends React.Component {
                     onClick={ clickCallback }
                     onMouseOver={ event => this.onMouseOver(event, button.card) }
                     onMouseOut={ event => this.onMouseOut(event, button.card) }
-                    disabled={ button.disabled }>{ button.text } { button.icon && <div className={ `thronesicon thronesicon-${button.icon}` } /> }</button>);
+                    disabled={ button.disabled }> { button.icon && <div className={ `with-background thronesicon thronesicon-${button.icon}` } /> } { button.text }</button>);
 
             buttonIndex++;
 
