@@ -72,7 +72,7 @@ class ActivePlayerPrompt extends React.Component {
         return buttons;
     }
 
-    onCardNameSelected(command, method, cardName) {
+    handleLookupValueSelected(command, method, cardName) {
         if(this.props.onButtonClick) {
             this.props.onButtonClick(command, cardName, method);
         }
@@ -93,9 +93,9 @@ class ActivePlayerPrompt extends React.Component {
                             source={ control.source }
                             targets={ control.targets } />);
                 case 'card-name':
-                    return <CardNameLookup cards={ this.props.cards } onCardSelected={ this.onCardNameSelected.bind(this, control.command, control.method) } />;
+                    return <CardNameLookup cards={ this.props.cards } onValueSelected={ this.handleLookupValueSelected.bind(this, control.command, control.method) } />;
                 case 'trait-name':
-                    return <TraitNameLookup cards={ this.props.cards } onTraitSelected={ this.onCardNameSelected.bind(this, control.command, control.method) } />;
+                    return <TraitNameLookup cards={ this.props.cards } onValueSelected={ this.handleLookupValueSelected.bind(this, control.command, control.method) } />;
             }
         });
     }
