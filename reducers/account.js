@@ -1,3 +1,17 @@
+function processsUser(user) {
+    let customData = JSON.parse(user.customData);
+
+    user.settings.promptDupes = customData.promptDupes;
+    user.settings.windowTimer = customData.timerSettings.duration;
+    user.settings.keywordSettings = customData.keywordSettings;
+    user.settings.timerSettings = customData.timerSettings;
+    user.promptedActionWindows = customData.promptedActionWindows;
+
+    delete user.customData;
+
+    return user;
+}
+
 export default function(state = {}, action) {
     switch(action.type) {
         case 'REGISTER_ACCOUNT':
@@ -15,7 +29,7 @@ export default function(state = {}, action) {
         case 'ACCOUNT_LOGGEDIN':
             return Object.assign({}, state, {
                 loggedIn: true,
-                user: action.response.user
+                user: processsUser(action.response.user)
             });
         case 'ACCOUNT_LOGGEDOUT':
             return Object.assign({}, state, {
@@ -42,11 +56,11 @@ export default function(state = {}, action) {
         case 'ACCOUNT_AUTH_VERIFIED':
             return Object.assign({}, state, {
                 loggedIn: true,
-                user: action.response.user
+                user: processsUser(action.response.user)
             });
         case 'PROFILE_SAVED':
             return Object.assign({}, state, {
-                user: action.response.user
+                user: processsUser(action.response.user)
             });
     }
 

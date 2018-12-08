@@ -48,10 +48,13 @@ module.exports = (env) => {
             contentBase: './assets',
             hot: true,
             host: process.env.HOST || 'localhost',
-            proxy: [{
-                context: ['/**', '!/img/**', '!/fonts/**', '!/sound/**'],
-                target: `http://${process.env.HOST || 'localhost'}:4000`
-            }]
+            historyApiFallback: {
+                index: 'index.html'
+            }
+            /*            proxy: [{
+                            context: ['/**', '!/img/**', '!/fonts/**', '!/sound/**'],
+                            target: `http://${process.env.HOST || 'localhost'}:4000`
+                        }]*/
         },
         devtool: isDevBuild ? 'inline-source-map' : 'source-map',
         module: {

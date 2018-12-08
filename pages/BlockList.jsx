@@ -59,7 +59,6 @@ class BlockList extends React.Component {
             successPanel = (
                 <AlertPanel message='Block list entry added successfully' type={ 'success' } />
             );
-            this.props.socket.emit('authenticate', this.props.token);
         }
 
         if(this.props.blockListDeleted) {
@@ -69,7 +68,6 @@ class BlockList extends React.Component {
             successPanel = (
                 <AlertPanel message='Block list entry removed successfully' type={ 'success' } />
             );
-            this.props.socket.emit('authenticate', this.props.token);
         }
 
         let content;

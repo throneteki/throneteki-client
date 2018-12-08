@@ -40,7 +40,6 @@ export class Register extends React.Component {
     }
 
     render() {
-
         return (
             <div className='col-sm-6 col-sm-offset-3'>
                 <ApiStatus apiState={ this.props.apiState } successMessage={ this.state.successMessage } />

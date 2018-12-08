@@ -22,7 +22,7 @@ class Logout extends React.Component {
             this.setState({ successMessage: 'You were successfully logged out, redirecting you shortly.' });
 
             setTimeout(() => {
-                this.props.navigate('/');
+            this.props.navigate('/');
             }, 2000);
         }
     }

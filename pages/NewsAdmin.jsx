@@ -70,7 +70,7 @@ class NewsAdmin extends React.Component {
     }
 
     onEditClick(item) {
-        this.setState({ editItemId: item._id, editText: item.text });
+        this.setState({ editItemId: item.id, editText: item.text });
     }
 
     onSaveClick() {
@@ -105,13 +105,13 @@ class NewsAdmin extends React.Component {
                 <td>{ moment(newsItem.datePublished).format('YYYY-MM-DD') }</td>
                 <td>{ newsItem.poster }</td>
                 <td>
-                    { this.state.editItemId === newsItem._id ?
+                    { this.state.editItemId === newsItem.id ?
                         <TextArea name='newsEditText' value={ this.state.editText } onChange={ this.onEditTextChange.bind(this) } rows='4' /> :
                         newsItem.text }
                 </td>
                 <td>
                     <div className='btn-group'>
-                        { this.state.editItemId === newsItem._id ?
+                        { this.state.editItemId === newsItem.id ?
                             <button type='button' className='btn btn-primary' onClick={ this.onSaveClick }>Save</button> :
                             <button type='button' className='btn btn-primary' onClick={ this.onEditClick.bind(this, newsItem) }>Edit</button>
                         }
@@ -143,7 +143,7 @@ class NewsAdmin extends React.Component {
                 <Panel title='Add new news item'>
                     <Form name='newsAdmin' apiLoading={ this.props.apiAddState && this.props.apiAddState.loading } buttonClass='col-sm-offset-2 col-sm-4' buttonText='Add' onSubmit={ this.onAddNewsClick } />
                 </Panel>
-            </div>);
+                </div>);
 
     }
 }

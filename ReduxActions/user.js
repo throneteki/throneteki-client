@@ -73,7 +73,8 @@ export function saveProfile(username, details) {
         APIParams: {
             url: `/api/account/${username}`,
             type: 'PUT',
-            data: JSON.stringify({ data: details })
+            contentType: 'application/json',
+            data: JSON.stringify(processUser(details))
         }
     };
 }
@@ -82,4 +83,15 @@ export function clearProfileStatus() {
     return {
         type: 'CLEAR_PROFILE_STATUS'
     };
+}
+
+function processUser(user) {
+    user.customData = JSON.stringify({
+        promptDupes: user.settings.promptDupes,
+        keywordSettings: user.settings.keywordSettings,
+        promptedActionWindows: user.promptedActionWindows,
+        timerSettings: Object.assign({}, user.settings.timerSettings, { windowTimer: user.settings.windowTimer })
+    });
+
+    return user;
 }

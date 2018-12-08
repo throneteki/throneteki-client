@@ -4,7 +4,7 @@ const defaultState = {
     messages: []
 };
 
-export default function(state = defaultState, action) {
+export default function (state = defaultState, action) {
     switch(action.type) {
         case 'LOBBY_CONNECTING':
             return Object.assign({}, state, {
@@ -48,8 +48,9 @@ export default function(state = defaultState, action) {
                 newGame: false
             });
         case 'PROFILE_SAVED':
+            // XXX This should really call the action that already does this
             if(state.socket) {
-                state.socket.emit('authenticate', action.response.token);
+                state.socket.send('authenticate', action.response.token);
             }
             break;
         case 'START_NEWGAME':

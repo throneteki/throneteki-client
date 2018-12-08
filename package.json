@@ -101,5 +101,7 @@
     "jest": "^24.8.0",
     "react-test-renderer": "^16.8.6",
     "redux-loop": "^4.5.2"
+    "@aspnet/signalr": "^1.0.4",
+    "bootstrap": "^3.3.7"
   }
 }

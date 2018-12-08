@@ -48,7 +48,6 @@ export function loadStandaloneDecks() {
         shouldCallAPI: (state) => {
             return !state.cards.standaloneDecks;
         },
-        APIParams: { url: '/api/standalone-decks', cache: false },
-        skipAuth: true
+        APIParams: { url: '/api/standalone-decks', cache: false, skipAuth: true }
     };
 }

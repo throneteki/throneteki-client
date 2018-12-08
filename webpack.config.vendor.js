@@ -49,7 +49,8 @@ module.exports = (env) => {
                 'classnames',
                 'react-dnd',
                 'react-dnd-touch-backend',
-                'react-transition-group'
+                'react-transition-group',
+		'@aspnet/signalr'
             ]
         },
         devtool: isDevBuild ? 'inline-source-map' : 'source-map',

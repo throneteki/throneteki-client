@@ -66,7 +66,7 @@ class UserAdmin extends React.Component {
             this.setState({ successMessage: 'User saved successfully.' });
         } else {
             this.setState({ successMessage: undefined });
-        }
+    }
     }
 
     onFindClick(state) {
@@ -148,12 +148,12 @@ class UserAdmin extends React.Component {
 
         return (<div className='col-sm-offset-2 col-sm-8'>
             <ApiStatus apiState={ this.props.apiState } successMessage={ this.state.successMessage } />
-            <Panel title='User administration'>
+                    <Panel title='User administration'>
                 <Form name='userAdmin' apiLoading={ this.props.apiState && this.props.apiState.loading } buttonClass='col-sm-offset-4 col-sm-3' buttonText='Search' onSubmit={ this.onFindClick } />
-            </Panel>
-            { renderedUser }
-        </div>);
-    }
+                    </Panel>
+                    { renderedUser }
+                </div>);
+        }
 }
 
 UserAdmin.displayName = 'UserAdmin';

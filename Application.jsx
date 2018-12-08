@@ -7,7 +7,6 @@ import { CSSTransitionGroup } from 'react-transition-group';
 import ErrorBoundary from './Components/Site/ErrorBoundary';
 import NavBar from './Components/Site/NavBar';
 import Router from './Router';
-import {tryParseJSON} from './util';
 import AlertPanel from './Components/Site/AlertPanel';
 import * as actions from './actions';
 
@@ -29,11 +28,8 @@ class Application extends React.Component {
                 let token = localStorage.getItem('token');
                 let refreshToken = localStorage.getItem('refreshToken');
                 if(refreshToken) {
-                    const parsedToken = tryParseJSON(refreshToken);
-                    if(parsedToken) {
-                        this.props.setAuthTokens(token, parsedToken);
-                        this.props.authenticate();
-                    }
+                    this.props.setAuthTokens(token, refreshToken);
+                    this.props.authenticate();
                 }
             } catch(error) {
                 this.setState({ cannotLoad: true });

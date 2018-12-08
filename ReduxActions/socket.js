@@ -1,6 +1,6 @@
-import io from 'socket.io-client';
+import * as signalR from '@aspnet/signalr';
 
-import version from '../version';
+//import version from '../version';
 import * as actions from '../actions';
 
 export function socketMessageSent(message) {
@@ -71,7 +71,7 @@ export function authenticateSocket() {
         let state = getState();
 
         if(state.lobby.socket && state.auth.token) {
-            state.lobby.socket.emit('authenticate', state.auth.token);
+            state.lobby.socket.send('authenticate', state.auth.token);
         }
     };
 }
@@ -114,87 +114,83 @@ export function nodeStatusReceived(status) {
 
 export function connectLobby() {
     return (dispatch, getState) => {
-        let state = getState();
-        let queryString = state.auth.token ? 'token=' + state.auth.token + '&' : '';
-        queryString += 'version=' + version;
+        // let state = getState();
+        // // let queryString = state.auth.token ? 'token=' + state.auth.token + '&' : '';
+        // // queryString += 'version=' + version;
 
-        let socket = io.connect(window.location.origin, {
-            reconnection: true,
-            reconnectionDelay: 1000,
-            reconnectionDelayMax: 5000,
-            reconnectionAttempts: Infinity,
-            query: queryString
-        });
+        // let socket = new signalR.HubConnectionBuilder().withUrl('/lobby').configureLogging(signalR.LogLevel.Information).build();
 
-        dispatch(lobbyConnecting(socket));
+        // dispatch(lobbyConnecting(socket));
 
-        socket.on('connect', () => {
-            dispatch(lobbyConnected());
-        });
+        // socket.start().then(() => dispatch(lobbyConnected()));
 
-        socket.on('disconnect', () => {
-            dispatch(lobbyDisconnected());
-        });
+        // socket.on('disconnect', () => {
+        //     dispatch(lobbyDisconnected());
+        // });
 
-        socket.on('reconnect', () => {
-            dispatch(lobbyReconnecting());
-        });
+        // socket.on('reconnect', () => {
+        //     dispatch(lobbyReconnecting());
+        // });
 
-        socket.on('games', games => {
-            dispatch(lobbyMessageReceived('games', games));
-        });
+        // socket.on('games', games => {
+        //     dispatch(lobbyMessageReceived('games', games));
+        // });
 
-        socket.on('users', users => {
-            dispatch(lobbyMessageReceived('users', users));
-        });
+        // socket.on('users', users => {
+        //     dispatch(lobbyMessageReceived('users', users));
+        // });
 
-        socket.on('newgame', game => {
-            dispatch(lobbyMessageReceived, 'newgame', game);
-        });
+        // socket.on('newgame', game => {
+        //     dispatch(lobbyMessageReceived, 'newgame', game);
+        // });
 
-        socket.on('passworderror', message => {
-            dispatch(lobbyMessageReceived('passworderror', message));
-        });
+        // socket.on('passworderror', message => {
+        //     dispatch(lobbyMessageReceived('passworderror', message));
+        // });
 
-        socket.on('lobbychat', message => {
-            dispatch(lobbyMessageReceived('lobbychat', message));
-        });
+        // socket.on('lobbychat', message => {
+        //     dispatch(lobbyMessageReceived('lobbychat', message));
+        // });
 
-        socket.on('lobbymessages', messages => {
-            dispatch(lobbyMessageReceived('lobbymessages', messages));
-        });
+        // socket.on('lobbymessages', messages => {
+        //     dispatch(lobbyMessageReceived('lobbymessages', messages));
+        // });
 
-        socket.on('banner', notice => {
-            dispatch(lobbyMessageReceived('banner', notice));
-        });
+        // socket.on('banner', notice => {
+        //     dispatch(lobbyMessageReceived('banner', notice));
+        // });
 
-        socket.on('motd', motd => {
-            dispatch(lobbyMessageReceived('motd', motd));
-        });
+        // socket.on('banner', notice => {
+        //    dispatch(lobbyMessageReceived('banner', notice));
+        // });
 
-        socket.on('gamestate', game => {
-            state = getState();
-            dispatch(lobbyMessageReceived('gamestate', game, state.account.user ? state.account.user.username : undefined));
-        });
+        // socket.on('motd', motd => {
+        //    dispatch(lobbyMessageReceived('motd', motd));
+        // });
 
-        socket.on('cleargamestate', () => {
-            dispatch(lobbyMessageReceived('cleargamestate'));
-        });
+        //socket.on('gamestate', game => {
+        //    state = getState();
+        //    dispatch(lobbyMessageReceived('gamestate', game, state.account.user ? state.account.user.username : undefined));
+        // });
 
-        socket.on('handoff', handoff => {
-            dispatch(handoffReceived(handoff));
-        });
+        // socket.on('cleargamestate', () => {
+        //     dispatch(lobbyMessageReceived('cleargamestate'));
+        // });
 
-        socket.on('authfailed', () => {
-            dispatch(actions.authenticate());
-        });
+        // socket.on('handoff', handoff => {
+        //     dispatch(handoffReceived(handoff));
+        // });
 
-        socket.on('nodestatus', status => {
-            dispatch(nodeStatusReceived(status));
-        });
+        // socket.on('authfailed', () => {
+        //     dispatch(actions.authenticate());
+        // });
 
-        socket.on('removemessage', messageId => {
-            dispatch(lobbyMessageReceived('removemessage', messageId));
-        });
+        // socket.on('nodestatus', status => {
+        //     dispatch(nodeStatusReceived(status));
+        // });
+
+        // socket.on('removemessage', messageId => {
+        //     dispatch(lobbyMessageReceived('removemessage', messageId));
+        // });
     };
 }

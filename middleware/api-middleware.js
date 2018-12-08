@@ -53,7 +53,7 @@ export default function callAPIMiddleware({ dispatch, getState }) {
                 let authResponse = await $.ajax('/api/account/token', {
                     contentType: 'application/json',
                     type: 'POST',
-                    data: JSON.stringify({ token: state.auth.refreshToken })
+                    data: JSON.stringify({ refreshToken: state.auth.refreshToken, token: state.auth.token })
                 });
 
                 if(!authResponse.success) {
@@ -103,6 +103,17 @@ export default function callAPIMiddleware({ dispatch, getState }) {
             dispatch(Object.assign({}, payload, {
                 status: errorStatus,
                 message: 'An error occured communicating with the server.  Please try again later.',
+                type: 'API_FAILURE',
+                request: requestType
+            }));
+
+            return;
+        }
+
+        if(response.status === 400) {
+            dispatch(Object.assign({}, payload, {
+                status: response.status,
+                message: response.message,
                 type: 'API_FAILURE',
                 request: requestType
             }));
