@@ -120,7 +120,7 @@ export default function(state = { decks: [] }, action) {
                 deckDeleted: false
             });
 
-            if(newState.selectedDeck && !newState.selectedDeck._id) {
+            if(newState.selectedDeck && !newState.selectedDeck.id) {
                 if(newState.decks.length !== 0) {
                     newState.selectedDeck = newState.decks[0];
                 }
@@ -133,12 +133,12 @@ export default function(state = { decks: [] }, action) {
                 deckSaved: false
             });
 
-            if(!newState.decks.some(deck => deck._id === action.response.deck._id)) {
+            if(!newState.decks.some(deck => deck.id === action.response.deck.id)) {
                 newState.decks.push(processDeck(action.response.deck, state));
             }
 
             var selected = newState.decks.find(deck => {
-                return deck._id === action.response.deck._id;
+                return deck.id === action.response.deck.id;
             });
 
             newState = selectDeck(newState, selected);
@@ -180,7 +180,7 @@ export default function(state = { decks: [] }, action) {
             });
 
             newState.decks = newState.decks.filter(deck => {
-                return deck._id !== action.response.deckId;
+                return deck.id !== action.response.deckId;
             });
 
             newState.selectedDeck = newState.decks[0];

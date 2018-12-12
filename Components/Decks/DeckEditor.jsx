@@ -32,7 +32,7 @@ class DeckEditor extends React.Component {
         };
 
         if(props.deck) {
-            this.state.deckId = props.deck._id;
+            this.state.deckId = props.deck.id;
             this.state.deckName = props.deck.name;
             this.state.plotCards = props.deck.plotCards;
             this.state.drawCards = props.deck.drawCards;
@@ -103,6 +103,10 @@ class DeckEditor extends React.Component {
     }
 
     formatCardListItem(card) {
+        if(!card.card) {
+            return card.code;
+        }
+
         if(card.card.custom) {
             let typeCode = card.card.type;
             let typeName = typeCode[0].toUpperCase() + typeCode.slice(1);

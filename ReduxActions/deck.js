@@ -15,7 +15,7 @@ export function loadDeck(deckId) {
         types: ['REQUEST_DECK', 'RECEIVE_DECK'],
         shouldCallAPI: (state) => {
             let ret = state.cards.decks.length === 0 || !state.cards.decks.some(deck => {
-                return deck._id === deckId;
+                return deck.id === deckId;
             });
 
             return ret;
@@ -49,7 +49,7 @@ export function deleteDeck(deck) {
         types: ['DELETE_DECK', 'DECK_DELETED'],
         shouldCallAPI: () => true,
         APIParams: {
-            url: `/api/decks/${deck._id}`,
+            url: `/api/decks/${deck.id}`,
             type: 'DELETE'
         }
     };
@@ -67,8 +67,8 @@ export function saveDeck(deck) {
         types: ['SAVE_DECK', 'DECK_SAVED'],
         shouldCallAPI: () => true,
         APIParams: {
-            url: `/api/decks/${(deck._id || '')}`,
-            type: deck._id ? 'PUT' : 'POST',
+            url: `/api/decks/${(deck.id || '')}`,
+            type: deck.id ? 'PUT' : 'POST',
             data: str
         }
     };

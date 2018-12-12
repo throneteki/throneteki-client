@@ -12,7 +12,7 @@ class DeckList extends React.Component {
                 {
                     !decks || decks.length === 0
                         ? 'You have no decks, try adding one'
-                        : decks.map((deck, index) => <DeckRow active={ activeDeck && activeDeck._id === deck._id } deck={ deck } key={ index } onSelect={ onSelectDeck } />)
+                        : decks.map((deck, index) => <DeckRow active={ activeDeck && activeDeck.id === deck.id } deck={ deck } key={ index } onSelect={ onSelectDeck } />)
                 }
             </div>);
     }

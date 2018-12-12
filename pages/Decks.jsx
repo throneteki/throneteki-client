@@ -22,7 +22,7 @@ class Decks extends React.Component {
     }
 
     handleEditDeck(deck) {
-        this.props.navigate(`/decks/edit/${deck._id}`);
+        this.props.navigate(`/decks/edit/${deck.id}`);
     }
 
     handleDeleteDeck(deck) {

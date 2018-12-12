@@ -50,9 +50,10 @@ module.exports = (env) => {
                 'react-dnd',
                 'react-dnd-touch-backend',
                 'react-transition-group',
-		'@aspnet/signalr'
+                '@aspnet/signalr'
             ]
         },
+        mode: 'development',
         devtool: isDevBuild ? 'inline-source-map' : 'source-map',
         output: {
             publicPath: '/',

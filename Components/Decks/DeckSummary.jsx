@@ -53,6 +53,10 @@ class DeckSummary extends React.Component {
         let combinedCards = this.props.deck.plotCards.concat(this.props.deck.drawCards);
 
         for(const card of combinedCards) {
+            if(!card.card) {
+                continue;
+            }
+
             let typeCode = card.card.type;
             if(!typeCode) {
                 continue;
