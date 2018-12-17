@@ -34,17 +34,17 @@ module.exports = (env) => {
         },
         module: {
             rules: [
-                { test: /\.jsx?/, exclude: /node_modules/, loader: 'babel-loader' },
-                { test: /.(png|woff(2)?|eot|ttf|svg)(\?[a-z0-9=.]+)?$/, use: 'url-loader?limit=25000' },
-                {
-                    type: 'javascript/auto',
-                    test: /\.(json)/,
-                    exclude: /(node_modules|bower_components)/,
-                    use: [{
-                        loader: 'file-loader',
-                        options: { name: '[name].[ext]' }
-                    }]
-                }
+                { test: /\.jsx?$/, exclude: /node_modules/, loader: 'babel-loader' },
+                { test: /.(png|woff(2)?|eot|ttf|svg)(\?[a-z0-9=.]+)?$/, use: 'url-loader?limit=25000' }
+                // {
+                //     type: 'javascript/auto',
+                //     test: /\.(json)/,
+                //     exclude: /(node_modules|bower_components)/,
+                //     use: [{
+                //         loader: 'file-loader',
+                //         options: { name: '[name].[ext]' }
+                //     }]
+                // }
             ]
         }
     });

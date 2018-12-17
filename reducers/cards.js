@@ -146,7 +146,7 @@ export default function(state = { decks: [] }, action) {
             return newState;
         case 'SELECT_DECK':
             return Object.assign({}, state, {
-                selectedDeck: processDeck(action.deck, state),
+                selectedDeck: action.deck,
                 deckSaved: false
             });
         case 'ADD_DECK':
