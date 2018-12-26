@@ -25,18 +25,12 @@ export function receiveNews(news) {
 }
 
 export function loadNews(options) {
-    let params = {};
-
-    if(options && options.limit) {
-        params.limit = options.limit;
-    }
-
     return {
         types: ['REQUEST_NEWS', 'RECEIVE_NEWS'],
         shouldCallAPI: (state) => {
             return state.news.news.length === 0 || (options && !!options.forceLoad);
         },
-        APIParams: { url: '/api/news/', cache: false, data: params }
+        APIParams: { url: '/api/news/', cache: false }
     };
 }
 
