@@ -125,14 +125,12 @@ export function nodeStatusReceived(status) {
 }
 
 export function reconnectSocket(socket) {
-    return (dispatch, getState) => {
+    return (dispatch) => {
         dispatch(lobbyReconnecting());
 
         socket.start()
             .then(() => dispatch(lobbyConnected()))
-            .catch(err => {
-                console.info(err);
-
+            .catch(() => {
                 setTimeout(() => dispatch(reconnectSocket(socket)), 3000);
             });
     };
@@ -150,9 +148,7 @@ export function connectLobby() {
 
         socket.start()
             .then(() => dispatch(lobbyConnected()))
-            .catch(err => {
-                console.info(err);
-
+            .catch(() => {
                 setTimeout(() => dispatch(reconnectSocket(socket)), 3000);
             });
 
@@ -183,10 +179,6 @@ export function connectLobby() {
         socket.on('lobbychat', message => {
             dispatch(lobbyMessageReceived('lobbychat', message));
         });
-
-        // socket.on('lobbymessages', messages => {
-        //     dispatch(lobbyMessageReceived('lobbymessages', messages));
-        // });
 
         // socket.on('banner', notice => {
         //     dispatch(lobbyMessageReceived('banner', notice));
@@ -221,8 +213,8 @@ export function connectLobby() {
         //     dispatch(nodeStatusReceived(status));
         // });
 
-        // socket.on('removemessage', messageId => {
-        //     dispatch(lobbyMessageReceived('removemessage', messageId));
-        // });
+        socket.on('removemessage', messageId => {
+            dispatch(lobbyMessageReceived('removemessage', messageId));
+        });
     };
 }
