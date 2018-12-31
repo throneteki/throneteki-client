@@ -26,7 +26,7 @@ export function sendSocketMessage(message, ...args) {
             return dispatch(queueSocketMessage(message, args));
         }
 
-        state.lobby.socket.invoke(message, ...args).catch(err => console.error(err.toString()));
+        state.lobby.socket.invoke(message, ...args);
 
         return dispatch(socketMessageSent(message));
     };
