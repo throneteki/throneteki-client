@@ -28,15 +28,16 @@ class Lobby extends React.Component {
     }
 
     componentDidMount() {
-        this.props.loadNews({ limit: 3 });
+        this.props.loadNews();
+        this.props.loadMessages();
     }
 
     sendMessage() {
-        if(this.state.message === '') {
+        if(this.state.message.trim() === '') {
             return;
         }
 
-        this.props.socket.emit('lobbychat', this.state.message);
+        this.props.sendLobbyMessage(this.state.message);
 
         this.setState({ message: '' });
     }
@@ -70,11 +71,18 @@ class Lobby extends React.Component {
         let placeholder = isLoggedIn ? 'Enter a message...' : 'You must be logged in to send lobby chat messages';
 
         let newsStatus = null;
+        let messagesStatus = null;
 
         if(this.props.newsLoading) {
             newsStatus = <div>News loading...</div>;
         } else if(!this.props.newsSuccess) {
             newsStatus = <div>Site news failed to load.</div>;
+        }
+
+        if(this.props.messagesLoading) {
+            messagesStatus = <div>Messages loading...</div>;
+        } else if(!this.props.messagesSuccess) {
+            messagesStatus = <div>Messages failed to load.</div>;
         }
 
         return (
@@ -87,13 +95,11 @@ class Lobby extends React.Component {
                         <span className='text-center'><h1>A # LCG second edition</h1></span>
                     </div>
                 </div>
-                { this.props.motd && this.props.motd.message &&
-                    <div className='col-sm-offset-1 col-sm-10 banner'>
-                        <AlertPanel type={ this.props.motd.motdType }>
-                            { getMessageWithLinks(this.props.motd.message) }
-                        </AlertPanel>
-                    </div>
-                }
+                { /* <div className='col-sm-offset-1 col-sm-10'>
+                    <AlertPanel type='success'>
+                        Registration for the Fall season on the Iron Throne League is <a href='http://championsofwesteros.blogspot.com/p/registration.html' target='_blank'>open now</a> through September 30
+                    </AlertPanel>
+                </div> */ }
                 { this.props.bannerNotice ? <div className='col-sm-offset-1 col-sm-10 announcement'>
                     <AlertPanel message={ this.props.bannerNotice } type='error' />
                 </div> : null }
@@ -106,9 +112,10 @@ class Lobby extends React.Component {
                 <div className='col-sm-offset-1 col-sm-10 chat-container'>
                     <Panel title={ `Lobby Chat (${this.props.users.length} online)` }>
                         <div>
-                            <LobbyChat messages={ this.props.messages }
+                            { messagesStatus }
+                            { this.props.messagesSuccess && <LobbyChat messages={ this.props.messages }
                                 isModerator={ this.props.user && this.props.user.permissions.canModerateChat }
-                                onRemoveMessageClick={ this.onRemoveMessageClick } />
+                                onRemoveMessageClick={ this.onRemoveMessageClick } /> }
                         </div>
                     </Panel>
                     <form className='form form-hozitontal chat-box-container' onSubmit={ event => this.onSendClick(event) }>
@@ -131,14 +138,19 @@ Lobby.displayName = 'Lobby';
 Lobby.propTypes = {
     bannerNotice: PropTypes.string,
     fetchNews: PropTypes.func,
+    loadMessages: PropTypes.func,
     loadNews: PropTypes.func,
     loading: PropTypes.bool,
     messages: PropTypes.array,
+    messagesLoading: PropTypes.bool,
+    messagesSuccess: PropTypes.bool,
     motd: PropTypes.object,
     news: PropTypes.array,
     newsLoading: PropTypes.bool,
     newsSuccess: PropTypes.bool,
     removeLobbyMessage: PropTypes.func,
+    sendLobbyMessage: PropTypes.func,
+    sendSocketMessage: PropTypes.func,
     socket: PropTypes.object,
     user: PropTypes.object,
     users: PropTypes.array
@@ -149,6 +161,8 @@ function mapStateToProps(state) {
         bannerNotice: state.lobby.notice,
         loading: state.api.loading,
         messages: state.lobby.messages,
+        messagesLoading: state.api.REQUEST_LOBBY_MESSAGES && state.api.REQUEST_LOBBY_MESSAGES.loading,
+        messagesSuccess: state.api.REQUEST_LOBBY_MESSAGES && state.api.REQUEST_LOBBY_MESSAGES.success,
         motd: state.lobby.motd,
         news: state.news.news,
         newsLoading: state.api.REQUEST_NEWS && state.api.REQUEST_NEWS.loading,

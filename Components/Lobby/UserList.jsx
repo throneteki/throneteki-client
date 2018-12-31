@@ -11,9 +11,9 @@ class UserList extends React.Component {
 
         const userList = this.props.users.map(user => {
             return (
-                <div className='user-row' key={ user.name }>
-                    <Avatar username={ user.name } />
-                    <span>{ user.name }</span>
+                <div className='user-row' key={ user }>
+                    <Avatar username={ user } />
+                    <span>{ user }</span>
                 </div>
             );
         });

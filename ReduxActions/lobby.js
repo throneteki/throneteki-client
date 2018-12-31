@@ -12,10 +12,27 @@ export function receiveLobbyMessage(message) {
     };
 }
 
-export function receiveLobbyMessages(messages) {
+export function loadMessages() {
     return {
-        type: 'RECEIVE_LOBBY_MSGS',
-        messages: messages
+        types: ['REQUEST_LOBBY_MESSAGES', 'RECEIVE_LOBBY_MESSAGES'],
+        shouldCallAPI: (state) => {
+            return state.lobby.messages.length === 0;
+        },
+        APIParams: { url: '/api/messages/', cache: false }
+    };
+}
+
+export function sendLobbyMessage(message) {
+    return {
+        types: ['SEND_LOBBY_MESSAGE', 'LOBBY_MESSAGE_SENT'],
+        shouldCallAPI: () => true,
+        APIParams: {
+            url: '/api/messages/',
+            contentType: 'application/json',
+            cache: false,
+            type: 'POST',
+            data: JSON.stringify({ Message: message })
+        }
     };
 }
 

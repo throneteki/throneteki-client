@@ -60,11 +60,11 @@ class LobbyChat extends React.Component {
             }
 
             const formattedTime = moment(message.time).format('YYYYMMDDHHmm');
-            if(lastUser && message.user && lastUser !== message.user.username) {
+            if(lastUser && message.user && lastUser !== message.user) {
                 currentGroup++;
             }
 
-            const key = message.user.username + formattedTime + currentGroup;
+            const key = message.user + formattedTime + currentGroup;
 
             if(!groupedMessages[key]) {
                 groupedMessages[key] = [];
@@ -72,7 +72,7 @@ class LobbyChat extends React.Component {
 
             groupedMessages[key].push(message);
 
-            lastUser = message.user.username;
+            lastUser = message.user;
         }
 
         return Object.values(groupedMessages).map(messages => {
@@ -97,7 +97,7 @@ class LobbyChat extends React.Component {
                     return undefined;
                 }
 
-                return (<div key={ message.user.username + i++ } className='lobby-message'>
+                return (<div key={ message.user + i++ } className='lobby-message'>
                     { message.message }
                     { this.props.isModerator &&
                         <a href='#' className='btn no-padding' onClick={ this.onRemoveMessageClick.bind(this, message._id) }>
@@ -109,9 +109,9 @@ class LobbyChat extends React.Component {
             let userClass = 'username' + (firstMessage.user.role ? ` ${firstMessage.user.role}-role` : '');
 
             return (
-                <div key={ timestamp + firstMessage.user.username + (index++).toString() }>
-                    <Avatar username={ firstMessage.user.username } float />
-                    <span className={ userClass }>{ firstMessage.user.username }</span>
+                <div key={ timestamp + firstMessage.user + (index++).toString() }>
+                    <Avatar username={ firstMessage.user } float />
+                    <span className={ userClass }>{ firstMessage.user }</span>
                     <span>{ timestamp }</span>
                     { renderedMessages }
                 </div>

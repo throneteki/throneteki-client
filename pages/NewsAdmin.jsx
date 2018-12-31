@@ -23,7 +23,7 @@ class NewsAdmin extends React.Component {
     }
 
     componentWillMount() {
-        this.props.loadNews({ limit: 5, forceLoad: true });
+        this.props.loadNews({ forceLoad: true });
     }
 
     componentWillReceiveProps(props) {

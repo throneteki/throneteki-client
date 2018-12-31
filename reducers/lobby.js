@@ -1,7 +1,8 @@
 const defaultState = {
     games: [],
     users: [],
-    messages: []
+    messages: [],
+    messageQueue: []
 };
 
 export default function (state = defaultState, action) {
@@ -60,6 +61,17 @@ export default function (state = defaultState, action) {
         case 'CANCEL_NEWGAME':
             return Object.assign({}, state, {
                 newGame: false
+            });
+        case 'RECEIVE_LOBBY_MESSAGES':
+            return Object.assign({}, state, {
+                messages: action.response.messages
+            });
+        case 'SOCKET_MESSAGE_QUEUED':
+            var messageQueue = state.messageQueue;
+            messageQueue.push({ message: action.message, args: action.args });
+
+            return Object.assign({}, state, {
+                messageQueue: messageQueue
             });
         case 'CLEAR_GAMESTATE':
             return Object.assign({}, state, {
@@ -153,17 +165,11 @@ function handleMessage(action, state) {
             });
 
             break;
-        case 'lobbymessages':
-            newState = Object.assign({}, state, {
-                messages: action.args[0]
-            });
-
-            break;
         case 'removemessage':
             newState = Object.assign({}, state);
 
             newState.messages = newState.messages.filter(message => {
-                return message._id !== action.args[0];
+                return message.id !== action.args[0];
             });
 
             break;

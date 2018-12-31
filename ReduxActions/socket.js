@@ -10,11 +10,23 @@ export function socketMessageSent(message) {
     };
 }
 
+export function queueSocketMessage(message, ...args) {
+    return {
+        type: 'SOCKET_MESSAGE_QUEUED',
+        message: message,
+        args: args
+    };
+}
+
 export function sendSocketMessage(message, ...args) {
     return (dispatch, getState) => {
         var state = getState();
 
-        state.lobby.socket.emit(message, ...args);
+        if(!state.lobby.connected) {
+            return dispatch(queueSocketMessage(message, args));
+        }
+
+        state.lobby.socket.invoke(message, ...args).catch(err => console.error(err.toString()));
 
         return dispatch(socketMessageSent(message));
     };
@@ -71,7 +83,7 @@ export function authenticateSocket() {
         let state = getState();
 
         if(state.lobby.socket && state.auth.token) {
-            state.lobby.socket.send('authenticate', state.auth.token);
+            return dispatch(sendSocketMessage('authenticate', state.auth.token));
         }
     };
 }
@@ -112,17 +124,37 @@ export function nodeStatusReceived(status) {
     };
 }
 
+export function reconnectSocket(socket) {
+    return (dispatch, getState) => {
+        dispatch(lobbyReconnecting());
+
+        socket.start()
+            .then(() => dispatch(lobbyConnected()))
+            .catch(err => {
+                console.info(err);
+
+                setTimeout(() => dispatch(reconnectSocket(socket)), 3000);
+            });
+    };
+}
+
 export function connectLobby() {
     return (dispatch, getState) => {
-        // let state = getState();
-        // // let queryString = state.auth.token ? 'token=' + state.auth.token + '&' : '';
-        // // queryString += 'version=' + version;
+        let state = getState();
+        let socket = new signalR.HubConnectionBuilder()
+            .withUrl('/lobby', { accessTokenFactory: () => state.auth.token })
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
 
-        // let socket = new signalR.HubConnectionBuilder().withUrl('/lobby').configureLogging(signalR.LogLevel.Information).build();
+        dispatch(lobbyConnecting(socket));
 
-        // dispatch(lobbyConnecting(socket));
+        socket.start()
+            .then(() => dispatch(lobbyConnected()))
+            .catch(err => {
+                console.info(err);
 
-        // socket.start().then(() => dispatch(lobbyConnected()));
+                setTimeout(() => dispatch(reconnectSocket(socket)), 3000);
+            });
 
         // socket.on('disconnect', () => {
         //     dispatch(lobbyDisconnected());
@@ -136,9 +168,9 @@ export function connectLobby() {
         //     dispatch(lobbyMessageReceived('games', games));
         // });
 
-        // socket.on('users', users => {
-        //     dispatch(lobbyMessageReceived('users', users));
-        // });
+        socket.on('users', users => {
+            dispatch(lobbyMessageReceived('users', users));
+        });
 
         // socket.on('newgame', game => {
         //     dispatch(lobbyMessageReceived, 'newgame', game);
@@ -148,9 +180,9 @@ export function connectLobby() {
         //     dispatch(lobbyMessageReceived('passworderror', message));
         // });
 
-        // socket.on('lobbychat', message => {
-        //     dispatch(lobbyMessageReceived('lobbychat', message));
-        // });
+        socket.on('lobbychat', message => {
+            dispatch(lobbyMessageReceived('lobbychat', message));
+        });
 
         // socket.on('lobbymessages', messages => {
         //     dispatch(lobbyMessageReceived('lobbymessages', messages));
