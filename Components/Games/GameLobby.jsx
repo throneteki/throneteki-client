@@ -172,7 +172,7 @@ class GameLobby extends React.Component {
                 break;
             case GameState.PendingGame:
                 if(!this.props.currentGame.started) {
-                    this.props.leaveGame(this.props.currentGame.id);
+                    this.props.leaveGame();
                 }
                 break;
         }

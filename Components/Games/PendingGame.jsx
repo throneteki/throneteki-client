@@ -158,7 +158,7 @@ class PendingGame extends React.Component {
     onLeaveClick(event) {
         event.preventDefault();
 
-        this.props.leaveGame(this.props.currentGame.id);
+        this.props.leaveGame();
     }
 
     onStartClick(event) {

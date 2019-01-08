@@ -14,24 +14,28 @@ export default function (state = defaultState, action) {
             return Object.assign({}, state, {
                 connecting: true,
                 connected: false,
+                reconnecting: false,
                 connectionAttempt: 0,
                 socket: action.socket
             });
         case 'LOBBY_CONNECTED':
             return Object.assign({}, state, {
                 connecting: false,
-                connected: true
+                connected: true,
+                reconnecting: false
             });
         case 'LOBBY_DISCONNECTED':
             return Object.assign({}, state, {
                 connecting: false,
                 connected: false,
-                connectionAttempt: 0
+                connectionAttempt: 0,
+                wantReconnect: true
             });
         case 'LOBBY_RECONNECTING':
             return Object.assign({}, state, {
                 connected: false,
-                connecting: true,
+                connecting: false,
+                reconnecting: true,
                 connectionAttempt: state.connectionAttempt + 1
             });
         case 'LOBBY_MESSAGE_RECEIVED':
@@ -160,6 +164,11 @@ function handleMessage(action, state) {
                 ]
             });
 
+            break;
+        case 'removegame':
+            newState = Object.assign({}, state, {
+                games: state.games.filter(game => game.id !== action.args[0])
+            });
             break;
         case 'passworderror':
             newState = Object.assign({}, state, {

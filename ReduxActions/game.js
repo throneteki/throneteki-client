@@ -242,9 +242,9 @@ export function startGame(id) {
     };
 }
 
-export function leaveGame(id) {
+export function leaveGame() {
     return dispatch => {
-        dispatch(sendSocketMessage('leavegame'), id);
+        dispatch(sendSocketMessage('leavegame'));
 
         return dispatch(gameSocketClose());
     };

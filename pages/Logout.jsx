@@ -39,7 +39,7 @@ class Logout extends React.Component {
 
 Logout.displayName = 'Logout';
 Logout.propTypes = {
-    apiState: PropTypes.bool,
+    apiState: PropTypes.object,
     loggedOut: PropTypes.bool,
     logout: PropTypes.func,
     navigate: PropTypes.func
