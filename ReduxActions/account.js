@@ -1,4 +1,4 @@
-import { connectLobby, authenticateSocket } from './socket';
+import { connectLobby, reconnectLobbySocket } from './socket';
 
 export function registerAccount(user) {
     return {
@@ -130,7 +130,7 @@ export function authenticate() {
 
         dispatch(verifyAuthentication(state.auth.token));
 
-        return dispatch(authenticateSocket());
+        return dispatch(reconnectLobbySocket());
     };
 }
 

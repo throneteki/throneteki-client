@@ -17,7 +17,7 @@ class Login extends React.Component {
 
     componentWillReceiveProps(props) {
         if(props.loggedIn) {
-            props.authenticateSocket();
+            props.reconnectLobbySocket();
             props.navigate('/');
         }
     }
@@ -50,13 +50,13 @@ Login.propTypes = {
     apiLoading: PropTypes.bool,
     apiMessage: PropTypes.string,
     apiSuccess: PropTypes.bool,
-    authenticateSocket: PropTypes.func,
     loggedIn: PropTypes.bool,
     loggedInToken: PropTypes.string,
     loggedInUser: PropTypes.object,
     login: PropTypes.func,
     loginAccount: PropTypes.func,
     navigate: PropTypes.func,
+    reconnectLobbySocket: PropTypes.func,
     socket: PropTypes.object
 };
 

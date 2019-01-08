@@ -1,3 +1,6 @@
+import { reconnectLobbySocket } from '../ReduxActions/socket';
+import { loop, Cmd } from 'redux-loop';
+
 const defaultState = {
     games: [],
     users: [],
@@ -11,6 +14,7 @@ export default function (state = defaultState, action) {
             return Object.assign({}, state, {
                 connecting: true,
                 connected: false,
+                connectionAttempt: 0,
                 socket: action.socket
             });
         case 'LOBBY_CONNECTED':
@@ -21,12 +25,14 @@ export default function (state = defaultState, action) {
         case 'LOBBY_DISCONNECTED':
             return Object.assign({}, state, {
                 connecting: false,
-                connected: false
+                connected: false,
+                connectionAttempt: 0
             });
-        case 'LOBBY_RECONNECING':
+        case 'LOBBY_RECONNECTING':
             return Object.assign({}, state, {
                 connected: false,
-                connecting: true
+                connecting: true,
+                connectionAttempt: state.connectionAttempt + 1
             });
         case 'LOBBY_MESSAGE_RECEIVED':
             return handleMessage(action, state);
@@ -49,9 +55,8 @@ export default function (state = defaultState, action) {
                 newGame: false
             });
         case 'PROFILE_SAVED':
-            // XXX This should really call the action that already does this
             if(state.socket) {
-                state.socket.send('authenticate', action.response.token);
+                return loop(state, Cmd.action(reconnectLobbySocket()));
             }
             break;
         case 'START_NEWGAME':
@@ -61,6 +66,10 @@ export default function (state = defaultState, action) {
         case 'CANCEL_NEWGAME':
             return Object.assign({}, state, {
                 newGame: false
+            });
+        case 'CLEAR_NEWGAME_STATUS':
+            return Object.assign({}, state, {
+                joinFailReason: undefined
             });
         case 'RECEIVE_LOBBY_MESSAGES':
             return Object.assign({}, state, {
@@ -97,7 +106,7 @@ function handleGameState(action, state) {
     }
 
     if(currentState && currentState.spectators.some(spectator => {
-        return spectator.name === username;
+        return spectator === username;
     })) {
         return retState;
     }
@@ -146,8 +155,9 @@ function handleMessage(action, state) {
             break;
         case 'newgame':
             newState = Object.assign({}, state, {
-                currentGame: action.args[0],
-                newGame: false
+                games: [
+                    ...state.games, action.args[0]
+                ]
             });
 
             break;
@@ -195,6 +205,11 @@ function handleMessage(action, state) {
                 currentGame: undefined
             });
 
+            break;
+        case 'joinfailed':
+            newState = Object.assign({}, state, {
+                joinFailReason: action.args[0]
+            });
             break;
     }
 

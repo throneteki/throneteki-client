@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import { navigate, setAuthTokens, authenticateSocket } from '../actions';
+import { navigate, setAuthTokens, reconnectLobbySocket } from '../actions';
 
 export default function callAPIMiddleware({ dispatch, getState }) {
     return next => async action => {
@@ -63,7 +63,7 @@ export default function callAPIMiddleware({ dispatch, getState }) {
                 }
 
                 dispatch(setAuthTokens(authResponse.token, state.auth.refreshToken));
-                dispatch(authenticateSocket());
+                dispatch(reconnectLobbySocket());
 
                 apiParams.headers = {
                     Authorization: `Bearer ${authResponse.token}`

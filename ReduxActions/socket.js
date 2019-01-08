@@ -2,6 +2,7 @@ import * as signalR from '@aspnet/signalr';
 
 //import version from '../version';
 import * as actions from '../actions';
+import { authenticate } from './account';
 
 export function socketMessageSent(message) {
     return {
@@ -26,9 +27,15 @@ export function sendSocketMessage(message, ...args) {
             return dispatch(queueSocketMessage(message, args));
         }
 
-        state.lobby.socket.invoke(message, ...args);
-
-        return dispatch(socketMessageSent(message));
+        state.lobby.socket.invoke(message, ...args)
+            .then(() => {
+                dispatch(socketMessageSent(message));
+            })
+            .catch(err => {
+                if(!err.message && err.includes('authorized')) {
+                    dispatch(authenticate());
+                }
+            });
     };
 }
 
@@ -78,12 +85,17 @@ export function lobbyMessageReceived(message, ...args) {
     };
 }
 
-export function authenticateSocket() {
+export function reconnectLobbySocket() {
     return (dispatch, getState) => {
         let state = getState();
 
         if(state.lobby.socket && state.auth.token) {
-            return dispatch(sendSocketMessage('authenticate', state.auth.token));
+            dispatch(lobbyDisconnected());
+            state.lobby.socket.stop().then(() => {
+                dispatch(lobbyConnecting(state.lobby.socket));
+
+                connectSocket(state.lobby.socket, dispatch);
+            });
         }
     };
 }
@@ -124,15 +136,24 @@ export function nodeStatusReceived(status) {
     };
 }
 
-export function reconnectSocket(socket) {
-    return (dispatch) => {
-        dispatch(lobbyReconnecting());
-
+function connectSocket(socket, dispatch, getState) {
         socket.start()
             .then(() => dispatch(lobbyConnected()))
             .catch(() => {
-                setTimeout(() => dispatch(reconnectSocket(socket)), 3000);
+            let attempt = getState().lobby.connectionAttempt;
+            let maxDelay = 5000;
+            let backOffFactor = 200 * Math.pow(2, attempt);
+            let delay = Math.floor(Math.random() * (Math.min(maxDelay, backOffFactor) - 0 + 1) + 0);
+
+            setTimeout(() => dispatch(reconnectSocket(socket)), delay);
             });
+}
+
+export function reconnectSocket(socket) {
+    return (dispatch, getState) => {
+        dispatch(lobbyReconnecting());
+
+        connectSocket(socket, dispatch, getState);
     };
 }
 
@@ -140,41 +161,36 @@ export function connectLobby() {
     return (dispatch, getState) => {
         let state = getState();
         let socket = new signalR.HubConnectionBuilder()
-            .withUrl('/lobby', { accessTokenFactory: () => state.auth.token })
+            .withUrl('/lobby', { accessTokenFactory: () => getState().auth.token })
             .configureLogging(signalR.LogLevel.Information)
             .build();
 
-        dispatch(lobbyConnecting(socket));
+        socket.onclose(error => {
+            dispatch(lobbyDisconnected());
 
-        socket.start()
-            .then(() => dispatch(lobbyConnected()))
-            .catch(() => {
-                setTimeout(() => dispatch(reconnectSocket(socket)), 3000);
+            if(error) {
+                dispatch(reconnectSocket(socket));
+            }
             });
 
-        // socket.on('disconnect', () => {
-        //     dispatch(lobbyDisconnected());
-        // });
+        dispatch(lobbyConnecting(socket));
+        connectSocket(socket, dispatch, getState);
 
-        // socket.on('reconnect', () => {
-        //     dispatch(lobbyReconnecting());
-        // });
-
-        // socket.on('games', games => {
-        //     dispatch(lobbyMessageReceived('games', games));
-        // });
+        socket.on('games', games => {
+            dispatch(lobbyMessageReceived('games', games));
+        });
 
         socket.on('users', users => {
             dispatch(lobbyMessageReceived('users', users));
         });
 
-        // socket.on('newgame', game => {
-        //     dispatch(lobbyMessageReceived, 'newgame', game);
-        // });
+        socket.on('newgame', game => {
+            dispatch(lobbyMessageReceived('newgame', game));
+        });
 
-        // socket.on('passworderror', message => {
-        //     dispatch(lobbyMessageReceived('passworderror', message));
-        // });
+        socket.on('joinfailed', reason => {
+            dispatch(lobbyMessageReceived('joinfailed', reason));
+        });
 
         socket.on('lobbychat', message => {
             dispatch(lobbyMessageReceived('lobbychat', message));
@@ -192,10 +208,10 @@ export function connectLobby() {
         //    dispatch(lobbyMessageReceived('motd', motd));
         // });
 
-        //socket.on('gamestate', game => {
-        //    state = getState();
-        //    dispatch(lobbyMessageReceived('gamestate', game, state.account.user ? state.account.user.username : undefined));
-        // });
+        socket.on('gamestate', game => {
+            state = getState();
+            dispatch(lobbyMessageReceived('gamestate', game, state.account.user ? state.account.user.username : undefined));
+        });
 
         // socket.on('cleargamestate', () => {
         //     dispatch(lobbyMessageReceived('cleargamestate'));
@@ -203,10 +219,6 @@ export function connectLobby() {
 
         // socket.on('handoff', handoff => {
         //     dispatch(handoffReceived(handoff));
-        // });
-
-        // socket.on('authfailed', () => {
-        //     dispatch(actions.authenticate());
         // });
 
         // socket.on('nodestatus', status => {

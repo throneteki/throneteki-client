@@ -32,6 +32,8 @@ class NewGame extends React.Component {
 
     componentWillMount() {
         this.setState({ gameName: this.props.defaultGameName });
+
+        this.props.clearNewGameStatus();
     }
 
     handleRookeryClick(event) {
@@ -63,15 +65,17 @@ class NewGame extends React.Component {
     onSubmitClick(event) {
         event.preventDefault();
 
-        this.props.socket.emit('newgame', {
+        this.props.sendSocketMessage('newgame', {
             name: this.state.gameName,
             spectators: this.state.spectators,
             showHand: this.state.showHand,
-            gameType: this.state.selectedGameType,
-            isMelee: this.state.selectedGameFormat === 'melee',
+            quickJoin: this.props.quickJoin,
             password: this.state.password,
-            useRookery: this.state.useRookery,
-            quickJoin: this.props.quickJoin
+            gameType: this.state.selectedGameType,
+            customData: JSON.stringify({
+                isMelee: this.state.selectedGameFormat === 'melee',
+                useRookery: this.state.useRookery
+            })
         });
     }
 
@@ -192,6 +196,7 @@ class NewGame extends React.Component {
         return this.props.socket ? (
             <div>
                 <Panel title={ this.props.quickJoin ? 'Join Existing or Start New Game' : 'New game' }>
+                    { this.props.joinFailReason && <AlertPanel type='error' message={ this.props.joinFailReason } /> }
                     <form className='form'>
                         { content }
                         <div className='button-row'>
@@ -212,14 +217,18 @@ NewGame.displayName = 'NewGame';
 NewGame.propTypes = {
     allowMelee: PropTypes.bool,
     cancelNewGame: PropTypes.func,
+    clearNewGameStatus: PropTypes.func,
     defaultGameName: PropTypes.string,
+    joinFailReason: PropTypes.string,
     quickJoin: PropTypes.bool,
+    sendSocketMessage: PropTypes.func,
     socket: PropTypes.object
 };
 
 function mapStateToProps(state) {
     return {
         allowMelee: state.account.user ? state.account.user.permissions.allowMelee : false,
+        joinFailReason: state.lobby.joinFailReason,
         socket: state.lobby.socket
     };
 }

@@ -36,6 +36,7 @@ module.exports = (env) => {
                 'react-redux',
                 'react-redux-toastr',
                 'redux',
+                'redux-loop',
                 'redux-thunk',
                 'jquery',
                 'jquery-migrate',

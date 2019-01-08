@@ -1,6 +1,7 @@
 import io from 'socket.io-client';
 
 import * as actions from '../actions';
+import { sendSocketMessage } from './socket';
 
 export function receiveGames(games) {
     return {
@@ -18,6 +19,12 @@ export function startNewGame() {
 export function cancelNewGame() {
     return {
         type: 'CANCEL_NEWGAME'
+    };
+}
+
+export function clearNewGameStatus() {
+    return {
+        type: 'CLEAR_NEWGAME_STATUS'
     };
 }
 
@@ -236,12 +243,8 @@ export function startGame(id) {
 }
 
 export function leaveGame(id) {
-    return (dispatch, getState) => {
-        let state = getState();
-
-        if(state.lobby.socket) {
-            state.lobby.socket.emit('leavegame', id);
-        }
+    return dispatch => {
+        dispatch(sendSocketMessage('leavegame'), id);
 
         return dispatch(gameSocketClose());
     };
