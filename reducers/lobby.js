@@ -170,6 +170,14 @@ function handleMessage(action, state) {
                 games: state.games.filter(game => game.id !== action.args[0])
             });
             break;
+        case 'updategame':
+            newState = Object.assign({}, state, {
+                games: [
+                    ...state.games.filter(game => game.id !== action.args[0].id),
+                    action.args[0]
+                ]
+            });
+            break;
         case 'passworderror':
             newState = Object.assign({}, state, {
                 passwordError: action.args[0]

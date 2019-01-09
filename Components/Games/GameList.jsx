@@ -17,7 +17,7 @@ class GameList extends React.Component {
         if(game.needsPassword) {
             this.props.joinPasswordGame(game, 'Join');
         } else {
-            this.props.socket.emit('joingame', game.id);
+            this.props.sendSocketMessage('joingame', game.id, '');
         }
     }
 
@@ -104,6 +104,7 @@ GameList.propTypes = {
     gameFilter: PropTypes.object,
     games: PropTypes.array,
     joinPasswordGame: PropTypes.func,
+    sendSocketMessage: PropTypes.func,
     showNodes: PropTypes.bool,
     socket: PropTypes.object,
     user: PropTypes.object

@@ -69,6 +69,7 @@ export function saveDeck(deck) {
         APIParams: {
             url: `/api/decks/${(deck.id || '')}`,
             type: deck.id ? 'PUT' : 'POST',
+            contentType: 'application/json',
             data: str
         }
     };

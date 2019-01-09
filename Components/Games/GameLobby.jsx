@@ -221,8 +221,8 @@ class GameLobby extends React.Component {
         return (
             <div className='full-height'>
                 <div className='col-md-offset-2 col-md-8 full-height'>
-                    { this.props.bannerNotice ? <AlertPanel type='error' message={ this.props.bannerNotice } /> : null }
-                    { this.state.errorMessage ? <AlertPanel type='error' message={ this.state.errorMessage } /> : null }
+                { this.props.bannerNotice ? <AlertPanel type='error' message={ this.props.bannerNotice } /> : null }
+                { this.state.errorMessage ? <AlertPanel type='error' message={ this.state.errorMessage } /> : null }
                     <Panel title='Current Games'>
                         <div className='col-xs-12 game-controls'>
                             <div className='col-xs-3 join-buttons'>

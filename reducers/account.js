@@ -20,7 +20,8 @@ export default function(state = {}, action) {
             });
         case 'ACCOUNT_REGISTERED':
             return Object.assign({}, state, {
-                registered: true
+                registered: true,
+                registerMessage: action.response.message
             });
         case 'LOGIN_ACCOUNT':
             return Object.assign({}, state, {

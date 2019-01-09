@@ -1,4 +1,4 @@
-import { connectLobby, reconnectLobbySocket } from './socket';
+import { reconnectLobbySocket } from './socket';
 
 export function registerAccount(user) {
     return {

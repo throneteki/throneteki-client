@@ -143,7 +143,7 @@ class PendingGame extends React.Component {
         }
 
         if(!Object.values(this.props.currentGame.players).every(player => {
-            return !!player.deck.selected;
+            return player.deck && player.deck.selected;
         })) {
             return 'Waiting for players to select decks';
         }

@@ -23,7 +23,7 @@ export class Register extends React.Component {
 
     componentWillReceiveProps(props) {
         if(props.accountRegistered) {
-            this.setState({ successMessage: 'Your account was successfully registered.  Please verify your account using the link in the email sent to the address you have provided.' });
+            this.setState({ successMessage: props.registerMessage });
 
             setTimeout(() => {
                 this.props.navigate('/');
@@ -59,6 +59,7 @@ Register.propTypes = {
     navigate: PropTypes.func,
     register: PropTypes.func,
     registerAccount: PropTypes.func,
+    registerMessage: PropTypes.string,
     registeredToken: PropTypes.string,
     registeredUser: PropTypes.object,
     socket: PropTypes.object
