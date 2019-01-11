@@ -15,18 +15,24 @@ class PasswordGame extends React.Component {
         };
     }
 
+    componentWillMount() {
+        this.props.clearGameStatus();
+    }
+
     onJoinClick(event) {
         event.preventDefault();
 
         if(this.props.passwordJoinType === 'Join') {
-            this.props.socket.emit('joingame', this.props.passwordGame.id, this.state.password);
+            this.props.sendSocketMessage('joingame', this.props.passwordGame.id, this.state.password);
         } else if(this.props.passwordJoinType === 'Watch') {
-            this.props.socket.emit('watchgame', this.props.passwordGame.id, this.state.password);
+            this.props.sendSocketMessage('watchgame', this.props.passwordGame.id, this.state.password);
         }
     }
 
     onCancelClick(event) {
         this.props.cancelPasswordJoin();
+
+        this.setState({ password: '' });
 
         event.preventDefault();
     }
@@ -43,17 +49,13 @@ class PasswordGame extends React.Component {
         return (
             <div>
                 <Panel title={ this.props.passwordGame.name }>
+                    { this.props.joinFailReason && <AlertPanel type='error' message={ this.props.joinFailReason } /> }
                     <div>
                         <h3>Enter the password</h3>
                     </div>
                     <div className='game-password'>
                         <input className='form-control' type='password' onChange={ this.onPasswordChange.bind(this) } value={ this.state.password } />
                     </div>
-                    { this.props.passwordError ?
-                        <div>
-                            <AlertPanel type='error' message={ this.props.passwordError } />
-                        </div>
-                        : null }
                     <div>
                         <div className='btn-group'>
                             <button className='btn btn-primary' onClick={ this.onJoinClick.bind(this) }>{ this.props.passwordJoinType }</button>
@@ -68,18 +70,18 @@ class PasswordGame extends React.Component {
 PasswordGame.displayName = 'PasswordGame';
 PasswordGame.propTypes = {
     cancelPasswordJoin: PropTypes.func,
-    passwordError: PropTypes.string,
+    clearGameStatus: PropTypes.func,
+    joinFailReason: PropTypes.string,
     passwordGame: PropTypes.object,
     passwordJoinType: PropTypes.string,
-    socket: PropTypes.object
+    sendSocketMessage: PropTypes.func
 };
 
 function mapStateToProps(state) {
     return {
-        passwordError: state.lobby.passwordError,
+        joinFailReason: state.lobby.joinFailReason,
         passwordGame: state.lobby.passwordGame,
-        passwordJoinType: state.lobby.passwordJoinType,
-        socket: state.lobby.socket
+        passwordJoinType: state.lobby.passwordJoinType
     };
 }
 

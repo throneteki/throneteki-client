@@ -97,7 +97,7 @@ class PendingGame extends React.Component {
     selectDeck(deck) {
         $('#decks-modal').modal('hide');
 
-        this.props.socket.emit('selectdeck', this.props.currentGame.id, deck.id);
+        this.props.sendSocketMessage('selectdeck', this.props.currentGame.id, deck.id);
     }
 
     getNumberOfPlayers(props) {
@@ -249,10 +249,11 @@ class PendingGame extends React.Component {
                     </form>
                 </Panel>
                 <SelectDeckModal
-                    apiError={ this.props.apiError }
+                    apiLoading={ this.props.apiLoading }
+                    apiMessage={ this.props.apiMessage }
+                    apiSuccess={ this.props.apiSuccess }
                     decks={ this.props.decks }
                     id='decks-modal'
-                    loading={ this.props.loading }
                     onDeckSelected={ this.selectDeck.bind(this) }
                     standaloneDecks={ this.props.standaloneDecks } />
             </div >);
@@ -261,7 +262,9 @@ class PendingGame extends React.Component {
 
 PendingGame.displayName = 'PendingGame';
 PendingGame.propTypes = {
-    apiError: PropTypes.string,
+    apiLoading: PropTypes.bool,
+    apiMessage: PropTypes.string,
+    apiSuccess: PropTypes.bool,
     connecting: PropTypes.bool,
     currentGame: PropTypes.object,
     decks: PropTypes.array,
@@ -270,7 +273,6 @@ PendingGame.propTypes = {
     leaveGame: PropTypes.func,
     loadDecks: PropTypes.func,
     loadStandaloneDecks: PropTypes.func,
-    loading: PropTypes.bool,
     navigate: PropTypes.func,
     sendSocketMessage: PropTypes.func,
     socket: PropTypes.object,
@@ -282,12 +284,13 @@ PendingGame.propTypes = {
 
 function mapStateToProps(state) {
     return {
-        apiError: state.api.message,
+        apiLoading: state.api.REQUEST_DECKS ? state.api.REQUEST_DECKS.loading : undefined,
+        apiMessage: state.api.REQUEST_DECKS ? state.api.REQUEST_DECKS.message : undefined,
+        apiSuccess: state.api.REQUEST_DECKS ? state.api.REQUEST_DECKS.success : undefined,
         connecting: state.games.connecting,
         currentGame: state.lobby.currentGame,
         decks: state.cards.decks,
         host: state.games.gameHost,
-        loading: state.api.loading,
         socket: state.lobby.socket,
         standaloneDecks: state.cards.standaloneDecks,
         user: state.account.user

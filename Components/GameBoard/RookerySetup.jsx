@@ -46,30 +46,19 @@ class RookerySetup extends React.Component {
 
     moveCardBetweenDecks(card, source) {
         let newRookeryCards = this.state.deck.rookeryCards;
-        let newPlotCards = this.state.deck.plotCards;
-        let newDrawCards = this.state.deck.drawCards;
+        let newCards = this.state.deck.cards;
+
         if(source === 'rookery') {
             newRookeryCards = this.removeCardFromPile(card, newRookeryCards);
-
-            if(card.type === 'plot') {
-                newPlotCards = this.addCardToPile(card, newPlotCards);
-            } else {
-                newDrawCards = this.addCardToPile(card, newDrawCards);
-            }
+            newCards = this.addCardToPile(card, newCards);
         } else {
-            if(card.type === 'plot') {
-                newPlotCards = this.removeCardFromPile(card, newPlotCards);
-            } else {
-                newDrawCards = this.removeCardFromPile(card, newDrawCards);
-            }
-
+            newCards = this.removeCardFromPile(card, newCards);
             newRookeryCards = this.addCardToPile(card, newRookeryCards);
         }
 
         let newDeck = Object.assign({}, this.state.deck);
         newDeck.rookeryCards = newRookeryCards;
-        newDeck.drawCards = newDrawCards;
-        newDeck.plotCards = newPlotCards;
+        newDeck.cards = newCards;
         this.setState({ deck: newDeck });
     }
 
@@ -128,7 +117,7 @@ class RookerySetup extends React.Component {
 
         let deck = this.state.deck;
         let rookeryCards = this.createLinearCards(deck.rookeryCards);
-        let deckCards = this.createLinearCards(deck.plotCards).concat(this.createLinearCards(deck.drawCards));
+        let deckCards = this.createLinearCards(deck.cards);
         let status = validateDeck(deck, { packs: this.props.packs, restrictedList: this.props.restrictedList });
 
         return (

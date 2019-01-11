@@ -9,10 +9,10 @@ class SelectDeckModal extends React.Component {
     render() {
         let decks = null;
 
-        if(this.props.loading) {
+        if(this.props.apiLoading) {
             decks = <div>Loading decks from the server...</div>;
-        } else if(this.props.apiError) {
-            decks = <AlertPanel type='error' message={ this.props.apiError } />;
+        } else if(!this.props.apiSuccess) {
+            decks = <AlertPanel type='error' message={ this.props.apiMessage } />;
         } else {
             decks = (
                 <div>
@@ -36,10 +36,11 @@ class SelectDeckModal extends React.Component {
 
 SelectDeckModal.displayName = 'SelectDeckModal';
 SelectDeckModal.propTypes = {
-    apiError: PropTypes.string,
+    apiLoading: PropTypes.bool,
+    apiMessage: PropTypes.string,
+    apiSuccess: PropTypes.bool,
     decks: PropTypes.array,
     id: PropTypes.string,
-    loading: PropTypes.bool,
     onDeckSelected: PropTypes.func,
     standaloneDecks: PropTypes.array
 };

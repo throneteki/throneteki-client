@@ -33,7 +33,7 @@ class NewGame extends React.Component {
     componentWillMount() {
         this.setState({ gameName: this.props.defaultGameName });
 
-        this.props.clearNewGameStatus();
+        this.props.clearGameStatus();
     }
 
     handleRookeryClick(event) {
@@ -217,7 +217,7 @@ NewGame.displayName = 'NewGame';
 NewGame.propTypes = {
     allowMelee: PropTypes.bool,
     cancelNewGame: PropTypes.func,
-    clearNewGameStatus: PropTypes.func,
+    clearGameStatus: PropTypes.func,
     defaultGameName: PropTypes.string,
     joinFailReason: PropTypes.string,
     quickJoin: PropTypes.bool,

@@ -26,6 +26,10 @@ class ViewDeck extends React.Component {
     render() {
         let { deck, cards } = this.props;
 
+        if(!deck.cards.some(c => !!c.card)) {
+            return <div>Waiting for deck validation...</div>;
+        }
+
         return (
             <div className='col-sm-7'>
                 <Panel title={ deck.name }>

@@ -15,14 +15,12 @@ class DeckEditor extends React.Component {
         super(props);
 
         this.state = {
-            bannerCards: [],
             cardList: '',
             rookeryList: '',
             deckName: 'New Deck',
-            drawCards: [],
             faction: props.factions && props.factions['baratheon'],
             numberToAdd: 1,
-            plotCards: [],
+            cards: [],
             showBanners: false,
             selectedBanner: {},
             validation: {
@@ -34,22 +32,16 @@ class DeckEditor extends React.Component {
         if(props.deck) {
             this.state.deckId = props.deck.id;
             this.state.deckName = props.deck.name;
-            this.state.plotCards = props.deck.plotCards;
-            this.state.drawCards = props.deck.drawCards;
-            this.state.bannerCards = props.deck.bannerCards;
+            this.state.cards = props.deck.cards;
             this.state.faction = props.deck.faction;
-            this.state.agenda = props.deck.agenda;
-            this.state.showBanners = this.isAllianceAgenda(props.deck.agenda);
+            this.state.showBanners = this.isAllianceAgenda(this.getAgenda(props.deck.cards));
             this.state.status = props.deck.status;
             this.state.rookeryCards = props.deck.rookeryCards || [];
 
             let cardList = '';
             let rookeryList = '';
-            for(const card of props.deck.drawCards) {
-                cardList += this.formatCardListItem(card) + '\n';
-            }
 
-            for(const plot of props.deck.plotCards) {
+            for(const plot of props.deck.cards) {
                 cardList += this.formatCardListItem(plot) + '\n';
             }
 
@@ -73,15 +65,19 @@ class DeckEditor extends React.Component {
         }
     }
 
+    getAgenda(cards) {
+        let agenda = cards.find(c => c.card.type === 'agenda');
+
+        return agenda && agenda.card;
+    }
+
     getDeckFromState() {
         let deck = {
-            _id: this.state.deckId,
+            id: this.state.deckId,
             name: this.state.deckName,
             faction: this.state.faction,
             agenda: this.state.agenda,
-            bannerCards: this.state.bannerCards,
-            plotCards: this.state.plotCards,
-            drawCards: this.state.drawCards,
+            cards: this.state.cards,
             rookeryCards: this.state.rookeryCards
         };
 
@@ -138,13 +134,13 @@ class DeckEditor extends React.Component {
 
     onAgendaChange(selectedAgenda) {
         let toUpdate = {
-            agenda: selectedAgenda,
             showBanners: this.isAllianceAgenda(selectedAgenda)
         };
 
-        if(!toUpdate.showBanners) {
-            toUpdate.bannerCards = [];
-        }
+        let cards = this.state.cards.filter(c => c.card.type !== 'agenda');
+        this.addCard(cards, selectedAgenda, 1);
+
+        toUpdate.cards = cards;
 
         this.setState(toUpdate, this.triggerDeckUpdated);
     }
@@ -160,30 +156,33 @@ class DeckEditor extends React.Component {
             return;
         }
 
+        let banners = this.state.cards.filter(c => c.card.traits.includes('Banner'));
+
         // Don't allow more than 2 banners
-        if(this.state.bannerCards.length >= 2) {
+        if(banners.length >= 2) {
             return;
         }
 
         // Don't allow duplicate banners
-        if(this.state.bannerCards.some(banner => {
+        if(banners.some(banner => {
             return banner.code === this.state.selectedBanner.code;
         })) {
             return;
         }
 
-        let banners = this.state.bannerCards;
-        banners.push(this.state.selectedBanner);
+        let cards = this.state.cards;
 
-        this.setState({ bannerCards: banners }, this.triggerDeckUpdated);
+        this.addCard(cards, this.state.selectedBanner, 1);
+
+        this.setState({ cards: cards }, this.triggerDeckUpdated);
     }
 
     onRemoveBanner(banner) {
-        const banners = this.state.bannerCards.filter(card => {
-            return card.code !== banner.code;
+        const cards = this.state.cards.filter(c => {
+            return c.card.code !== banner.code;
         });
 
-        this.setState({ bannerCards: banners }, this.triggerDeckUpdated);
+        this.setState({ cards: cards }, this.triggerDeckUpdated);
     }
 
     addCardChange(selectedCards) {
@@ -200,15 +199,9 @@ class DeckEditor extends React.Component {
         let cardList = this.state.cardList;
         cardList += `${this.state.numberToAdd}  ${this.state.cardToAdd.label}\n`;
 
-        if(this.state.cardToAdd.type === 'plot') {
-            let plots = this.state.plotCards;
-            this.addCard(plots, this.state.cardToAdd, parseInt(this.state.numberToAdd));
-            this.setState({ cardList: cardList, plotCards: plots }, this.triggerDeckUpdated);
-        } else {
-            let cards = this.state.drawCards;
+        let cards = this.state.cards;
             this.addCard(cards, this.state.cardToAdd, parseInt(this.state.numberToAdd));
-            this.setState({ cardList: cardList, drawCards: cards }, this.triggerDeckUpdated);
-        }
+        this.setState({ cardList: cardList, cards: cards }, this.triggerDeckUpdated);
     }
 
     onAddRookeryCard(event) {
@@ -242,7 +235,9 @@ class DeckEditor extends React.Component {
 
     onCardListChange(event) {
         let split = event.target.value.split('\n');
-        let { deckName, faction, agenda, bannerCards, plotCards, drawCards } = this.state;
+        let { deckName, faction, cards } = this.state;
+        let agenda = this.getAgenda(this.state.cards);
+        let banners = [];
 
         let headerMark = split.findIndex(line => line.match(/^Packs:/));
         if(headerMark >= 0) {
@@ -278,7 +273,6 @@ class DeckEditor extends React.Component {
                     }
 
                     if(rawBanners) {
-                        let banners = [];
                         for(let rawBanner of rawBanners) {
                             let banner = this.props.banners.find(banner => {
                                 return rawBanner.trim() === banner.label;
@@ -288,32 +282,34 @@ class DeckEditor extends React.Component {
                                 banners.push(banner);
                             }
                         }
-
-                        bannerCards = banners;
                     }
                 }
             }
         }
 
-        plotCards = [];
-        drawCards = [];
+        cards = [];
 
         for(const line of split) {
             let { card, count } = this.parseCardLine(line);
             if(card) {
-                this.addCard(card.type === 'plot' ? plotCards : drawCards, card, count);
+                this.addCard(cards, card, num);
             }
+        }
+
+        if(agenda) {
+            this.addCard(cards, agenda, 1);
+        }
+
+        for(let banner of banners) {
+            this.addCard(cards, banner, 1);
         }
 
         this.setState({
             cardList: event.target.value,
             deckName: deckName,
             faction: faction,
-            agenda: agenda,
-            bannerCards: bannerCards,
             showBanners: this.isAllianceAgenda(agenda),
-            plotCards: plotCards,
-            drawCards: drawCards
+            cards: cards
         }, this.triggerDeckUpdated);
     }
 
@@ -422,14 +418,16 @@ class DeckEditor extends React.Component {
     }
 
     getBannerList() {
-        if(this.state.bannerCards.length === 0) {
+        let banners = this.state.cards.filter(c => c.card.traits.includes('Banner'));
+
+        if(banners.length === 0) {
             return null;
         }
 
-        return this.state.bannerCards.map(card => {
-            return (<div key={ card.code }>
-                <span key={ card.code } className='card-link col-sm-10'>{ card.label }</span>
-                <span className='glyphicon glyphicon-remove icon-danger btn col-sm-1' aria-hidden='true' onClick={ this.onRemoveBanner.bind(this, card) } />
+        return banners.map(c => {
+            return (<div key={ c.card.code }>
+                <span key={ c.card.code } className='card-link col-sm-10'>{ c.card.label }</span>
+                <span className='glyphicon glyphicon-remove icon-danger btn col-sm-1' aria-hidden='true' onClick={ this.onRemoveBanner.bind(this, c.card) } />
             </div>);
         });
     }
@@ -445,10 +443,11 @@ class DeckEditor extends React.Component {
 
         let banners = this.getBannerList();
         const cardsExcludingAgendas = Object.values(this.props.cards).filter(card => !this.props.agendas[card.code]);
+        let agenda = this.getAgenda(this.state.cards);
 
         return (
             <div>
-                <ApiStatus apiState={ this.props.apiState } successMessage='Deck saved successfully.' />
+                <ApiStatus apiState={ this.props.apiState } successMessage={ this.props.deckSaved ? 'Deck saved successfully.' : null } />
 
                 <div className='form-group'>
                     <div className='col-xs-12 deck-buttons'>
@@ -466,7 +465,7 @@ class DeckEditor extends React.Component {
                     <Select name='faction' label='Faction' labelClass='col-sm-3' fieldClass='col-sm-9' options={ Object.values(this.props.factions) }
                         onChange={ this.onFactionChange.bind(this) } value={ this.state.faction ? this.state.faction.value : undefined } />
                     <Select name='agenda' label='Agenda' labelClass='col-sm-3' fieldClass='col-sm-9' options={ Object.values(this.props.agendas) }
-                        onChange={ this.onAgendaChange.bind(this) } value={ this.state.agenda ? this.state.agenda.code : undefined }
+                        onChange={ this.onAgendaChange.bind(this) } value={ agenda ? agenda.code : undefined }
                         valueKey='code' nameKey='label' blankOption={ { label: '- Select -', code: '' } } />
 
                     { this.state.showBanners &&
@@ -520,6 +519,7 @@ DeckEditor.propTypes = {
     banners: PropTypes.array,
     cards: PropTypes.object,
     deck: PropTypes.object,
+    deckSaved: PropTypes.bool,
     factions: PropTypes.object,
     navigate: PropTypes.func,
     onDeckSave: PropTypes.func,
@@ -535,6 +535,7 @@ function mapStateToProps(state) {
         apiState: state.api.SAVE_DECK,
         banners: state.cards.banners,
         cards: state.cards.cards,
+        deckSaved: state.cards.deckSaved,
         decks: state.cards.decks,
         factions: state.cards.factions,
         loading: state.api.loading,

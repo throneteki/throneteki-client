@@ -58,6 +58,9 @@ export default function(state = { decks: [] }, action) {
 
             // In case the card list is received after the decks, updated the decks now
             newState.decks = processDecks(newState.decks, newState);
+            if(state.selectedDeck) {
+                newState.selectedDeck = processDeck(state.selectedDeck, newState);
+            }
 
             return newState;
         case 'RECEIVE_PACKS':
@@ -150,7 +153,7 @@ export default function(state = { decks: [] }, action) {
                 deckSaved: false
             });
         case 'ADD_DECK':
-            var newDeck = { name: 'New Deck', drawCards: [], plotCards: [] };
+            var newDeck = { name: 'New Deck', cards: [] };
 
             return Object.assign({}, state, {
                 selectedDeck: processDeck(newDeck, state),

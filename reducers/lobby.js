@@ -50,7 +50,7 @@ export default function (state = defaultState, action) {
         case 'CANCEL_PASSWORD_JOIN':
             return Object.assign({}, state, {
                 passwordGame: undefined,
-                passwordError: undefined,
+                joinFailReason: undefined,
                 passwordJoinType: undefined
             });
         case 'GAME_SOCKET_CLOSED':
@@ -71,7 +71,7 @@ export default function (state = defaultState, action) {
             return Object.assign({}, state, {
                 newGame: false
             });
-        case 'CLEAR_NEWGAME_STATUS':
+        case 'CLEAR_GAME_STATUS':
             return Object.assign({}, state, {
                 joinFailReason: undefined
             });

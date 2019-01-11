@@ -35,22 +35,27 @@ class DeckSummary extends React.Component {
 
     getBannersToRender() {
         let banners = [];
+        let bannerCards = this.props.deck.cards.filter(c => c.card.traits.includes('Banner'));
 
-        if(this.props.deck.bannerCards) {
-            for(const card of this.props.deck.bannerCards) {
-                banners.push(<div className='pull-right' key={ card.code ? card.code : card }>
-                    <span className='card-link' onMouseOver={ this.onCardMouseOver } onMouseOut={ this.onCardMouseOut }>{ card.label }</span>
-                </div>);
-            }
+        for(const cardEntry of bannerCards) {
+            banners.push(<div className='pull-right' key={ cardEntry.card.code ? cardEntry.card.code : cardEntry }>
+                <span className='card-link' onMouseOver={ this.onCardMouseOver } onMouseOut={ this.onCardMouseOut }>{ cardEntry.card.label }</span>
+            </div>);
         }
 
         return <div className='info-row row'><span>Banners:</span>{ banners }</div>;
     }
 
+    getAgenda(deck) {
+        let agenda = deck.cards.find(c => c.card.type === 'agenda');
+
+        return agenda && agenda.card;
+    }
+
     getCardsToRender() {
         let cardsToRender = [];
         let groupedCards = {};
-        let combinedCards = this.props.deck.plotCards.concat(this.props.deck.drawCards);
+        let combinedCards = this.props.deck.cards.filter(c => ['attachment', 'character', 'location', 'event', 'plot'].includes(c.card.type));
 
         for(const card of combinedCards) {
             if(!card.card) {
@@ -63,8 +68,9 @@ class DeckSummary extends React.Component {
             }
 
             let type = typeCode[0].toUpperCase() + typeCode.slice(1);
+            let agenda = this.getAgenda(this.props.deck);
 
-            if(this.props.deck.agenda && this.props.deck.agenda.code === '05045') {
+            if(agenda && agenda.code === '05045') {
                 if(this.hasTrait(card.card, 'scheme')) {
                     type = 'Scheme';
                 }
@@ -114,6 +120,7 @@ class DeckSummary extends React.Component {
 
         let cardsToRender = this.getCardsToRender();
         let banners = this.getBannersToRender();
+        let agenda = this.getAgenda(this.props.deck);
 
         return (
             <div className='deck-summary col-xs-12'>
@@ -126,16 +133,16 @@ class DeckSummary extends React.Component {
                     <div className='col-xs-2 col-sm-3 no-x-padding'>{ this.props.deck.faction ? <img className='img-responsive' src={ '/img/cards/' + this.props.deck.faction.value + '.png' } /> : null }</div>
                     <div className='col-xs-8 col-sm-6'>
                         <div className='info-row row'><span>Faction:</span>{ this.props.deck.faction ? <span className={ 'pull-right' }>{ this.props.deck.faction.name }</span> : null }</div>
-                        <div className='info-row row' ref='agenda'><span>Agenda:</span> { this.props.deck.agenda && this.props.deck.agenda.label ? <span className='pull-right card-link' onMouseOver={ this.onCardMouseOver }
-                            onMouseOut={ this.onCardMouseOut }>{ this.props.deck.agenda.label }</span> : <span>None</span> }</div>
-                        { (this.props.deck.agenda && this.props.deck.agenda.label === 'Alliance') ? banners : null }
+                        <div className='info-row row' ref='agenda'><span>Agenda:</span> { agenda && agenda.label ? <span className='pull-right card-link' onMouseOver={ this.onCardMouseOver }
+                            onMouseOut={ this.onCardMouseOut }>{ agenda.label }</span> : <span>None</span> }</div>
+                        { (agenda && agenda.label === 'Alliance') ? banners : null }
                         <div className='info-row row' ref='drawCount'><span>Draw deck:</span><span className='pull-right'>{ this.props.deck.status.drawCount } cards</span></div>
                         <div className='info-row row' ref='plotCount'><span>Plot deck:</span><span className='pull-right'>{ this.props.deck.status.plotCount } cards</span></div>
                         <div className='info-row row'><span>Validity:</span>
                             <DeckStatus className='pull-right' status={ this.props.deck.status } />
                         </div>
                     </div>
-                    <div className='col-xs-2 col-sm-3 no-x-padding'>{ this.props.deck.agenda && this.props.deck.agenda.code ? <img className='img-responsive' src={ '/img/cards/' + this.props.deck.agenda.code + '.png' } /> : null }</div>
+                    <div className='col-xs-2 col-sm-3 no-x-padding'>{ agenda && agenda.code ? <img className='img-responsive' src={ '/img/cards/' + agenda.code + '.png' } /> : null }</div>
                 </div>
                 <div className='col-xs-12 no-x-padding'>
                     <div className='cards'>

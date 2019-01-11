@@ -10,9 +10,9 @@ class AltCard extends React.Component {
         if(this.props.card.icons) {
             for(let [icon, present] of Object.entries(this.props.card.icons)) {
                 if(present) {
-                    icons.push(<div className={ `challenge-icon thronesicon thronesicon-${icon} with-background` } />);
+                    icons.push(<div key={ icon } className={ `challenge-icon thronesicon thronesicon-${icon} with-background` } />);
                 } else {
-                    icons.push(<div className='challenge-icon' />);
+                    icons.push(<div key={ icon }className='challenge-icon' />);
                 }
             }
         }

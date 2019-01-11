@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import $ from 'jquery';
 
 import NewGame from './NewGame';
 import GameList from './GameList';
@@ -9,7 +8,6 @@ import PendingGame from './PendingGame';
 import PasswordGame from './PasswordGame';
 import AlertPanel from '../Site/AlertPanel';
 import Panel from '../Site/Panel';
-import Modal from '../Site/Modal';
 import Checkbox from '../Form/Checkbox';
 
 import * as actions from '../../actions';
@@ -28,7 +26,6 @@ class GameLobby extends React.Component {
 
         this.onNewGameClick = this.onNewGameClick.bind(this);
         this.onQuickJoinClick = this.onQuickJoinClick.bind(this);
-        this.onModalHidden = this.onModalHidden.bind(this);
 
         let savedFilter = localStorage.getItem('gameFilter');
         if(savedFilter) {
@@ -51,8 +48,6 @@ class GameLobby extends React.Component {
     }
 
     componentDidMount() {
-        $('#pendingGameModal').on('hide.bs.modal', this.onModalHidden);
-
         if(window.Notification && Notification.permission !== 'granted') {
             Notification.requestPermission((status) => {
                 if(Notification.permission !== status) {
@@ -75,17 +70,11 @@ class GameLobby extends React.Component {
 
         if(!this.isPendingGameStillCurrent(props) || this.isGameInProgress(props)) {
             this.setState({ gameState: props.currentGame && props.currentGame.started ? GameState.Started : GameState.None }, () => {
-                $('#pendingGameModal').modal('hide');
             });
-        } else if(!this.isPasswordGameStillCurrent(props) && !props.currentGame) {
-            $('#pendingGameModal').modal('hide');
-        } else if(!this.props.passwordGame && props.passwordGame) {
-            $('#pendingGameModal').modal('show');
         }
 
         if(props.currentGame && !this.props.currentGame && !props.currentGame.started) {
             // Joining a game
-            $('#pendingGameModal').modal('show');
             this.setState({ gameState: GameState.PendingGame });
         }
     }
@@ -137,8 +126,6 @@ class GameLobby extends React.Component {
             return;
         }
 
-        $('#pendingGameModal').modal('show');
-
         this.props.startNewGame();
     }
 
@@ -158,28 +145,6 @@ class GameLobby extends React.Component {
         this.startNewGame();
     }
 
-    onModalHidden(event) {
-        if($(event.target).attr('id') !== 'pendingGameModal') {
-            return;
-        }
-
-        switch(this.state.gameState) {
-            case GameState.NewGame:
-                this.props.cancelNewGame();
-                break;
-            case GameState.PasswordedGame:
-                this.props.cancelPasswordJoin();
-                break;
-            case GameState.PendingGame:
-                if(!this.props.currentGame.started) {
-                    this.props.leaveGame();
-                }
-                break;
-        }
-
-        this.setGameState(this.props);
-    }
-
     onCheckboxChange(field, event) {
         let filter = Object.assign({}, this.state.filter);
 
@@ -190,44 +155,42 @@ class GameLobby extends React.Component {
         localStorage.setItem('gameFilter', JSON.stringify(filter));
     }
 
+    canStartGames() {
+        return !this.props.currentGame && this.props.user && this.props.lobbySocketConnected;
+    }
+
     render() {
-        let modalProps = {
-            id: 'pendingGameModal',
-            className: 'settings-popup row',
-            bodyClassName: 'col-xs-12',
-            title: ''
-        };
-        let modalBody = null;
+        let gameControl = null;
 
         switch(this.state.gameState) {
             case GameState.None:
             default:
                 break;
             case GameState.NewGame:
-                modalProps.title = 'Game Options';
-                modalProps.okButton = 'Create';
-                modalBody = <NewGame defaultGameName={ this.props.user.username + '\'s game' } quickJoin={ this.state.quickJoin } />;
+                gameControl = <NewGame defaultGameName={ this.props.user.username + '\'s game' } quickJoin={ this.state.quickJoin } />;
                 break;
             case GameState.PendingGame:
-                modalProps.title = this.props.currentGame ? this.props.currentGame.name : '';
-                modalBody = this.props.currentGame ? <PendingGame /> : null;
+                gameControl = this.props.currentGame ? <PendingGame /> : null;
                 break;
             case GameState.PasswordedGame:
-                modalProps.title = 'Password Required';
-                modalBody = <PasswordGame />;
+                gameControl = <PasswordGame />;
                 break;
         }
 
         return (
             <div className='full-height'>
                 <div className='col-md-offset-2 col-md-8 full-height'>
-                { this.props.bannerNotice ? <AlertPanel type='error' message={ this.props.bannerNotice } /> : null }
-                { this.state.errorMessage ? <AlertPanel type='error' message={ this.state.errorMessage } /> : null }
+                    { gameControl }
+
+                    { this.props.lobbySocketConnected || <AlertPanel type='error' message='The connection to the lobby server has been lost.  Refresh your browser if this message persists.' /> }
+                    { this.props.bannerNotice ? <AlertPanel type='error' message={ this.props.bannerNotice } /> : null }
+                    { this.state.errorMessage ? <AlertPanel type='error' message={ this.state.errorMessage } /> : null }
                     <Panel title='Current Games'>
                         <div className='col-xs-12 game-controls'>
                             <div className='col-xs-3 join-buttons'>
                                 <button className='btn btn-primary' onClick={ this.onNewGameClick } disabled={ !!this.props.currentGame || !this.props.user }>New Game</button>
-                                <button className='btn btn-primary' onClick={ this.onQuickJoinClick } disabled={ !!this.props.currentGame || !this.props.user }>Quick Join</button>                            </div>
+                                <button className='btn btn-primary' onClick={ this.onQuickJoinClick } disabled={ !!this.props.currentGame || !this.props.user }>Quick Join</button>
+                            </div>
                             <div className='col-xs-9 game-filter'>
                                 <Panel type='tertiary'>
                                     <Checkbox name='beginner' label='Beginner' fieldClass='col-xs-4' noGroup onChange={ this.onCheckboxChange.bind(this, 'beginner') } checked={ this.state.filter['beginner'] } />
@@ -242,9 +205,6 @@ class GameLobby extends React.Component {
                         </div>
                     </Panel>
                 </div>
-                <Modal { ...modalProps }>
-                    { modalBody }
-                </Modal>
             </div>);
     }
 }
@@ -257,6 +217,7 @@ GameLobby.propTypes = {
     currentGame: PropTypes.object,
     games: PropTypes.array,
     leaveGame: PropTypes.func,
+    lobbySocketConnected: PropTypes.bool,
     newGame: PropTypes.bool,
     passwordGame: PropTypes.object,
     setContextMenu: PropTypes.func,
@@ -269,6 +230,7 @@ function mapStateToProps(state) {
         bannerNotice: state.lobby.notice,
         currentGame: state.lobby.currentGame,
         games: state.lobby.games,
+        lobbySocketConnected: state.lobby.connected,
         newGame: state.lobby.newGame,
         passwordGame: state.lobby.passwordGame,
         socket: state.lobby.socket,

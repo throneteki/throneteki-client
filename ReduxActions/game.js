@@ -22,9 +22,9 @@ export function cancelNewGame() {
     };
 }
 
-export function clearNewGameStatus() {
+export function clearGameStatus() {
     return {
-        type: 'CLEAR_NEWGAME_STATUS'
+        type: 'CLEAR_GAME_STATUS'
     };
 }
 
