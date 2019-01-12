@@ -1,4 +1,4 @@
-import { validateDeck, formatDeckAsFullCards } from 'throneteki-deck-helper';
+import { formatDeckAsFullCards } from 'throneteki-deck-helper';
 
 function selectDeck(state, deck) {
     if(state.decks.length !== 0) {
@@ -25,11 +25,7 @@ function processDeck(deck, state) {
 
     let formattedDeck = formatDeckAsFullCards(deck, state);
 
-    if(!state.restrictedList) {
-        formattedDeck.status = {};
-    } else {
-        formattedDeck.status = validateDeck(formattedDeck, { packs: state.packs, restrictedList: state.restrictedList });
-    }
+    formattedDeck.status = deck.validationResult || {};
 
     return formattedDeck;
 }
@@ -79,15 +75,6 @@ export default function(state = { decks: [] }, action) {
             });
 
             // In case the factions are received after the decks, updated the decks now
-            newState.decks = processDecks(newState.decks, newState);
-
-            return newState;
-        case 'RECEIVE_RESTRICTED_LIST':
-            newState = Object.assign({}, state, {
-                restrictedList: action.response.restrictedList
-            });
-
-            // In case the restricted list is received after the decks, updated the decks now
             newState.decks = processDecks(newState.decks, newState);
 
             return newState;
@@ -193,6 +180,10 @@ export default function(state = { decks: [] }, action) {
             return Object.assign({}, state, {
                 deckDeleted: false,
                 deckSaved: false
+            });
+        case 'DECK_VALIDATED':
+            return Object.assign({}, state, {
+                validationResult: action.response.result
             });
         default:
             return state;

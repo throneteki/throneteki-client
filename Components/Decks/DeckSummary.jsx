@@ -136,8 +136,8 @@ class DeckSummary extends React.Component {
                         <div className='info-row row' ref='agenda'><span>Agenda:</span> { agenda && agenda.label ? <span className='pull-right card-link' onMouseOver={ this.onCardMouseOver }
                             onMouseOut={ this.onCardMouseOut }>{ agenda.label }</span> : <span>None</span> }</div>
                         { (agenda && agenda.label === 'Alliance') ? banners : null }
-                        <div className='info-row row' ref='drawCount'><span>Draw deck:</span><span className='pull-right'>{ this.props.deck.status.drawCount } cards</span></div>
-                        <div className='info-row row' ref='plotCount'><span>Plot deck:</span><span className='pull-right'>{ this.props.deck.status.plotCount } cards</span></div>
+                        <div className='info-row row' ref='drawCount'><span>Draw deck:</span><span className='pull-right'>{ this.props.deck.status.drawCount || 0 } cards</span></div>
+                        <div className='info-row row' ref='plotCount'><span>Plot deck:</span><span className='pull-right'>{ this.props.deck.status.plotCount || 0 } cards</span></div>
                         <div className='info-row row'><span>Validity:</span>
                             <DeckStatus className='pull-right' status={ this.props.deck.status } />
                         </div>

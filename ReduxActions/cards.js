@@ -31,17 +31,6 @@ export function loadFactions() {
     };
 }
 
-export function loadRestrictedList() {
-    return {
-        types: ['REQUEST_RESTRICTED_LIST', 'RECEIVE_RESTRICTED_LIST'],
-        shouldCallAPI: (state) => {
-            return !state.cards.restrictedList;
-        },
-        APIParams: { url: '/api/restricted-list', cache: false },
-        skipAuth: true
-    };
-}
-
 export function loadStandaloneDecks() {
     return {
         types: ['REQUEST_STANDALONE_DECKS', 'RECEIVE_STANDALONE_DECKS'],

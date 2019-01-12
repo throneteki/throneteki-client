@@ -73,7 +73,6 @@ export class GameBoard extends React.Component {
 
     componentDidMount() {
         this.updateContextMenu(this.props);
-        $('.modal-backdrop').remove();
     }
 
     componentWillReceiveProps(props) {
@@ -306,8 +305,7 @@ export class GameBoard extends React.Component {
                     onSubmit={ this.props.submitRookeryPrompt }
                     packs={ this.props.packs }
                     players={ Object.values(this.props.currentGame.players) }
-                    promptId={ this.props.rookeryPromptId }
-                    restrictedList={ this.props.restrictedList } />);
+                    promptId={ this.props.rookeryPromptId } />);
         }
 
         return [
@@ -494,7 +492,6 @@ GameBoard.propTypes = {
     dispatch: PropTypes.func,
     navigate: PropTypes.func,
     packs: PropTypes.array,
-    restrictedList: PropTypes.array,
     rookeryDeck: PropTypes.object,
     rookeryPromptId: PropTypes.string,
     sendGameMessage: PropTypes.func,
@@ -514,7 +511,6 @@ function mapStateToProps(state) {
         cards: state.cards.cards,
         currentGame: state.lobby.currentGame,
         packs: state.cards.packs,
-        restrictedList: state.cards.restrictedList,
         rookeryDeck: state.prompt.rookeryDeck,
         rookeryPromptId: state.prompt.rookeryPromptId,
         socket: state.lobby.socket,

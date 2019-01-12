@@ -75,6 +75,26 @@ export function saveDeck(deck) {
     };
 }
 
+export function validateDeck(deck) {
+    let formattedDeck = formatDeckAsShortCards(deck);
+    formattedDeck.deckName = deck.name;
+
+    let str = JSON.stringify({
+        deck: formattedDeck
+    });
+
+    return {
+        types: ['VALIDATE_DECK', 'DECK_VALIDATED'],
+        shouldCallAPI: () => true,
+        APIParams: {
+            url: '/api/decks/validate',
+            type: 'POST',
+            contentType: 'application/json',
+            data: str
+        }
+    };
+}
+
 export function clearDeckStatus() {
     return {
         type: 'CLEAR_DECK_STATUS'

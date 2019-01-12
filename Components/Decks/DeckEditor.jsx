@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { validateDeck } from 'throneteki-deck-helper';
 
 import Input from '../Form/Input';
 import Select from '../Form/Select';
@@ -81,11 +80,7 @@ class DeckEditor extends React.Component {
             rookeryCards: this.state.rookeryCards
         };
 
-        if(!this.props.restrictedList) {
-            deck.status = {};
-        } else {
-            deck.status = validateDeck(deck, { packs: this.props.packs, restrictedList: this.props.restrictedList });
-        }
+        deck.status = {};
 
         return deck;
     }
@@ -95,6 +90,10 @@ class DeckEditor extends React.Component {
 
         if(this.props.onDeckUpdated) {
             this.props.onDeckUpdated(deck);
+        }
+
+        if(deck.faction) {
+            this.props.validateDeck(deck);
         }
     }
 
@@ -525,8 +524,8 @@ DeckEditor.propTypes = {
     onDeckSave: PropTypes.func,
     onDeckUpdated: PropTypes.func,
     packs: PropTypes.array,
-    restrictedList: PropTypes.array,
-    updateDeck: PropTypes.func
+    updateDeck: PropTypes.func,
+    validateDeck: PropTypes.func
 };
 
 function mapStateToProps(state) {
@@ -539,8 +538,7 @@ function mapStateToProps(state) {
         decks: state.cards.decks,
         factions: state.cards.factions,
         loading: state.api.loading,
-        packs: state.cards.packs,
-        restrictedList: state.cards.restrictedList
+        packs: state.cards.packs
     };
 }
 

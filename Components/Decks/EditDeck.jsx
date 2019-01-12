@@ -30,6 +30,10 @@ class EditDeck extends React.Component {
     }
 
     componentWillReceiveProps(props) {
+        if(props.validationResult) {
+            props.deck.status = props.validationResult;
+        }
+
         this.setState({ deck: props.deck });
     }
 
@@ -94,7 +98,8 @@ EditDeck.propTypes = {
     navigate: PropTypes.func,
     packs: PropTypes.array,
     saveDeck: PropTypes.func,
-    setUrl: PropTypes.func
+    setUrl: PropTypes.func,
+    validationResult: PropTypes.object
 };
 
 function mapStateToProps(state) {
@@ -110,7 +115,8 @@ function mapStateToProps(state) {
         deckSaved: state.cards.deckSaved,
         factions: state.cards.factions,
         loading: state.api.loading,
-        socket: state.lobby.socket
+        socket: state.lobby.socket,
+        validationResult: state.cards.validationResult
     };
 }
 

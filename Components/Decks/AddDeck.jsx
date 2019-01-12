@@ -26,6 +26,16 @@ export class AddDeck extends React.Component {
         this.props.addDeck();
     }
 
+    componentWillReceiveProps(props) {
+        if(props.validationResult) {
+            let deck = this.state.deck;
+
+            deck.status = props.validationResult;
+
+            this.setState({deck: deck});
+        }
+    }
+
     componentWillUpdate(props) {
         if(props.deckSaved) {
             this.props.navigate('/decks');
@@ -79,7 +89,8 @@ AddDeck.propTypes = {
     factions: PropTypes.object,
     loading: PropTypes.bool,
     navigate: PropTypes.func,
-    saveDeck: PropTypes.func
+    saveDeck: PropTypes.func,
+    validationResult: PropTypes.object
 };
 
 function mapStateToProps(state) {
@@ -90,7 +101,8 @@ function mapStateToProps(state) {
         deckSaved: state.cards.deckSaved,
         factions: state.cards.factions,
         loading: state.api.loading,
-        socket: state.lobby.socket
+        socket: state.lobby.socket,
+        validationResult: state.cards.validationResult
     };
 }
 

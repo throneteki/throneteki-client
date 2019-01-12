@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { validateDeck, formatDeckAsShortCards } from 'throneteki-deck-helper';
+import { formatDeckAsShortCards } from 'throneteki-deck-helper';
 
 import CardTiledList from './CardTiledList';
 import DeckStatus from '../Decks/DeckStatus';
@@ -118,14 +118,13 @@ class RookerySetup extends React.Component {
         let deck = this.state.deck;
         let rookeryCards = this.createLinearCards(deck.rookeryCards);
         let deckCards = this.createLinearCards(deck.cards);
-        let status = validateDeck(deck, { packs: this.props.packs, restrictedList: this.props.restrictedList });
 
         return (
             <div className='rookery'>
                 <div className='rookery-status'>
                     <h4>Click cards to move them between your rookery and deck</h4>
                     <div>
-                        <DeckStatus status={ status } />
+                        <DeckStatus status={ deck.status || {} } />
                         <button className='btn btn-primary btn-rookery-done' onClick={ this.handleDoneClick }>Done</button>
                     </div>
                 </div>
@@ -174,7 +173,6 @@ RookerySetup.propTypes = {
     onSubmit: PropTypes.func,
     packs: PropTypes.array,
     players: PropTypes.array,
-    promptId: PropTypes.string,
     restrictedList: PropTypes.array
 };
 
