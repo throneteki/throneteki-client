@@ -180,9 +180,10 @@ class GameLobby extends React.Component {
         return (
             <div className='full-height'>
                 <div className='col-md-offset-2 col-md-8 full-height'>
+                    { this.props.lobbySocketConnected || <AlertPanel type='error' message='The connection to the lobby server has been lost.  Refresh your browser if this message persists.' /> }
+
                     { gameControl }
 
-                    { this.props.lobbySocketConnected || <AlertPanel type='error' message='The connection to the lobby server has been lost.  Refresh your browser if this message persists.' /> }
                     { this.props.bannerNotice ? <AlertPanel type='error' message={ this.props.bannerNotice } /> : null }
                     { this.state.errorMessage ? <AlertPanel type='error' message={ this.state.errorMessage } /> : null }
                     <Panel title='Current Games'>

@@ -8,6 +8,7 @@ import Messages from '../GameBoard/Messages';
 import Avatar from '../Site/Avatar';
 import SelectDeckModal from './SelectDeckModal';
 import DeckStatus from '../Decks/DeckStatus';
+import AlertPanel from '../Site/AlertPanel';
 import * as actions from '../../actions';
 
 class PendingGame extends React.Component {
@@ -82,7 +83,9 @@ class PendingGame extends React.Component {
         }
 
         if(!Object.values(this.props.currentGame.players).every(player => {
-            return player.deck && player.deck.selected;
+            let deck = this.getPlayerDeck(player);
+
+            return !!deck;
         })) {
             return false;
         }
@@ -104,6 +107,16 @@ class PendingGame extends React.Component {
         return Object.values(props.currentGame.players).length;
     }
 
+    getPlayerDeck(player) {
+        let playerCustomData = player.customData && JSON.parse(player.customData);
+
+        if(!playerCustomData) {
+            return undefined;
+        }
+
+        return playerCustomData.deck;
+    }
+
     getPlayerStatus(player, username) {
         let playerIsMe = player && player.name === username;
 
@@ -111,14 +124,17 @@ class PendingGame extends React.Component {
         let selectLink = null;
         let status = null;
 
-        if(player && player.deck && player.deck.selected) {
+        let playerDeck = this.getPlayerDeck(player);
+
+        if(playerDeck) {
             if(playerIsMe) {
-                deck = <span className='deck-selection clickable' onClick={ this.onSelectDeckClick }>{ player.deck.name }</span>;
+                let deckName = this.props.decks.find(d => d.id === playerDeck.id).name;
+                deck = <span className='deck-selection clickable' onClick={ this.onSelectDeckClick }>{ deckName }</span>;
             } else {
                 deck = <span className='deck-selection'>Deck Selected</span>;
             }
 
-            status = <DeckStatus status={ player.deck.status } />;
+            status = <DeckStatus status={ playerDeck.validationResult } />;
         } else if(player && playerIsMe) {
             selectLink = <span className='card-link' onClick={ this.onSelectDeckClick }>Select deck...</span>;
         }
@@ -143,7 +159,9 @@ class PendingGame extends React.Component {
         }
 
         if(!Object.values(this.props.currentGame.players).every(player => {
-            return player.deck && player.deck.selected;
+            let deck = this.getPlayerDeck(player);
+
+            return deck;
         })) {
             return 'Waiting for players to select decks';
         }
@@ -201,6 +219,10 @@ class PendingGame extends React.Component {
         this.props.zoomCard(card);
     }
 
+    disableStartButton() {
+        return !this.isGameReady() || this.props.connecting || this.state.waiting;
+    }
+
     render() {
         if(this.props.currentGame && this.props.currentGame.started) {
             return <div>Loading game in progress, please wait...</div>;
@@ -219,8 +241,10 @@ class PendingGame extends React.Component {
                     <source src='/sound/charge.ogg' type='audio/ogg' />
                 </audio>
                 <Panel title={ this.props.currentGame.name }>
+                    { this.props.joinFailReason && <AlertPanel type='error' message={ this.props.joinFailReason } /> }
+
                     <div className='btn-group'>
-                        <button className='btn btn-primary' disabled={ !this.isGameReady() || this.props.connecting || this.state.waiting } onClick={ this.onStartClick }>Start</button>
+                        <button className='btn btn-primary' disabled={ this.disableStartButton() } onClick={ this.onStartClick }>Start</button>
                         <button className='btn btn-primary' onClick={ this.onLeaveClick }>Leave</button>
                     </div>
                     <div className='game-status'>{ this.getGameStatus() }</div>
@@ -270,6 +294,7 @@ PendingGame.propTypes = {
     decks: PropTypes.array,
     gameSocketClose: PropTypes.func,
     host: PropTypes.string,
+    joinFailReason: PropTypes.string,
     leaveGame: PropTypes.func,
     loadDecks: PropTypes.func,
     loadStandaloneDecks: PropTypes.func,
@@ -291,6 +316,7 @@ function mapStateToProps(state) {
         currentGame: state.lobby.currentGame,
         decks: state.cards.decks,
         host: state.games.gameHost,
+        joinFailReason: state.lobby.joinFailReason,
         socket: state.lobby.socket,
         standaloneDecks: state.cards.standaloneDecks,
         user: state.account.user
