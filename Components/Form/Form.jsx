@@ -26,10 +26,28 @@ class Form extends React.Component {
         $.validator.unobtrusive.parse('form');
 
         this.validator = $('form').validate();
+
+        this.setInitialValues(this.props);
+    }
+
+    componentWillReceiveProps(props) {
+        this.setInitialValues(props);
     }
 
     componentWillUnmount() {
         this.validator.destroy();
+    }
+
+    setInitialValues(props) {
+        if(props.initialValues) {
+            for(let [key, value] of Object.entries(props.initialValues)) {
+                if(!this.state[key]) {
+                    let state = this.state;
+                    state[key] = value;
+                    this.setState(state);
+                }
+            }
+        }
     }
 
     onChange(field, event) {
@@ -105,6 +123,7 @@ Form.propTypes = {
     buttonClass: PropTypes.string,
     buttonText: PropTypes.string,
     children: PropTypes.node,
+    initialValues: PropTypes.object,
     name: PropTypes.string.isRequired,
     onSubmit: PropTypes.func,
     panelTitle: PropTypes.string

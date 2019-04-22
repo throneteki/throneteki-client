@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import Slider from 'react-bootstrap-slider';
 
 import AlertPanel from '../Components/Site/AlertPanel';
+import ApiStatus from '../Components/Site/ApiStatus';
 import Panel from '../Components/Site/Panel';
 import Form from '../Components/Form/Form';
 import Checkbox from '../Components/Form/Checkbox';
@@ -24,8 +25,8 @@ class Profile extends React.Component {
         this.state = {
             newPassword: '',
             newPasswordAgain: '',
+            successMessage: '',
             promptDupes: false,
-            validation: {},
             timerSettings: {},
             keywordSettings: {}
         };
@@ -143,7 +144,7 @@ class Profile extends React.Component {
     }
 
     onSaveClick() {
-        this.setState({ errorMessage: undefined, successMessage: undefined });
+        this.setState({ successMessage: undefined });
 
         document.getElementsByClassName('wrapper')[0].scrollTop = 0;
 
@@ -161,42 +162,6 @@ class Profile extends React.Component {
                 cardSize: this.state.selectedCardSize
             }
         });
-    }
-
-    verifyPassword(isSubmitting) {
-        var validation = this.state.validation;
-
-        delete validation['password'];
-
-        if(!this.state.newPassword && !this.state.newPasswordAgain) {
-            return;
-        }
-
-        if(this.state.newPassword.length < 6) {
-            validation['password'] = 'The password you specify must be at least 6 characters long';
-        }
-
-        if(isSubmitting && !this.state.newPasswordAgain) {
-            validation['password'] = 'Please enter your password again';
-        }
-
-        if(this.state.newPassword && this.state.newPasswordAgain && this.state.newPassword !== this.state.newPasswordAgain) {
-            validation['password'] = 'The passwords you have specified do not match';
-        }
-
-        this.setState({ validation: validation });
-    }
-
-    verifyEmail() {
-        var validation = this.state.validation;
-
-        delete validation['email'];
-
-        if(!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(this.state.email)) {
-            validation['email'] = 'Please enter a valid email address';
-        }
-
-        this.setState({ validation: validation });
     }
 
     onSlideStop(event) {
@@ -247,18 +212,20 @@ class Profile extends React.Component {
                 checked={ this.state.promptedActionWindows[window.name] } />);
         });
 
-        let successBar;
         if(this.props.profileSaved) {
             setTimeout(() => {
                 this.props.clearProfileStatus();
             }, 5000);
-            successBar = <AlertPanel type='success' message='Profile saved successfully.  Please note settings changed here may only apply at the start of your next game.' />;
         }
+
+        let initialValues = { email: this.props.user.email };
 
         return (
             <div className='col-sm-8 col-sm-offset-2 profile full-height'>
                 <div className='about-container'>
-                    <Form panelTitle='Profile' name='profile' apiLoading={ this.props.apiState && this.props.apiState.loading } buttonClass='col-sm-offset-10 col-sm-2' buttonText='Save' onSubmit={ this.onSaveClick }>
+                    <ApiStatus apiState={ this.props.apiState } successMessage={ this.state.successMessage } />
+
+                    <Form panelTitle='Profile' name='profile' initialValues={ initialValues } apiLoading={ this.props.apiState && this.props.apiState.loading } buttonClass='col-sm-offset-10 col-sm-2' buttonText='Save' onSubmit={ this.onSaveClick }>
                         <span className='col-sm-3 text-center'><Avatar username={ this.props.user.username } /></span>
                         <Checkbox name='enableGravatar' label='Enable Gravatar integration' fieldClass='col-sm-offset-1 col-sm-7'
                             onChange={ e => this.setState({ enableGravatar: e.target.checked }) } checked={ this.state.enableGravatar } />
