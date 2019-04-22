@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import Input from './Input';
 import Checkbox from './Checkbox';
 import TextArea from './TextArea';
+import Panel from '../Site/Panel';
 
 import formFields from './formFields.json';
 
@@ -74,7 +75,7 @@ class Form extends React.Component {
             }
         });
 
-        return (<form className='form form-horizontal' onSubmit={ this.onSubmit }>
+        let content = (<form className='form form-horizontal' onSubmit={ this.onSubmit }>
             { fieldsToRender }
             { this.props.children }
             <div className='form-group'>
@@ -85,6 +86,16 @@ class Form extends React.Component {
                 </div>
             </div>
         </form>);
+
+        if(this.props.panelTitle) {
+            return (
+                <Panel title={ this.props.panelTitle }>
+                    { content }
+                </Panel>
+            );
+        }
+
+        return content;
     }
 }
 
@@ -95,7 +106,8 @@ Form.propTypes = {
     buttonText: PropTypes.string,
     children: PropTypes.node,
     name: PropTypes.string.isRequired,
-    onSubmit: PropTypes.func
+    onSubmit: PropTypes.func,
+    panelTitle: PropTypes.string
 };
 
 export default Form;
