@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 
 import Input from './Input';
 import Checkbox from './Checkbox';
+import TextArea from './TextArea';
 
 import formFields from './formFields.json';
 
@@ -14,6 +15,10 @@ class Form extends React.Component {
         this.state = {};
 
         this.onSubmit = this.onSubmit.bind(this);
+
+        for(let field of formFields[props.name]) {
+            this.state[field.name] = '';
+        }
     }
 
     componentDidMount() {
@@ -58,6 +63,10 @@ class Form extends React.Component {
                 case 'checkbox':
                     return (<Checkbox key={ field.name } name={ field.name } label={ field.label } fieldClass={ field.fieldClass }
                         onChange={ this.onCheckboxChange.bind(this, field.name) } checked={ this.state[field.name] } />);
+                case 'textarea':
+                    return (<TextArea key={ field.name } name={ field.name } label={ field.label } placeholder={ field.placeholder }
+                        fieldClass={ field.fieldClass } labelClass={ field.labelClass } onChange={ this.onChange.bind(this, field.name) }
+                        value={ this.state[field.name] } validationAttributes={ field.validationProperties } />);
                 default:
                     return (<Input key={ field.name } name={ field.name } label={ field.label } placeholder={ field.placeholder }
                         validationAttributes={ field.validationProperties } fieldClass={ field.fieldClass } labelClass={ field.labelClass }
@@ -69,7 +78,7 @@ class Form extends React.Component {
             { fieldsToRender }
             { this.props.children }
             <div className='form-group'>
-                <div className='col-sm-offset-4 col-sm-3'>
+                <div className={ this.props.buttonClass }>
                     <button ref='submit' type='submit' className='btn btn-primary' disabled={ this.props.apiLoading }>
                         { this.props.buttonText || 'Submit' } { this.props.apiLoading ? <span className='spinner button-spinner' /> : null }
                     </button>
@@ -82,6 +91,7 @@ class Form extends React.Component {
 Form.displayName = 'Form';
 Form.propTypes = {
     apiLoading: PropTypes.bool,
+    buttonClass: PropTypes.string,
     buttonText: PropTypes.string,
     children: PropTypes.node,
     name: PropTypes.string.isRequired,

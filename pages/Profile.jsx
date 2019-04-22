@@ -315,7 +315,6 @@ class Profile extends React.Component {
                                     <label className='col-xs-2 control-label text-left no-padding'>seconds</label>
                                 </div>
                                 <div className='form-group'>
-
                                     <Checkbox name='timerSettings.events' noGroup label={ 'Show timer for events' } fieldClass='col-sm-6'
                                         onChange={ this.onTimerSettingToggle.bind(this, 'events') } checked={ this.state.timerSettings.events } />
                                     <Checkbox name='timerSettings.abilities' noGroup label={ 'Show timer for card abilities' } fieldClass='col-sm-6'
