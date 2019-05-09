@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 
 import Panel from '../Components/Site/Panel';
 import TextArea from '../Components/Form/TextArea';
-import RadioButton from '../Components/Form/RadioButton';
+import RadioGroup from '../Components/Form/RadioGroup';
 import * as actions from '../actions';
 
 class MotdAdmin extends React.Component {
@@ -46,21 +46,12 @@ class MotdAdmin extends React.Component {
     }
 
     render() {
-        let types = this.motdTypes.map(type => {
-            return (<RadioButton key={ type.value }
-                name={ type.value }
-                onChange={ this.onMotdTypeChange.bind(this, type.value) }
-                checked={ this.state.selectedMotdType === type.value }
-                label={ type.label } />
-            );
-        });
-
         return (<div className='col-sm-offset-2 col-sm-8' >
             <Panel title='Motd administration'>
                 <TextArea fieldClass='col-xs-12' name='motd' value={ this.state.motdText } onChange={ this.onMotdTextChange } rows='4'
                     placeholder='Enter a motd message' />
                 <div className='col-xs-12'>
-                    { types }
+                    <RadioGroup buttons={ this.motdTypes } onValueSelected={ this.onMotdTypeChange.bind(this) } />
                 </div>
 
                 <button className='btn btn-primary col-xs-2 motd-button' type='button' onClick={ this.onSaveClick }>Save</button>

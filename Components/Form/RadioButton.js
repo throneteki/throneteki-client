@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 class RadioButton extends React.Component {
     render() {
         return (<label className='radio-inline'>
-            <input name={ this.props.name } type='radio' onChange={ this.props.onChange } checked={ this.props.checked } />
+            <input name={ this.props.name } type='radio' onClick={ this.props.onClick } checked={ !!this.props.selected } />
             { this.props.label }
         </label>);
     }
@@ -12,10 +12,10 @@ class RadioButton extends React.Component {
 
 RadioButton.displayName = 'RadioButton';
 RadioButton.propTypes = {
-    checked: PropTypes.bool,
     label: PropTypes.string,
     name: PropTypes.string,
-    onChange: PropTypes.func
+    onClick: PropTypes.func,
+    selected: PropTypes.bool
 };
 
 export default RadioButton;

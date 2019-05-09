@@ -28,7 +28,7 @@ class RadioGroup extends React.Component {
 
     render() {
         let buttons = this.props.buttons.map(button => {
-            return <RadioButton key={ button.value } label={ button.label } onClick={ this.onRadioButtonClick.bind(this, button) } selected={ this.isButtonSelected(button) } />;
+            return <RadioButton key={ button.value } name={ button.value } label={ button.label } onClick={ this.onRadioButtonClick.bind(this, button) } selected={ this.isButtonSelected(button) } />;
         });
 
         return (<div>
@@ -39,7 +39,7 @@ class RadioGroup extends React.Component {
 
 RadioGroup.displayName = 'RadioGroup';
 RadioGroup.propTypes = {
-    buttons: PropTypes.array,
+    buttons: PropTypes.array.isRequired,
     onValueSelected: PropTypes.func
 };
 
