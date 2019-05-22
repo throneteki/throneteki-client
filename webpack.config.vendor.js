@@ -52,6 +52,7 @@ module.exports = (env) => {
                 'react-dnd-touch-backend',
                 'react-transition-group',
                 'throneteki-deck-helper',
+                'simple-backoff',
                 '@aspnet/signalr'
             ]
         },

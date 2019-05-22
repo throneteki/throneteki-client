@@ -150,6 +150,10 @@ class PendingGame extends React.Component {
             return 'Connecting to game server: ' + this.props.host;
         }
 
+        if(this.props.joinFailReason) {
+            return 'A problem has occurred.  See the above notice for more information.';
+        }
+
         if(this.state.waiting) {
             return 'Waiting for lobby server...';
         }
@@ -184,7 +188,8 @@ class PendingGame extends React.Component {
 
         this.setState({ waiting: true });
 
-        this.props.startGame(this.props.currentGame.id);
+        this.props.startGame();
+        this.props.clearGameStatus();
     }
 
     sendMessage() {
@@ -220,7 +225,7 @@ class PendingGame extends React.Component {
     }
 
     disableStartButton() {
-        return !this.isGameReady() || this.props.connecting || this.state.waiting;
+        return !this.isGameReady() || this.props.connecting || (this.state.waiting && !this.props.joinFailReason);
     }
 
     render() {
@@ -289,6 +294,7 @@ PendingGame.propTypes = {
     apiLoading: PropTypes.bool,
     apiMessage: PropTypes.string,
     apiSuccess: PropTypes.bool,
+    clearGameStatus: PropTypes.func,
     connecting: PropTypes.bool,
     currentGame: PropTypes.object,
     decks: PropTypes.array,

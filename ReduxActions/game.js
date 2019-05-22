@@ -145,7 +145,7 @@ export function gameSocketConnectFailed() {
     };
 }
 
-export function connectGameSocket(url, name) {
+export function connectGameSocket(url, name, token, gameId) {
     return (dispatch, getState) => {
         let state = getState();
 
@@ -155,7 +155,7 @@ export function connectGameSocket(url, name) {
             reconnectionDelay: 1000,
             reconnectionDelayMax: 5000,
             reconnectionAttempts: 5,
-            query: state.auth.token ? 'token=' + state.auth.token : undefined
+            query: `token=${token}&gameId=${gameId}`
         });
 
         dispatch(gameSocketConnecting(url + '/' + name, gameSocket));
@@ -165,9 +165,7 @@ export function connectGameSocket(url, name) {
         });
 
         gameSocket.on('connect_error', (err) => {
-            if(state.lobby.socket) {
-                state.lobby.socket.emit('connectfailed');
-            }
+            dispatch(sendSocketMessage('connectfailed'));
 
             dispatch(gameSocketConnectError(err));
         });
@@ -230,13 +228,9 @@ export function gameStarting() {
     };
 }
 
-export function startGame(id) {
-    return (dispatch, getState) => {
-        let state = getState();
-
-        if(state.lobby.socket) {
-            state.lobby.socket.emit('startgame', id);
-        }
+export function startGame() {
+    return (dispatch) => {
+        dispatch(sendSocketMessage('startgame'));
 
         return dispatch(gameStarting());
     };

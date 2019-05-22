@@ -20,7 +20,7 @@ class GameConfiguration extends React.Component {
         ];
 
         this.state = {
-            windowTimer: this.props.timerSettings.windowTimer
+            windowTimer: this.props.timerSettings && this.props.timerSettings.windowTimer
         };
     }
 
@@ -65,6 +65,10 @@ class GameConfiguration extends React.Component {
     }
 
     render() {
+        if(!this.props.actionWindows) {
+            return null;
+        }
+
         let windows = this.windows.map(window => {
             return (<Checkbox key={ window.name }
                 noGroup

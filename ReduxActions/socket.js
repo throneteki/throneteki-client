@@ -1,8 +1,16 @@
 import * as signalR from '@aspnet/signalr';
+import { ExponentialBackoff } from 'simple-backoff';
 
 //import version from '../version';
 import * as actions from '../actions';
 import { authenticate } from './account';
+
+const backOff = new ExponentialBackoff({
+    min: 300,
+    max: 30000,
+    factor: 1.5,
+    jitter: 0.4
+});
 
 export function socketMessageSent(message) {
     return {
@@ -102,32 +110,25 @@ export function reconnectLobbySocket() {
     };
 }
 
-export function handoff(details) {
+export function handoff(address, token, gameId) {
     return {
         type: 'HANDOFF_RECEIVED',
-        details: details
+        details: { address: address, token: token, gameId: gameId}
     };
 }
 
-export function handoffReceived(details) {
+export function handoffReceived(address, nodeName, token, gameId) {
     return (dispatch, getState) => {
-        let url = '//' + details.address;
-        let standardPorts = [80, 443];
+        let url = '//' + address;
         let state = getState();
 
-        dispatch(handoff(details));
+        dispatch(handoff(address, token, gameId));
 
-        if(details.port && !standardPorts.some(p => p === details.port)) {
-            url += ':' + details.port;
-        }
-
-        dispatch(actions.setAuthTokens(details.authToken, state.auth.refreshToken));
-
-        if(state.games.socket && state.games.gameId !== details.gameId) {
+        if(state.games.socket && state.games.gameId !== gameId) {
             dispatch(actions.closeGameSocket());
         }
 
-        dispatch(actions.connectGameSocket(url, details.name));
+        dispatch(actions.connectGameSocket(url, nodeName, token, gameId));
     };
 }
 
@@ -150,11 +151,7 @@ function connectSocket(socket, dispatch, getState) {
     socket.start()
         .then(() => dispatch(lobbyConnected(socket)))
         .catch(() => {
-            let attempt = getState().lobby.connectionAttempt;
-            let maxDelay = 5000;
-            let backOffFactor = 200 * Math.pow(2, attempt);
-            let delay = Math.floor(Math.random() * (Math.min(maxDelay, backOffFactor) - 0 + 1) + 0);
-
+            let delay = backOff.next();
             setTimeout(() => dispatch(reconnectSocket(socket)), delay);
         });
 }
@@ -169,6 +166,8 @@ export function reconnectSocket(socket) {
 
 export function connectLobby() {
     return (dispatch, getState) => {
+        backOff.reset();
+
         let state = getState();
         let socket = new signalR.HubConnectionBuilder()
             .withUrl('/lobby', { accessTokenFactory: () => getState().auth.token })
@@ -230,9 +229,9 @@ export function connectLobby() {
         //     dispatch(lobbyMessageReceived('cleargamestate'));
         // });
 
-        // socket.on('handoff', handoff => {
-        //     dispatch(handoffReceived(handoff));
-        // });
+        socket.on('HandOff', (address, nodeName, token, gameId) => {
+            dispatch(handoffReceived(address, nodeName, token, gameId));
+        });
 
         // socket.on('nodestatus', status => {
         //     dispatch(nodeStatusReceived(status));
