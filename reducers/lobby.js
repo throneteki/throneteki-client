@@ -153,6 +153,7 @@ function handleMessage(action, state) {
             newState = Object.assign({}, state, {
                 games: updatedGames
             });
+            break;
         case 'users':
             newState = Object.assign({}, state, {
                 users: action.args[0]
