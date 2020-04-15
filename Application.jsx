@@ -44,7 +44,6 @@ class Application extends React.Component {
         this.props.loadPacks();
         this.props.loadFactions();
         this.props.loadRestrictedList();
-        this.props.loadEvents();
 
         $(document).ajaxError((event, xhr) => {
             if(xhr.status === 403) {
@@ -112,7 +111,6 @@ Application.propTypes = {
     connectLobby: PropTypes.func,
     currentGame: PropTypes.object,
     loadCards: PropTypes.func,
-    loadEvents: PropTypes.func,
     loadFactions: PropTypes.func,
     loadPacks: PropTypes.func,
     loadRestrictedList: PropTypes.func,
