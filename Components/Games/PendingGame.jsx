@@ -36,6 +36,7 @@ class PendingGame extends React.Component {
     }
 
     componentDidMount() {
+        this.props.setCurrentRestrictedList(this.props.currentGame.restrictedList);
         this.props.loadDecks();
         this.props.loadStandaloneDecks();
     }
@@ -74,6 +75,10 @@ class PendingGame extends React.Component {
 
     componentDidUpdate() {
         $(this.refs.messagePanel).scrollTop(999999);
+    }
+
+    componentWillUnmount() {
+        this.props.setCurrentRestrictedList(null);
     }
 
     isGameReady() {
@@ -273,6 +278,7 @@ PendingGame.propTypes = {
     loading: PropTypes.bool,
     navigate: PropTypes.func,
     sendSocketMessage: PropTypes.func,
+    setCurrentRestrictedList: PropTypes.func,
     socket: PropTypes.object,
     standaloneDecks: PropTypes.array,
     startGame: PropTypes.func,
