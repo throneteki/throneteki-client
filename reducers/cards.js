@@ -26,8 +26,6 @@ function processDeck(deck, state) {
     let formattedDeck = formatDeckAsFullCards(deck, state);
     const restrictedLists = state.currentRestrictedList ? [state.currentRestrictedList] : state.restrictedList;
 
-    console.log({ restrictedLists });
-
     if(!restrictedLists) {
         formattedDeck.status = {};
     } else {
