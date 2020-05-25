@@ -485,7 +485,8 @@ export class GameBoard extends React.Component {
                                 messages={ this.props.currentGame.messages }
                                 onCardMouseOut={ this.onMouseOut }
                                 onCardMouseOver={ this.onMouseOver }
-                                onSendChat={ this.sendChatMessage } />
+                                onSendChat={ this.sendChatMessage }
+                                isChatEnabled={ !this.state.spectating || this.props.currentGame.isChatForSpectatorsEnabled } />
                         </div>
                     </div>
                     }

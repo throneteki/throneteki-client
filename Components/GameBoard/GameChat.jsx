@@ -71,8 +71,8 @@ class GameChat extends React.Component {
                     <Messages messages={ this.props.messages } onCardMouseOver={ this.props.onCardMouseOver } onCardMouseOut={ this.props.onCardMouseOut } />
                 </div>
                 <form className='form chat-form'>
-                    <input className='form-control' placeholder='Chat...' onKeyPress={ this.onKeyPress } onChange={ this.onChange }
-                        value={ this.state.message } />
+                    <input className='form-control' placeholder={ this.props.isChatEnabled ? 'Chat...' : 'Chat disabled for spectators' } onKeyPress={ this.onKeyPress } onChange={ this.onChange }
+                        value={ this.state.message } disabled={ !this.props.isChatEnabled }/>
                 </form>
             </div>);
     }
@@ -80,6 +80,7 @@ class GameChat extends React.Component {
 
 GameChat.displayName = 'GameChat';
 GameChat.propTypes = {
+    isChatEnabled: PropTypes.bool,
     messages: PropTypes.array,
     onCardMouseOut: PropTypes.func,
     onCardMouseOver: PropTypes.func,

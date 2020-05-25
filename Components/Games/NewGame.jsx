@@ -22,6 +22,7 @@ class NewGame extends React.Component {
         this.onPasswordChange = this.onPasswordChange.bind(this);
         this.onUseGameTimeLimitClick = this.onUseGameTimeLimitClick.bind(this);
         this.onGameTimeLimitChange = this.onGameTimeLimitChange.bind(this);
+        this.onChatForSpectatorsEnabledClick = this.onChatForSpectatorsEnabledClick.bind(this);
 
         this.state = {
             eventId: 'none',
@@ -32,7 +33,8 @@ class NewGame extends React.Component {
             password: '',
             useRookery: false,
             useGameTimeLimit: false,
-            gameTimeLimit: 55
+            gameTimeLimit: 55,
+            chatForSpectatorsEnabled: true
         };
     }
 
@@ -85,7 +87,8 @@ class NewGame extends React.Component {
             useRookery: this.state.useRookery,
             quickJoin: this.props.quickJoin,
             useGameTimeLimit: this.state.useGameTimeLimit,
-            gameTimeLimit: this.state.gameTimeLimit
+            gameTimeLimit: this.state.gameTimeLimit,
+            chatForSpectatorsEnabled: this.state.chatForSpectatorsEnabled
         });
     }
 
@@ -105,6 +108,10 @@ class NewGame extends React.Component {
         this.setState({ gameTimeLimit: event.target.value });
     }
 
+    onChatForSpectatorsEnabledClick(event) {
+        this.setState({ chatForSpectatorsEnabled: event.target.checked });
+    }
+
     isGameTypeSelected(gameType) {
         return this.state.selectedGameType === gameType;
     }
@@ -117,6 +124,12 @@ class NewGame extends React.Component {
                     Allow spectators
                 </label>
             </div>
+            { this.state.spectators && <div className='checkbox col-sm-8'>
+                <label>
+                    <input type='checkbox' onChange={ this.onChatForSpectatorsEnabledClick } checked={ this.state.chatForSpectatorsEnabled } />
+                    Enable chat for spectators
+                </label>
+            </div> }
             <div className='checkbox col-sm-8'>
                 <label>
                     <input type='checkbox' onChange={ this.onShowHandClick } checked={ this.state.showHand } />
