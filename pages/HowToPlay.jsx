@@ -91,6 +91,8 @@ class HowToPlay extends React.Component {
                             <li>/strength x - Sets the strength of a card to x.</li>
                             <li>/take-icon x - Takes an x icon from a character; where 'x' is as per '/give-icon'.</li>
                             <li>/token t x - Sets the token count of a card of type 't' to 'x'. Currently used token types are: 'bell', betrayal', 'ear', 'ghost', 'gold', 'journey', 'kiss', 'poison', 'prayer', 'stand', 'tale', 'valarmorghulis', 'vengeance' and 'venom'.</li>
+                            <li>/pause-clock - Pauses/Unpauses all players clocks until /pause-clock is used again.</li>
+                            <li>/add-chess-clock-time x - Adds x seconds to the players chess clock timelimit.</li>
                         </ul>
                     </div>
                     <div className='htp-topic'>
