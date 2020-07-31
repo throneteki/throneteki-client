@@ -10,10 +10,11 @@ class EventEditor extends React.Component {
     constructor(props) {
         super(props);
 
-        const event = props.event || { restricted: [], banned: [] };
+        const event = props.event || { useDefaultRestrictedList: false, restricted: [], banned: [] };
         this.state = {
             eventId: event._id,
             name: event.name,
+            useDefaultRestrictedList: event.useDefaultRestrictedList,
             restricted: event.restricted,
             banned: event.banned,
             restrictedListText: this.formatListText(props.cards, event.restricted),
@@ -25,6 +26,7 @@ class EventEditor extends React.Component {
         return {
             _id: this.state.eventId,
             name: this.state.name,
+            useDefaultRestrictedList: this.state.useDefaultRestrictedList,
             restricted: this.state.restricted,
             banned: this.state.banned
         };
@@ -52,6 +54,14 @@ class EventEditor extends React.Component {
         let state = this.state;
 
         state[field] = event.target.value;
+
+        this.setState({ state });
+    }
+
+    onCheckboxChange(field, event) {
+        let state = this.state;
+
+        state[field] = event.target.checked;
 
         this.setState({ state });
     }
@@ -159,7 +169,8 @@ class EventEditor extends React.Component {
                 <form className='form form-horizontal'>
                     <Input name='name' label='Event Name' labelClass='col-sm-3' fieldClass='col-sm-9' placeholder='Event Name'
                         type='text' onChange={ this.onChange.bind(this, 'name') } value={ this.state.name } />
-
+                    <Input name='name' label='Use default Restricted List' labelClass='col-sm-3' fieldClass='col-sm-9'
+                        type='checkbox' onChange={ this.onCheckboxChange.bind(this, 'useDefaultRestrictedList') } checked={ this.state.useDefaultRestrictedList } />
                     <Typeahead label='Card' labelClass={ 'col-sm-3 col-xs-2' } fieldClass='col-sm-4 col-xs-5' labelKey={ 'label' } options={ allCards }
                         onChange={ this.addCardChange.bind(this) }>
                         <div className='col-xs-1 no-x-padding'>
