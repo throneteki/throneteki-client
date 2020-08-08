@@ -12,17 +12,28 @@ class EventEditor extends React.Component {
         super(props);
 
         let event = {};
-        event = Object.assign(event, {useDefaultRestrictedList: false, useEventGameOptions: false, eventGameOptions: {}, restricted: [], banned: [] }, props.event);
+        event = Object.assign(event, {
+            useDefaultRestrictedList: false,
+            useEventGameOptions: false, 
+            eventGameOptions: {}, 
+            restricted: [], 
+            banned: [], 
+            restrictSpectators: false, 
+            validSpectators: [] 
+        }, props.event);
         this.state = {
             eventId: event._id,
             name: event.name,
             useDefaultRestrictedList: event.useDefaultRestrictedList,
             restricted: event.restricted,
             banned: event.banned,
-            restrictedListText: this.formatListText(props.cards, event.restricted),
-            bannedListText: this.formatListText(props.cards, event.banned),
+            restrictedListText: this.formatListTextForCards(props.cards, event.restricted),
+            bannedListText: this.formatListTextForCards(props.cards, event.banned),
             useEventGameOptions: event.useEventGameOptions,
-            eventGameOptions: event.eventGameOptions
+            eventGameOptions: event.eventGameOptions,
+            restrictSpectators: event.restrictSpectators,
+            validSpectators: event.validSpectators,
+            validSpectatorsText: this.formatListTextForUsers(event.validSpectators)
         };
     }
 
@@ -34,11 +45,21 @@ class EventEditor extends React.Component {
             useEventGameOptions: this.state.useEventGameOptions,
             eventGameOptions: this.state.eventGameOptions,
             restricted: this.state.restricted,
-            banned: this.state.banned            
+            banned: this.state.banned,
+            restrictSpectators: this.state.restrictSpectators,
+            validSpectators: this.state.validSpectators
         };
     }
 
-    formatListText(cards, cardCodes) {
+    formatListTextForUsers(users) {
+        if(!users) {
+            return '';
+        }
+
+        return users.map(user => `${user}\n`).join('');
+    }
+
+    formatListTextForCards(cards, cardCodes) {
         if(!cardCodes || !cards) {
             return '';
         }
@@ -105,6 +126,23 @@ class EventEditor extends React.Component {
         let cards = this.state[arrayProperty];
         this.addCard(cards, this.state.cardToAdd);
         this.setState({ [textProperty]: cardList, [arrayProperty]: cards });
+    }
+
+    handleUserListChange({event, textProperty, arrayProperty}) {
+        let split = event.target.value.split('\n');
+        const userNames = [];
+
+        for(const line of split) {
+            const userName = line;
+            if(userName) {
+                userNames.push(userName);
+            }
+        }
+
+        this.setState({
+            [textProperty]: event.target.value,
+            [arrayProperty]: userNames
+        });
     }
 
     handleCardListChange({ event, textProperty, arrayProperty }) {
@@ -234,6 +272,16 @@ class EventEditor extends React.Component {
                     { this.state.useEventGameOptions
                     && <Input name='password' label='Password' labelClass='col-sm-3' fieldClass='col-sm-9' placeholder='Password'
                         type='text' onChange={ this.onEventGameOptionChange.bind(this, 'password') } value={ this.state.eventGameOptions.password } />
+                    }
+
+                    <div className='form-group'>
+                        <label className='col-sm-3 col-xs-2 control-label'>Settings for Judges/Streamers</label>
+                    </div>
+                    <Checkbox name='restrictSpectators' label='Restrict spectators to those on the following list' labelClass='col-sm-4' fieldClass='col-sm-offset-3 col-sm-8'
+                        onChange={ this.onCheckboxChange.bind(this, 'restrictSpectators') } checked={ this.state.restrictSpectators } />
+                    { this.state.restrictSpectators
+                    && <TextArea label='Valid Spectators' labelClass='col-sm-3' fieldClass='col-sm-9' rows='10' value={ this.state.validSpectatorsText }
+                        onChange={ event => this.handleUserListChange({ event, textProperty: 'validSpectatorsText', arrayProperty: 'validSpectators' }) } />
                     }
 
                     <div className='form-group'>
