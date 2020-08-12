@@ -103,7 +103,7 @@ class NewGame extends React.Component {
             if(selectedEvent.eventGameOptions.password !== undefined) {
                 this.setState({ password: selectedEvent.eventGameOptions.password });
             }
-            this.setState({ selectedGameType: 'competetive' });
+            this.setState({ selectedGameType: 'competitive' });
         }
     }
 
