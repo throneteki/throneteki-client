@@ -324,7 +324,7 @@ class DeckEditor extends React.Component {
         let count = parseInt(match[1]);
         let cardName = match[2].trim().toLowerCase();
         //remove [J] and [M] restricted list, and [B] banned list indicators in a card name when the list is copied from thronesdb, trim at the end to remove the space between cardname and []
-        cardName = cardName.replace(/\[(b|j|m)\]/g,'').trim();
+        cardName = cardName.replace(/\[.+\]/g,'').trim();
         let packName = match[4] && match[4].trim().toLowerCase();
         let pack = packName && this.props.packs.find(pack => pack.code.toLowerCase() === packName || pack.name.toLowerCase() === packName);
 
