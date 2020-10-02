@@ -6,6 +6,8 @@ import Panel from '../Site/Panel';
 import * as actions from '../../actions';
 import AlertPanel from '../Site/AlertPanel';
 
+import { cardSetLabel } from '../Decks/DeckHelper';
+
 const GameNameMaxLength = 64;
 
 class NewGame extends React.Component {
@@ -291,7 +293,7 @@ class NewGame extends React.Component {
                 <div className='col-sm-8'>
                     <label htmlFor='gameName'>Mode</label>
                     <select className='form-control' value={ this.state.selectedMode } onChange={ this.onEventChange }>
-                        { restrictedLists.filter(rl => rl.official).map(rl => (<option value={ `none:${rl._id}` }>{ `${rl.issuer} (${rl.version})` }</option>)) }
+                        { restrictedLists.filter(rl => rl.official).map(rl => (<option value={ `none:${rl._id}` }>{ `${cardSetLabel(rl.cardSet)}` }</option>)) }
                         { events.map(event => (<option value={ event._id }>Event - { event.name }</option>)) }
                     </select>
                 </div>
