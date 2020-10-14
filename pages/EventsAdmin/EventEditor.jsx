@@ -253,7 +253,9 @@ class EventEditor extends React.Component {
                         onChange={ this.onCheckboxChange.bind(this, 'useDefaultRestrictedList') } checked={ this.state.useDefaultRestrictedList } />
                     { this.state.useDefaultRestrictedList
                     && <div className='form-group'>
-                        { restrictedListDropdown }
+                        <div className='col-sm-offset-3'>
+                            { restrictedListDropdown }
+                        </div>
                     </div>
                     }
 
