@@ -31,7 +31,7 @@ class GameList extends React.Component {
             return;
         }
 
-        if(game.needsPassword) {
+        if(game.needsPassword && !game.publicForSpectators) {
             this.props.joinPasswordGame(game, 'Watch');
         } else {
             this.props.socket.emit('watchgame', game.id);
