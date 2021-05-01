@@ -273,6 +273,10 @@ class EventEditor extends React.Component {
                         onChange={ this.onEventGameOptionCheckboxChange.bind(this, 'muteSpectators') } checked={ this.state.eventGameOptions.muteSpectators } />
                     }
                     { this.state.useEventGameOptions && this.state.eventGameOptions.spectators
+                    && <Checkbox name='publicForSpectators' label='Public for spectators (no password required to watch)' labelClass='col-sm-4' fieldClass='col-sm-offset-3 col-sm-8'
+                        onChange={ this.onEventGameOptionCheckboxChange.bind(this, 'publicForSpectators') } checked={ this.state.eventGameOptions.publicForSpectators } />
+                    }
+                    { this.state.useEventGameOptions && this.state.eventGameOptions.spectators
                     && <Checkbox name='showHand' label='Show hands to spectators' labelClass='col-sm-4' fieldClass='col-sm-offset-3 col-sm-8'
                         onChange={ this.onEventGameOptionCheckboxChange.bind(this, 'showHand') } checked={ this.state.eventGameOptions.showHand } />
                     }
