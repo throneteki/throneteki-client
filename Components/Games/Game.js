@@ -63,6 +63,7 @@ function Game(props) {
                 <span className='game-time'>{ `[${formattedTime}]` }</span>
                 <span className='game-icons'>
                     { game.useRookery && <img src='/img/RavenIcon.png' className='game-list-icon' alt='Rookery format' /> }
+                    { game.publicForSpectators && <span className='password-game glyphicon glyphicon-eye-open' /> }
                     { game.showHand && <img src='/img/ShowHandIcon.png' className='game-list-icon' alt='Show hands to spectators' /> }
                     { game.needsPassword && <span className='password-game glyphicon glyphicon-lock' /> }
                     { game.useGameTimeLimit && <img src='/img/Timelimit.png' className='game-list-icon' alt='Time limit used' /> }
