@@ -15,13 +15,16 @@ class DraftCubeEditor extends React.Component {
             ],
             starterDeck: []
         }, props.draftCube);
+        const rarities = draftCube.packDefinitions[0].rarities;
         this.state = {
             draftCubeId: draftCube._id,
+            maxPacks: this.calculateMaxPacks(rarities),
             name: draftCube.name,
-            rarities: draftCube.packDefinitions[0].rarities,
-            raritiesText: this.formatRaritiesText({ rarities: draftCube.packDefinitions[0].rarities, cards: props.cards }),
+            rarities: rarities,
+            raritiesText: this.formatRaritiesText({ rarities: rarities, cards: props.cards }),
             starterDeck: draftCube.starterDeck,
-            starterDeckText: this.formatStarterDeckText({ starterDeck: draftCube.starterDeck, cards: props.cards })
+            starterDeckText: this.formatStarterDeckText({ starterDeck: draftCube.starterDeck, cards: props.cards }),
+            totalPerPack: this.calculateTotalperPack(rarities)
         };
     }
 
@@ -96,9 +99,28 @@ class DraftCubeEditor extends React.Component {
         }
 
         this.setState({
+            maxPacks: this.calculateMaxPacks(rarities),
             raritiesText: event.target.value,
-            rarities: rarities
+            rarities,
+            totalPerPack: this.calculateTotalperPack(rarities)
         });
+    }
+
+    calculateTotalperPack(rarities) {
+        return rarities.reduce((total, rarity) => total + rarity.numPerPack, 0);
+    }
+
+    calculateMaxPacks(rarities) {
+        const maxPacksPerRarity = rarities.map(rarity => {
+            if(rarity.numPerPack === 0) {
+                return 0;
+            }
+
+            const totalCards = rarity.cards.reduce((total, cardQuantity) => total + cardQuantity.count, 0);
+
+            return Math.floor(totalCards / rarity.numPerPack);
+        });
+        return Math.min(...maxPacksPerRarity);
     }
 
     handleStarterDeckChange({ event }) {
@@ -210,6 +232,12 @@ class DraftCubeEditor extends React.Component {
                 <form className='form form-horizontal'>
                     <Input name='name' label='Cube Name' labelClass='col-sm-3' fieldClass='col-sm-9' placeholder='Cube Name'
                         type='text' onChange={ this.onChange.bind(this, 'name') } value={ this.state.name } />
+                    <div className='form-group'>
+                        <div className='control-label col-sm-3' />
+                        <div className='col-sm-9'>
+                            <strong>{ `Max ${this.state.maxPacks} packs of ${this.state.totalPerPack} cards` }</strong>
+                        </div>
+                    </div>
                     <TextArea
                         label='Card Rarities'
                         labelClass='col-sm-3'
