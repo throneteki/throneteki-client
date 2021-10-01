@@ -299,8 +299,6 @@ class DraftDeckEditor extends React.Component {
 
         const event = this.props.events.find(event => event._id === this.props.deck.eventId);
 
-        console.log({ event, eventId: this.props.deck.eventId });
-
         return (
             <div>
                 { this.state.cardToShow && <CardHoverPreview card={ this.state.cardToShow } /> }
