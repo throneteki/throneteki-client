@@ -61,7 +61,13 @@ class DraftDeckEditor extends React.Component {
 
         const allCards = deck.drawCards.concat(deck.plotCards);
         for(const draftCardQuantity of deck.draftedCards) {
-            const usedCardQuantity = allCards.find(cq => cq.card.code === draftCardQuantity.code) || { count: 0, code: draftCardQuantity.code, card: this.props.cards[draftCardQuantity.code] };
+            const card = this.props.cards[draftCardQuantity.code];
+
+            if(card.type === 'agenda') {
+                continue;
+            }
+
+            const usedCardQuantity = allCards.find(cq => cq.card.code === draftCardQuantity.code) || { count: 0, code: draftCardQuantity.code, card };
             if(draftCardQuantity.count > usedCardQuantity.count) {
                 remainingCards.push({
                     count: draftCardQuantity.count - usedCardQuantity.count,
