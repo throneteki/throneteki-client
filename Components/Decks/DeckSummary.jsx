@@ -44,7 +44,7 @@ class DeckSummary extends React.Component {
                         cards={ this.props.deck.plotCards.concat(this.props.deck.drawCards) }
                         onCardMouseOut={ this.onCardMouseOut }
                         onCardMouseOver={ this.onCardMouseOver }
-                        useScheme={ this.props.deck.agenda && this.props.deck.agenda.code === '05045' } />
+                        useSchemes={ this.props.deck.agenda && this.props.deck.agenda.code === '05045' } />
                 </div>
             </div>);
     }

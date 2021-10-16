@@ -383,7 +383,7 @@ class DraftDeckEditor extends React.Component {
                                 onCardClick={ card => this.handleRemoveCard(card.code) }
                                 onCardMouseOut={ () => this.clearHoverCard() }
                                 onCardMouseOver={ card => this.updateHoverCard(card) }
-                                useScheme={ this.state.agenda && this.state.agenda.code === '05045' } />
+                                useSchemes={ this.state.agenda && this.state.agenda.code === '05045' } />
                         </div>
                     </div>
                 </div>
