@@ -88,10 +88,12 @@ class PendingGame extends React.Component {
             return false;
         }
 
-        if(!Object.values(this.props.currentGame.players).every(player => {
-            return !!player.deck.selected;
-        })) {
-            return false;
+        if(this.props.currentGame.tableType !== 'drafting-table') {
+            if(!Object.values(this.props.currentGame.players).every(player => {
+                return !!player.deck.selected;
+            })) {
+                return false;
+            }
         }
 
         return this.props.currentGame.owner === this.props.user.username;
@@ -112,6 +114,14 @@ class PendingGame extends React.Component {
     }
 
     getPlayerStatus(player, username) {
+        if(this.props.currentGame.tableType === 'drafting-table') {
+            return (
+                <div className='player-row' key={ player.name }>
+                    <Avatar username={ player.name } /><span>{ player.name }</span>
+                </div>
+            );
+        }
+
         let playerIsMe = player && player.name === username;
 
         let deck = null;
@@ -233,9 +243,11 @@ class PendingGame extends React.Component {
                     <p>
                         <strong>Restricted List:</strong> { currentGame.restrictedList.name }
                     </p>
-                    <p>
-                        <strong>Cards:</strong> { cardSetLabel(currentGame.restrictedList.cardSet) }
-                    </p>
+                    { currentGame.event.format !== 'draft' && (
+                        <p>
+                            <strong>Cards:</strong> { cardSetLabel(currentGame.restrictedList.cardSet) }
+                        </p>
+                    ) }
                     <div className='btn-group'>
                         <button className='btn btn-primary' disabled={ !this.isGameReady() || this.props.connecting || this.state.waiting } onClick={ this.onStartClick }>Start</button>
                         <button className='btn btn-primary' onClick={ this.onLeaveClick }>Leave</button>

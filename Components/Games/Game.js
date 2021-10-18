@@ -10,32 +10,37 @@ function Game(props) {
     let game = props.game;
 
     let getPlayers = function(game) {
-        let firstPlayer = true;
-        let players = Object.values(game.players).map(player => {
-            let row = <GamePlayer key={ player.name } player={ player } firstPlayer={ firstPlayer } />;
-
-            firstPlayer = false;
-
-            return row;
+        let players = Object.values(game.players).map((player, i) => {
+            return <GamePlayer key={ player.name } player={ player } firstPlayer={ i % 2 === 0 } />;
         });
 
-        if(players.length === 1) {
-            if(props.showJoinButton) {
-                players.push(
-                    <div key={ players[0].name } className={ 'game-player-row other-player' }>
-                        <div className='game-faction-row other-player'>
-                            <button className='btn btn-primary gamelist-button img-responsive' onClick={ props.onJoinGame }>Join</button>
-                        </div>
-                    </div>);
-            } else {
-                players.push(<div key={ players[0].name } className='game-faction-row other-player' />);
-            }
+        if(props.showJoinButton) {
+            players.push(
+                <div key={ players[0].name } className={ classNames('game-player-row', { 'first-player': players.length % 2 === 0, 'other-player': players.length % 2 === 1 }) }>
+                    <div className='game-faction-row other-player'>
+                        <button className='btn btn-primary gamelist-button img-responsive' onClick={ props.onJoinGame }>Join</button>
+                    </div>
+                </div>
+            );
+        }
+
+        if(players.length % 2 === 1) {
+            players.push(<div key={ players[0].name } className='game-faction-row other-player' />);
         }
 
         return players;
     };
 
     let players = getPlayers(game);
+    let gameMiddles = [];
+    for(let i = 0; i < players.length; i += 2) {
+        gameMiddles.push(
+            <div key={ `game-middle-${i}` } className='game-middle-row'>
+                { players[i] }
+                { players[i + 1] }
+            </div>
+        );
+    }
 
     let rowClass = classNames('game-row', {
         [game.node]: game.node && props.isAdmin
@@ -68,9 +73,7 @@ function Game(props) {
                     { game.useChessClocks && <img src='/img/chess-clock.png' className='game-list-icon' alt='Chess clocks used' /> }
                 </span>
             </div>
-            <div className='game-middle-row'>
-                { players }
-            </div>
+            { gameMiddles }
             <div className='game-row-buttons'>
                 { props.showWatchButton &&
                     <button className='btn btn-primary gamelist-lower-button' onClick={ props.onWatchGame }>Watch</button> }
