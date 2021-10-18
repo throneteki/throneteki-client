@@ -43,7 +43,8 @@ class NewGame extends React.Component {
             gameTimeLimit: 55,
             muteSpectators: false,
             useChessClocks: false,
-            chessClockTimeLimit: 30
+            chessClockTimeLimit: 30,
+            tableType: 'game'
         };
     }
 
@@ -67,7 +68,7 @@ class NewGame extends React.Component {
         const eventId = selectedValues[0] || 'none';
         const restrictedListId = selectedValues[1] || '';
 
-        this.setState({ eventId, restrictedListId, selectedMode: event.target.value });
+        this.setState({ eventId, restrictedListId, selectedMode: event.target.value, tableType: 'game' });
 
         //set game options when the selected event uses event specific options
         //find the corresponding event
@@ -153,12 +154,13 @@ class NewGame extends React.Component {
             gameTimeLimit: this.state.gameTimeLimit,
             muteSpectators: this.state.muteSpectators,
             useChessClocks: this.state.useChessClocks,
-            chessClockTimeLimit: this.state.chessClockTimeLimit
+            chessClockTimeLimit: this.state.chessClockTimeLimit,
+            tableType: this.state.tableType
         });
     }
 
-    onRadioChange(gameType) {
-        this.setState({ selectedGameType: gameType });
+    onRadioChange({ key, value }) {
+        this.setState({ [key]: value });
     }
 
     onGameFormatChange(format) {
@@ -182,6 +184,10 @@ class NewGame extends React.Component {
     }
 
     getOptions() {
+        if(this.state.tableType !== 'game') {
+            return;
+        }
+
         return (<div className='row'>
             <div className='checkbox col-sm-8'>
                 <label>
@@ -247,6 +253,10 @@ class NewGame extends React.Component {
     }
 
     getGameTypeOptions() {
+        if(this.state.tableType !== 'game') {
+            return;
+        }
+
         return (
             <div className='row'>
                 <div className='col-sm-12 game-type'>
@@ -254,15 +264,15 @@ class NewGame extends React.Component {
                 </div>
                 <div className='col-sm-10'>
                     <label className='radio-inline'>
-                        <input type='radio' onChange={ this.onRadioChange.bind(this, 'beginner') } checked={ this.isGameTypeSelected('beginner') } disabled={ this.state.optionsLocked }/>
+                        <input type='radio' onChange={ this.onRadioChange.bind(this, { key: 'selectedGameType', value: 'beginner' }) } checked={ this.isGameTypeSelected('beginner') } disabled={ this.state.optionsLocked }/>
                         Beginner
                     </label>
                     <label className='radio-inline'>
-                        <input type='radio' onChange={ this.onRadioChange.bind(this, 'casual') } checked={ this.isGameTypeSelected('casual') } disabled={ this.state.optionsLocked }/>
+                        <input type='radio' onChange={ this.onRadioChange.bind(this, { key: 'selectedGameType', value: 'casual' }) } checked={ this.isGameTypeSelected('casual') } disabled={ this.state.optionsLocked }/>
                         Casual
                     </label>
                     <label className='radio-inline'>
-                        <input type='radio' onChange={ this.onRadioChange.bind(this, 'competitive') } checked={ this.isGameTypeSelected('competitive') } disabled={ this.state.optionsLocked } />
+                        <input type='radio' onChange={ this.onRadioChange.bind(this, { key: 'selectedGameType', value: 'competitive' }) } checked={ this.isGameTypeSelected('competitive') } disabled={ this.state.optionsLocked } />
                         Competitive
                     </label>
                 </div>
@@ -280,6 +290,33 @@ class NewGame extends React.Component {
                         { restrictedLists.filter(rl => rl.official).map(rl => (<option value={ `none:${rl._id}` }>{ `${cardSetLabel(rl.cardSet)}` }</option>)) }
                         { events.map(event => (<option value={ event._id }>Event - { event.name }</option>)) }
                     </select>
+                </div>
+            </div>
+        );
+    }
+
+    getTableType() {
+        const { events } = this.props;
+        const selectedEvent = events.find(event => event._id === this.state.eventId);
+
+        if(!selectedEvent || selectedEvent.format !== 'draft') {
+            return;
+        }
+
+        return (
+            <div className='row'>
+                <div className='col-sm-12 game-type'>
+                    <b>Table Type</b>
+                </div>
+                <div className='col-sm-10'>
+                    <label className='radio-inline'>
+                        <input type='radio' onChange={ this.onRadioChange.bind(this, { key: 'tableType', value: 'game' }) } checked={ this.state.tableType === 'game' } />
+                        Game
+                    </label>
+                    <label className='radio-inline'>
+                        <input type='radio' onChange={ this.onRadioChange.bind(this, { key: 'tableType', value: 'drafting-table' }) } checked={ this.state.tableType === 'drafting-table' } />
+                        Drafting Table
+                    </label>
                 </div>
             </div>
         );
@@ -310,6 +347,7 @@ class NewGame extends React.Component {
                     </div>
                 </div>
                 { this.getEventSelection() }
+                { this.getTableType() }
                 { this.getOptions() }
                 { this.getMeleeOptions() }
                 { this.getGameTypeOptions() }
