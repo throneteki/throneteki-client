@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux';
 
 import * as actions from '../../actions';
 import GameChat from '../GameBoard/GameChat';
+import CardTypeGroups from '../Decks/CardTypeGroups';
 import CardZoom from '../GameBoard/CardZoom';
 import DraftCard from './DraftCard';
 import Panel from '../Site/Panel';
@@ -19,6 +20,10 @@ class DraftingTable extends React.Component {
         //this.onCommand = this.onCommand.bind(this);
         //this.onLeaveClick = this.onLeaveClick.bind(this);
         this.sendChatMessage = this.sendChatMessage.bind(this);
+
+        this.state = {
+            selectedGroupBy: 'type'
+        };
     }
 
     onMouseOver(card) {
@@ -27,6 +32,10 @@ class DraftingTable extends React.Component {
 
     onMouseOut() {
         this.props.clearZoom();
+    }
+
+    handleChangeGroupBy(value) {
+        this.setState({ selectedGroupBy: value });
     }
 
     sendChatMessage(message) {
@@ -48,7 +57,13 @@ class DraftingTable extends React.Component {
 
     render() {
         const activePlayer = this.props.currentGame.draftingTable.activePlayer;
-        const { chosenCards, hand, starterCards } = activePlayer;
+        const { deck, hand } = activePlayer;
+
+        const deckWithCards = deck.map(cardQuantity => ({
+            count: cardQuantity.count,
+            code: cardQuantity.code,
+            card: this.props.cards[cardQuantity.code]
+        }));
 
         return (<div className='game-board'>
             <div className='main-window'>
@@ -63,16 +78,24 @@ class DraftingTable extends React.Component {
                         </Panel>
                     </div>
                     <div className='draft-deck'>
-                        <div className='col-xs-6'>
-                            <Panel title='Chosen Cards'>
-                                { chosenCards.map(cardQuantity => <div>{ cardQuantity.count }x { this.props.cards[cardQuantity.code].label }</div>) }
-                            </Panel>
-                        </div>
-                        <div className='col-xs-6'>
-                            <Panel title='Starter Cards'>
-                                { starterCards.map(cardQuantity => <div>{ cardQuantity.count }x { this.props.cards[cardQuantity.code].label }</div>) }
-                            </Panel>
-                        </div>
+                        <Panel title='Drafted Cards'>
+                            <div style={ { textAlign: 'right' } }>
+                                <label>
+                                    Group by:
+                                    <select value={ this.state.selectedGroupBy } onChange={ event => this.handleChangeGroupBy(event.target.value) }>
+                                        <option value='type'>Type</option>
+                                        <option value='cost'>Cost</option>
+                                    </select>
+                                </label>
+                            </div>
+                            <CardTypeGroups
+                                cards={ deckWithCards }
+                                displayFactionIcons
+                                groupBy={ this.state.selectedGroupBy }
+                                onCardMouseOut={ this.onMouseOut }
+                                onCardMouseOver={ this.onMouseOver }
+                                sortCardsBy='faction' />
+                        </Panel>
                     </div>
                 </div>
                 <div className='right-side'>
@@ -85,7 +108,7 @@ class DraftingTable extends React.Component {
                             muted={ this.props.currentGame.muteSpectators } />
                     </div>
                 </div>
-            </div>            
+            </div>
         </div>);
     }
 }
