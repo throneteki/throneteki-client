@@ -232,6 +232,14 @@ class PendingGame extends React.Component {
         const { currentGame } = this.props;
         const title = createGameTitle(currentGame.name, currentGame.event.name, currentGame.restrictedList.cardSet);
 
+        let allowStandaloneDecks = true;
+        let filterDecks;
+
+        if(currentGame.event.format === 'draft') {
+            allowStandaloneDecks = false;
+            filterDecks = (deck) => deck.eventId === currentGame.event._id;
+        }
+
         return (
             <div>
                 <audio ref={ ref => this.notification = ref }>
@@ -278,8 +286,10 @@ class PendingGame extends React.Component {
                     </form>
                 </Panel>
                 <SelectDeckModal
+                    allowStandaloneDecks={ allowStandaloneDecks }
                     apiError={ this.props.apiError }
                     decks={ this.props.decks }
+                    filterDecks={ filterDecks }
                     id='decks-modal'
                     loading={ this.props.loading }
                     onDeckSelected={ this.selectDeck.bind(this) }
