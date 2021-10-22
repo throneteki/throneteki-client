@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import $ from 'jquery';
+import { toastr } from 'react-redux-toastr';
 import { bindActionCreators } from 'redux';
 
 import * as actions from '../../actions';
@@ -16,14 +18,17 @@ class DraftingTable extends React.Component {
 
         this.onMouseOut = this.onMouseOut.bind(this);
         this.onMouseOver = this.onMouseOver.bind(this);
-        //this.onCardClick = this.onCardClick.bind(this);
-        //this.onCommand = this.onCommand.bind(this);
-        //this.onLeaveClick = this.onLeaveClick.bind(this);
+        this.onLeaveClick = this.onLeaveClick.bind(this);
         this.sendChatMessage = this.sendChatMessage.bind(this);
 
         this.state = {
             selectedGroupBy: 'type'
         };
+    }
+
+    componentDidMount() {
+        this.updateContextMenu(this.props);
+        $('.modal-backdrop').remove();
     }
 
     onMouseOver(card) {
@@ -42,6 +47,93 @@ class DraftingTable extends React.Component {
         this.props.sendGameMessage('chat', message);
     }
 
+    updateContextMenu(props) {
+        if(!props.currentGame || !props.user) {
+            return;
+        }
+
+        let thisPlayer = props.currentGame.players[props.user.username];
+
+        if(thisPlayer) {
+            this.setState({ spectating: false });
+        } else {
+            this.setState({ spectating: true });
+        }
+
+        let menuOptions = [
+            { text: 'Leave Game', onClick: this.onLeaveClick }
+        ];
+
+        if(props.currentGame && props.currentGame.started) {
+            let spectators = props.currentGame.spectators.map(spectator => {
+                return <li key={ spectator.id }>{ spectator.name }</li>;
+            });
+
+            let spectatorPopup = (
+                <ul className='spectators-popup absolute-panel'>
+                    { spectators }
+                </ul>
+            );
+
+            menuOptions.unshift({ text: 'Spectators: ' + props.currentGame.spectators.length, popup: spectatorPopup });
+
+            this.setContextMenu(menuOptions);
+        } else {
+            this.setContextMenu([]);
+        }
+    }
+
+    setContextMenu(menu) {
+        if(this.props.setContextMenu) {
+            this.props.setContextMenu(menu);
+        }
+    }
+
+    onLeaveClick() {
+        if(!this.state.spectating && this.isDraftActive()) {
+            toastr.confirm('Your draft is not finished, are you sure you want to leave?', {
+                onOk: () => {
+                    this.props.sendGameMessage('leavegame');
+                    this.props.closeGameSocket();
+                }
+            });
+
+            return;
+        }
+
+        this.props.sendGameMessage('leavegame');
+        this.props.closeGameSocket();
+    }
+
+    isDraftActive() {
+        if(!this.props.currentGame || !this.props.user) {
+            return false;
+        }
+
+        if(this.props.currentGame.draftingTable.draftFinished) {
+            return false;
+        }
+
+        let thisPlayer = this.props.currentGame.players[this.props.user.username];
+        if(!thisPlayer) {
+            thisPlayer = Object.values(this.props.currentGame.players)[0];
+        }
+
+        let otherPlayers = Object.values(this.props.currentGame.players).filter(player => {
+            return player.name !== thisPlayer.name;
+        });
+
+        if(!otherPlayers) {
+            return false;
+        }
+
+        if(otherPlayers.every(player => player.disconnected || player.left)) {
+            return false;
+        }
+
+        return true;
+    }
+
     renderHand(hand) {
         if(hand) {
             return hand.map(card => (
@@ -56,6 +148,15 @@ class DraftingTable extends React.Component {
     }
 
     render() {
+        if(!this.props.currentGame || !this.props.cards || !this.props.currentGame.started) {
+            return <div>Waiting for server...</div>;
+        }
+
+        if(!this.props.user) {
+            this.props.navigate('/');
+            return <div>You are not logged in, redirecting...</div>;
+        }
+
         const activePlayer = this.props.currentGame.draftingTable.activePlayer;
         const { deck, hand } = activePlayer;
 
@@ -118,8 +219,11 @@ DraftingTable.propTypes = {
     cardToZoom: PropTypes.object,
     cards: PropTypes.object,
     clearZoom: PropTypes.func,
+    closeGameSocket: PropTypes.func,
     currentGame: PropTypes.object,
+    navigate: PropTypes.func,
     sendGameMessage: PropTypes.func,
+    setContextMenu: PropTypes.func,
     user: PropTypes.object,
     zoomCard: PropTypes.func
 };
