@@ -108,6 +108,21 @@ class EventEditor extends React.Component {
         this.setState({ state });
     }
 
+    onChangeNumber(field, event) {
+        let state = this.state;
+
+        const value = Number(event.target ? event.target.value : event.value);
+
+        const fields = field.split('.');
+        if(fields.length === 1) {
+            state[field] = value;
+        } else {
+            state[fields[0]][fields[1]] = value;
+        }
+
+        this.setState({ state });
+    }
+
     onEventGameOptionChange(field, event) {
         let state = this.state;
 
@@ -331,7 +346,7 @@ class EventEditor extends React.Component {
                             fieldClass='col-sm-9'
                             type='text'
                             value={ this.state.draftOptions.numOfRounds }
-                            onChange={ this.onChange.bind(this, 'draftOptions.numOfRounds') } />
+                            onChange={ this.onChangeNumber.bind(this, 'draftOptions.numOfRounds') } />
                     </div>) }
                     { this.state.format === 'custom-joust' && (<div>
                         <div className='form-group'>
