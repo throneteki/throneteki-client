@@ -53,7 +53,7 @@ function Game(props) {
 
     let formattedTime = moment.utc(timeDifference).format('HH:mm');
 
-    const title = createGameTitle(game.name, game.event.name, game.restrictedList.cardSet);
+    const title = createGameTitle(game.name, game.event.name, game.restrictedList && game.restrictedList.cardSet || 'redesign');
 
     return (<div key={ game.id }>
         <hr />
