@@ -1,45 +1,43 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { Trans } from 'react-i18next';
+import AlertPanel from '../Components/Site/AlertPanel';
 
-import ApiStatus from '../Components/Site/ApiStatus';
-
-import * as actions from '../actions';
+import * as actions from '../redux/actions';
 
 class Logout extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {};
-    }
-
-    componentWillMount() {
+    componentDidMount() {
         this.props.logout();
     }
 
-    componentWillReceiveProps(props) {
-        if(props.loggedOut) {
-            this.setState({ successMessage: 'You were successfully logged out, redirecting you shortly.' });
-
-            setTimeout(() => {
-                this.props.navigate('/');
-            }, 2000);
+    // eslint-disable-next-line camelcase
+    UNSAFE_componentWillReceiveProps(props) {
+        if (props.loggedOut) {
+            this.props.navigate('/');
         }
     }
 
     render() {
+        let errorBar =
+            this.props.apiSuccess === false ? (
+                <AlertPanel type='error' message={this.props.apiMessage} />
+            ) : null;
+
         return (
             <div className='col-sm-6 col-sm-offset-3'>
-                <ApiStatus apiState={ this.props.apiState } successMessage={ this.state.successMessage } />
-
-                { this.props.apiState && this.props.apiState.loading && <span>Logging you out of your account, please wait...</span> }
-            </div>);
+                {errorBar}
+                <Trans>Logging you out of your account, please wait...</Trans>
+            </div>
+        );
     }
 }
 
 Logout.displayName = 'Logout';
 Logout.propTypes = {
-    apiState: PropTypes.bool,
+    apiLoading: PropTypes.bool,
+    apiMessage: PropTypes.string,
+    apiSuccess: PropTypes.bool,
     loggedOut: PropTypes.bool,
     logout: PropTypes.func,
     navigate: PropTypes.func
@@ -47,7 +45,9 @@ Logout.propTypes = {
 
 function mapStateToProps(state) {
     return {
-        apiState: state.api.LOGOUT_ACCOUNT,
+        apiLoading: state.api.LOGOUT_ACCOUNT ? state.api.LOGOUT_ACCOUNT.loading : undefined,
+        apiMessage: state.api.LOGOUT_ACCOUNT ? state.api.LOGOUT_ACCOUNT.message : undefined,
+        apiSuccess: state.api.LOGOUT_ACCOUNT ? state.api.LOGOUT_ACCOUNT.success : undefined,
         loggedOut: state.account.loggedOut
     };
 }

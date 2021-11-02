@@ -1,75 +1,76 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import React, { useState } from 'react';
+import { Col, Form, Button } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
+import { sendSocketMessage } from '../redux/actions';
 
 import Panel from '../Components/Site/Panel';
-import TextArea from '../Components/Form/TextArea';
-import RadioGroup from '../Components/Form/RadioGroup';
-import * as actions from '../actions';
 
-class MotdAdmin extends React.Component {
-    constructor(props) {
-        super(props);
+const MotdAdmin = () => {
+    const motdTypes = [
+        { value: 'error', label: 'Error (red)' },
+        { value: 'warning', label: 'Warning (yellow)' },
+        { value: 'info', label: 'Info (blue)' },
+        { value: 'success', label: 'Success (green)' }
+    ];
 
-        this.state = {
-            motdText: props.motd && props.motd.message,
-            selectedMotdType: props.motd ? props.motd.motdType : 'info'
-        };
+    const motd = useSelector((state) => state.lobby.motd);
 
-        this.motdTypes = [
-            { value: 'error', label: 'Error (red)' },
-            { value: 'warning', label: 'Warning (yellow)' },
-            { value: 'info', label: 'Info (blue)' },
-            { value: 'success', label: 'Success (green)' }
-        ];
+    let [motdText, setMotdText] = useState(motd?.message);
+    let [motdType, setMotdType] = useState(motd?.motdType ?? 'info');
 
-        this.onMotdTextChange = this.onMotdTextChange.bind(this);
-        this.onSaveClick = this.onSaveClick.bind(this);
-    }
+    const dispatch = useDispatch();
 
-    componentWillReceiveProps(props) {
-        this.setState({ motdText: props.motd && props.motd.message, selectedMotdType: props.motd ? props.motd.motdType : 'info' });
-    }
-
-    onMotdTextChange(event) {
-        this.setState({ motdText: event.target.value });
-    }
-
-    onMotdTypeChange(value) {
-        this.setState({ selectedMotdType: value });
-    }
-
-    onSaveClick(event) {
-        event.preventDefault();
-
-        this.props.sendSocketMessage('motd', { message: this.state.motdText, motdType: this.state.selectedMotdType });
-    }
-
-    render() {
-        return (<div className='col-sm-offset-2 col-sm-8' >
+    return (
+        <Col sm={{ span: 8, offset: 2 }}>
             <Panel title='Motd administration'>
-                <TextArea fieldClass='col-xs-12' name='motd' value={ this.state.motdText } onChange={ this.onMotdTextChange } rows='4'
-                    placeholder='Enter a motd message' />
-                <div className='col-xs-12'>
-                    <RadioGroup buttons={ this.motdTypes } onValueSelected={ this.onMotdTypeChange.bind(this) } />
-                </div>
+                <Form>
+                    <Form.Group controlId='motd' as={Col} xs={12}>
+                        <Form.Control
+                            as='textarea'
+                            rows={4}
+                            value={motdText}
+                            placeholder='Enter a motd message'
+                            onChange={(event) => setMotdText(event.target.value)}
+                        />
+                    </Form.Group>
+                    <Form.Group as={Col}>
+                        {motdTypes.map((type) => (
+                            <Form.Check
+                                name='gameType'
+                                key={type.value}
+                                type='radio'
+                                id={type.value}
+                                label={type.label}
+                                inline
+                                onChange={() => setMotdType(type.value)}
+                                value={type.value}
+                                checked={motdType === type.value}
+                            ></Form.Check>
+                        ))}
+                    </Form.Group>
 
-                <button className='btn btn-primary col-xs-2 motd-button' type='button' onClick={ this.onSaveClick }>Save</button>
+                    <div className='text-center'>
+                        <Button
+                            className='btn btn-primary'
+                            type='button'
+                            onClick={() =>
+                                dispatch(
+                                    sendSocketMessage('motd', {
+                                        message: motdText,
+                                        motdType: motdType
+                                    })
+                                )
+                            }
+                        >
+                            Save
+                        </Button>
+                    </div>
+                </Form>
             </Panel>
-        </div >);
-    }
-}
-
-MotdAdmin.displayName = 'MotdAdmin';
-MotdAdmin.propTypes = {
-    motd: PropTypes.object,
-    sendSocketMessage: PropTypes.func
+        </Col>
+    );
 };
 
-function mapStateToProps(state) {
-    return {
-        motd: state.lobby.motd
-    };
-}
+MotdAdmin.displayName = 'MotdAdmin';
 
-export default connect(mapStateToProps, actions)(MotdAdmin);
+export default MotdAdmin;

@@ -6,14 +6,22 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 let OctoWebpackPlugin;
 let version;
 
-if(process.env.TEAMCITY_VERSION) {
+if (process.env.TEAMCITY_VERSION) {
     OctoWebpackPlugin = require('./OctoWebpackPlugin');
     version = require('./version');
 }
 
 module.exports = {
-    resolve: { extensions: ['.js', '.jsx'] },
-    plugins: (process.env.TEAMCITY_VERSION ? [new OctoWebpackPlugin({ version: version.build })] : []).concat([
+    resolve: {
+        extensions: ['.js', '.jsx'],
+        alias: {
+            assets: path.resolve('./assets')
+        }
+    },
+    plugins: (process.env.TEAMCITY_VERSION
+        ? [new OctoWebpackPlugin({ version: version.build })]
+        : []
+    ).concat([
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
             template: './views/index.pug',
@@ -44,11 +52,19 @@ module.exports = {
     module: {
         rules: [
             { test: /\.jsx?/, exclude: /node_modules/, loader: 'babel-loader' },
-            { test: /.(png|woff(2)?|eot|ttf|svg)(\?[a-z0-9=.]+)?$/, use: 'url-loader?limit=25000' },
+            {
+                test: /.(jpe?g|png|woff(2)?|eot|ttf|cur|svg|mp3|ogg)(\?[a-z0-9=.]+)?$/,
+                use: 'url-loader?limit=16384'
+            },
             { test: /\.css$/, use: ['style-loader', 'css-loader'] },
             { test: /\.less$/, use: ['style-loader', 'css-loader', 'less-loader'] },
             { test: /\.scss$/, use: ['style-loader', 'css-loader', 'sass-loader'] },
-            { test: /\.json/, exclude: /node_modules/, type: 'javascript/auto', use: [require.resolve('json-loader')] },
+            {
+                test: /\.json/,
+                exclude: /node_modules/,
+                type: 'javascript/auto',
+                use: [require.resolve('json-loader')]
+            },
             { test: /\.pug$/, include: path.join(__dirname, 'views'), loaders: ['pug-loader'] }
         ]
     }

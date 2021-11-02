@@ -1,40 +1,57 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { Trans } from 'react-i18next';
 
 import NewsItem from './NewsItem';
 
-class News extends React.Component {
-    render() {
-        let icons = [
-            'military',
-            'intrigue',
-            'power'
-        ];
+import './News.scss';
 
-        let iconIndex = 0;
-        let news = this.props.news.map(newsItem => {
-            let retNews = <NewsItem key={ newsItem.datePublished } icon={ icons[iconIndex++] } date={ newsItem.datePublished } text={ newsItem.text } />;
-            if(iconIndex === 3) {
-                iconIndex = 0;
-            }
+/**
+ * @typedef News
+ * @property {Date} datePublished When the news was published
+ * @property {string} text The text of the news
+ */
 
-            return retNews;
-        });
+/**
+ * @typedef NewsProps
+ * @property {News[]} news
+ */
 
-        if(news.length === 0) {
-            news = <div className='military-container'>There is no site news at the moment</div>;
+/**
+ *
+ * @param {NewsProps} props
+ */
+const News = ({ news }) => {
+    /**
+     * @type import('./NewsItem').NewsIcon[]
+     */
+    let icons = ['military', 'intrigue', 'power'];
+
+    let iconIndex = 0;
+    let newsIndex = 0;
+    let renderedNews = news.map((newsItem) => {
+        let retNews = (
+            <NewsItem
+                key={newsIndex++}
+                icon={icons[iconIndex++]}
+                date={newsItem.datePublished}
+                text={newsItem.text}
+            />
+        );
+
+        if (iconIndex === 3) {
+            iconIndex = 0;
         }
 
-        return (
-            <div className='news-container'>
-                { news }
-            </div>);
+        return retNews;
+    });
+
+    if (renderedNews.length === 0) {
+        renderedNews.push(<Trans key='nonews'>There is no site news at the moment</Trans>);
     }
-}
+
+    return <div className='news-container'>{renderedNews}</div>;
+};
 
 News.displayName = 'News';
-News.propTypes = {
-    news: PropTypes.array
-};
 
 export default News;

@@ -2,23 +2,27 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
+import IdentityDefault from '../../assets/img/cards/cardback.jpg';
+
+import './CardSizeOption.scss';
+
 function CardSizeOption(props) {
     let { name, label, selected, onSelect } = props;
 
     const handleClick = () => {
-        if(onSelect) {
+        if (onSelect) {
             onSelect(name);
         }
     };
 
     return (
-        <div key={ name } className='card-settings' onClick={ handleClick }>
-            <div className={ classNames('card', 'vertical', name, { 'selected': selected }) }>
-                <img className={ classNames('card', 'vertical', name) }
-                    src='img/cards/cardback.jpg' />
+        <div key={name} className='card-settings' onClick={handleClick}>
+            <div className={classNames('game-card', 'vertical', name, { selected: selected })}>
+                <img className={classNames('game-card', 'vertical', name)} src={IdentityDefault} />
             </div>
-            <span className='bg-label'>{ label }</span>
-        </div>);
+            <span className='bg-label'>{label}</span>
+        </div>
+    );
 }
 
 CardSizeOption.propTypes = {

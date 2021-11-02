@@ -16,7 +16,7 @@ import PlayerPlots from './PlayerPlots';
 import RookerySetup from './RookerySetup';
 import GameConfigurationModal from './GameConfigurationModal';
 import Droppable from './Droppable';
-import * as actions from '../../actions';
+import * as actions from '../../redux/actions';
 import TimeLimitClock from './TimeLimitClock';
 import ChessClock from './ChessClock';
 
@@ -85,7 +85,7 @@ export class GameBoard extends React.Component {
         let lastMessageCount = this.state.lastMessageCount;
         let currentMessageCount = props.currentGame ? props.currentGame.messages.length : 0;
 
-        if(this.state.showMessages) {
+        if (this.state.showMessages) {
             this.setState({ lastMessageCount: currentMessageCount, newMessages: 0 });
         } else {
             this.setState({ newMessages: currentMessageCount - lastMessageCount });
@@ -93,38 +93,35 @@ export class GameBoard extends React.Component {
     }
 
     updateContextMenu(props) {
-        if(!props.currentGame || !props.user) {
+        if (!props.currentGame || !props.user) {
             return;
         }
 
         let thisPlayer = props.currentGame.players[props.user.username];
 
-        if(thisPlayer) {
+        if (thisPlayer) {
             this.setState({ spectating: false });
         } else {
             this.setState({ spectating: true });
         }
 
-        let menuOptions = [
-            { text: 'Leave Game', onClick: this.onLeaveClick }
-        ];
+        let menuOptions = [{ text: 'Leave Game', onClick: this.onLeaveClick }];
 
-        if(props.currentGame && props.currentGame.started) {
-            if(props.currentGame.players[props.user.username]) {
+        if (props.currentGame && props.currentGame.started) {
+            if (props.currentGame.players[props.user.username]) {
                 menuOptions.unshift({ text: 'Concede', onClick: this.onConcedeClick });
             }
 
-            let spectators = props.currentGame.spectators.map(spectator => {
-                return <li key={ spectator.id }>{ spectator.name }</li>;
+            let spectators = props.currentGame.spectators.map((spectator) => {
+                return <li key={spectator.id}>{spectator.name}</li>;
             });
 
-            let spectatorPopup = (
-                <ul className='spectators-popup absolute-panel'>
-                    { spectators }
-                </ul>
-            );
+            let spectatorPopup = <ul className='spectators-popup absolute-panel'>{spectators}</ul>;
 
-            menuOptions.unshift({ text: 'Spectators: ' + props.currentGame.spectators.length, popup: spectatorPopup });
+            menuOptions.unshift({
+                text: 'Spectators: ' + props.currentGame.spectators.length,
+                popup: spectatorPopup
+            });
 
             this.setContextMenu(menuOptions);
         } else {
@@ -133,7 +130,7 @@ export class GameBoard extends React.Component {
     }
 
     setContextMenu(menu) {
-        if(this.props.setContextMenu) {
+        if (this.props.setContextMenu) {
             this.props.setContextMenu(menu);
         }
     }
@@ -143,28 +140,28 @@ export class GameBoard extends React.Component {
     }
 
     isGameActive() {
-        if(!this.props.currentGame || !this.props.user) {
+        if (!this.props.currentGame || !this.props.user) {
             return false;
         }
 
-        if(this.props.currentGame.winner) {
+        if (this.props.currentGame.winner) {
             return false;
         }
 
         let thisPlayer = this.props.currentGame.players[this.props.user.username];
-        if(!thisPlayer) {
+        if (!thisPlayer) {
             thisPlayer = Object.values(this.props.currentGame.players)[0];
         }
 
-        let otherPlayer = Object.values(this.props.currentGame.players).find(player => {
+        let otherPlayer = Object.values(this.props.currentGame.players).find((player) => {
             return player.name !== thisPlayer.name;
         });
 
-        if(!otherPlayer) {
+        if (!otherPlayer) {
             return false;
         }
 
-        if(otherPlayer.disconnected || otherPlayer.left) {
+        if (otherPlayer.disconnected || otherPlayer.left) {
             return false;
         }
 
@@ -172,7 +169,7 @@ export class GameBoard extends React.Component {
     }
 
     onLeaveClick() {
-        if(!this.state.spectating && this.isGameActive()) {
+        if (!this.state.spectating && this.isGameActive()) {
             toastr.confirm('Your game is not finished, are you sure you want to leave?', {
                 onOk: () => {
                     this.props.sendGameMessage('leavegame');
@@ -219,34 +216,43 @@ export class GameBoard extends React.Component {
     getTimer(thisPlayer, otherPlayer) {
         let timeLimitClock = undefined;
 
-        if(this.props.currentGame.useGameTimeLimit) {
-            timeLimitClock = (<TimeLimitClock
-                timeLimitStarted={ this.props.currentGame.gameTimeLimitStarted }
-                timeLimitStartedAt={ this.props.currentGame.gameTimeLimitStartedAt }
-                timeLimit={ this.props.currentGame.gameTimeLimitTime } />);
-        } else if(this.props.currentGame.useChessClocks) {
+        if (this.props.currentGame.useGameTimeLimit) {
+            timeLimitClock = (
+                <TimeLimitClock
+                    timeLimitStarted={this.props.currentGame.gameTimeLimitStarted}
+                    timeLimitStartedAt={this.props.currentGame.gameTimeLimitStartedAt}
+                    timeLimit={this.props.currentGame.gameTimeLimitTime}
+                />
+            );
+        } else if (this.props.currentGame.useChessClocks) {
             let chessClockOtherPlayer = undefined;
-            if(otherPlayer.chessClock) {
+            if (otherPlayer.chessClock) {
                 chessClockOtherPlayer = (
                     <ChessClock
-                        delayToStartClock= { otherPlayer.chessClock.delayToStartClock }
-                        mode={ otherPlayer.chessClock.mode }
-                        secondsLeft={ otherPlayer.chessClock.timeLeft }
-                        stateId={ otherPlayer.chessClock.stateId } />);
+                        delayToStartClock={otherPlayer.chessClock.delayToStartClock}
+                        mode={otherPlayer.chessClock.mode}
+                        secondsLeft={otherPlayer.chessClock.timeLeft}
+                        stateId={otherPlayer.chessClock.stateId}
+                    />
+                );
             }
             let chessClockThisPlayer = undefined;
-            if(thisPlayer.chessClock) {
+            if (thisPlayer.chessClock) {
                 chessClockThisPlayer = (
                     <ChessClock
-                        delayToStartClock= { thisPlayer.chessClock.delayToStartClock }
-                        mode={ thisPlayer.chessClock.mode }
-                        secondsLeft={ thisPlayer.chessClock.timeLeft }
-                        stateId={ thisPlayer.chessClock.stateId } />);
+                        delayToStartClock={thisPlayer.chessClock.delayToStartClock}
+                        mode={thisPlayer.chessClock.mode}
+                        secondsLeft={thisPlayer.chessClock.timeLeft}
+                        stateId={thisPlayer.chessClock.stateId}
+                    />
+                );
             }
-            timeLimitClock = (<div>
-                { chessClockOtherPlayer }
-                { chessClockThisPlayer }
-            </div>);
+            timeLimitClock = (
+                <div>
+                    {chessClockOtherPlayer}
+                    {chessClockThisPlayer}
+                </div>
+            );
         }
 
         return timeLimitClock;
@@ -262,27 +268,31 @@ export class GameBoard extends React.Component {
             onMenuItemClick: this.onMenuItemClick
         };
 
-        return (<div key='plots-pane' className='plots-pane'>
-            <PlayerPlots
-                { ...commonProps }
-                activePlot={ otherPlayer.activePlot }
-                agenda={ otherPlayer.agenda }
-                direction='reverse'
-                isMe={ false }
-                plotDeck={ otherPlayer.cardPiles.plotDeck }
-                plotDiscard={ otherPlayer.cardPiles.plotDiscard }
-                plotSelected={ otherPlayer.plotSelected } />
-            { this.getTimer(thisPlayer, otherPlayer) }
-            <PlayerPlots
-                { ...commonProps }
-                activePlot={ thisPlayer.activePlot }
-                agenda={ thisPlayer.agenda }
-                direction='default'
-                isMe
-                plotDeck={ thisPlayer.cardPiles.plotDeck }
-                plotDiscard={ thisPlayer.cardPiles.plotDiscard }
-                plotSelected={ thisPlayer.plotSelected } />
-        </div>);
+        return (
+            <div key='plots-pane' className='plots-pane'>
+                <PlayerPlots
+                    {...commonProps}
+                    activePlot={otherPlayer.activePlot}
+                    agenda={otherPlayer.agenda}
+                    direction='reverse'
+                    isMe={false}
+                    plotDeck={otherPlayer.cardPiles.plotDeck}
+                    plotDiscard={otherPlayer.cardPiles.plotDiscard}
+                    plotSelected={otherPlayer.plotSelected}
+                />
+                {this.getTimer(thisPlayer, otherPlayer)}
+                <PlayerPlots
+                    {...commonProps}
+                    activePlot={thisPlayer.activePlot}
+                    agenda={thisPlayer.agenda}
+                    direction='default'
+                    isMe
+                    plotDeck={thisPlayer.cardPiles.plotDeck}
+                    plotDiscard={thisPlayer.cardPiles.plotDiscard}
+                    plotSelected={thisPlayer.plotSelected}
+                />
+            </div>
+        );
     }
 
     onCommand(button) {
@@ -325,7 +335,7 @@ export class GameBoard extends React.Component {
             showMessages: showState
         };
 
-        if(showState) {
+        if (showState) {
             newState.newMessages = 0;
             newState.lastMessageCount = this.props.currentGame.messages.length;
         }
@@ -340,19 +350,21 @@ export class GameBoard extends React.Component {
     }
 
     renderBoard(thisPlayer, otherPlayer) {
-        if(this.props.rookeryDeck) {
+        if (this.props.rookeryDeck) {
             return (
                 <RookerySetup
-                    cards={ this.props.cards }
-                    cardSize={ this.props.user.settings.cardSize }
-                    deck={ this.props.rookeryDeck }
-                    onCardMouseOut={ this.onMouseOut }
-                    onCardMouseOver={ this.onMouseOver }
-                    onSubmit={ this.props.submitRookeryPrompt }
-                    packs={ this.props.packs }
-                    players={ Object.values(this.props.currentGame.players) }
-                    promptId={ this.props.rookeryPromptId }
-                    restrictedList={ this.props.restrictedList } />);
+                    cards={this.props.cards}
+                    cardSize={this.props.user.settings.cardSize}
+                    deck={this.props.rookeryDeck}
+                    onCardMouseOut={this.onMouseOut}
+                    onCardMouseOver={this.onMouseOver}
+                    onSubmit={this.props.submitRookeryPrompt}
+                    packs={this.props.packs}
+                    players={Object.values(this.props.currentGame.players)}
+                    promptId={this.props.rookeryPromptId}
+                    restrictedList={this.props.restrictedList}
+                />
+            );
         }
 
         return [
@@ -360,120 +372,127 @@ export class GameBoard extends React.Component {
             <div key='board-middle' className='board-middle'>
                 <div className='player-home-row'>
                     <PlayerRow
-                        agenda={ otherPlayer.agenda }
-                        bannerCards={ otherPlayer.cardPiles.bannerCards }
-                        conclavePile={ otherPlayer.cardPiles.conclavePile }
-                        faction={ otherPlayer.faction }
-                        hand={ otherPlayer.cardPiles.hand } isMe={ false }
-                        isMelee={ this.props.currentGame.isMelee }
-                        numDrawCards={ otherPlayer.numDrawCards }
-                        discardPile={ otherPlayer.cardPiles.discardPile }
-                        deadPile={ otherPlayer.cardPiles.deadPile }
-                        drawDeck={ otherPlayer.cardPiles.drawDeck }
-                        onCardClick={ this.onCardClick }
-                        onMouseOver={ this.onMouseOver }
-                        onMouseOut={ this.onMouseOut }
-                        outOfGamePile={ otherPlayer.cardPiles.outOfGamePile }
-                        username={ this.props.user.username }
-                        revealTopCard={ otherPlayer.revealTopCard }
-                        shadows={ otherPlayer.cardPiles.shadows }
-                        spectating={ this.state.spectating }
-                        title={ otherPlayer.title }
+                        agenda={otherPlayer.agenda}
+                        bannerCards={otherPlayer.cardPiles.bannerCards}
+                        conclavePile={otherPlayer.cardPiles.conclavePile}
+                        faction={otherPlayer.faction}
+                        hand={otherPlayer.cardPiles.hand}
+                        isMe={false}
+                        isMelee={this.props.currentGame.isMelee}
+                        numDrawCards={otherPlayer.numDrawCards}
+                        discardPile={otherPlayer.cardPiles.discardPile}
+                        deadPile={otherPlayer.cardPiles.deadPile}
+                        drawDeck={otherPlayer.cardPiles.drawDeck}
+                        onCardClick={this.onCardClick}
+                        onMouseOver={this.onMouseOver}
+                        onMouseOut={this.onMouseOut}
+                        outOfGamePile={otherPlayer.cardPiles.outOfGamePile}
+                        username={this.props.user.username}
+                        revealTopCard={otherPlayer.revealTopCard}
+                        shadows={otherPlayer.cardPiles.shadows}
+                        spectating={this.state.spectating}
+                        title={otherPlayer.title}
                         side='top'
-                        cardSize={ this.props.user.settings.cardSize } />
+                        cardSize={this.props.user.settings.cardSize}
+                    />
                 </div>
                 <div className='board-inner'>
                     <div className='prompt-area'>
                         <div className='inset-pane'>
                             <ActivePlayerPrompt
-                                cards={ this.props.cards }
-                                buttons={ thisPlayer.buttons }
-                                controls={ thisPlayer.controls }
-                                promptText={ thisPlayer.menuTitle }
-                                promptTitle={ thisPlayer.promptTitle }
-                                onButtonClick={ this.onCommand }
-                                onMouseOver={ this.onMouseOver }
-                                onMouseOut={ this.onMouseOut }
-                                user={ this.props.user }
-                                phase={ thisPlayer.phase }
-                                timerLimit={ this.props.timerLimit }
-                                timerStartTime={ this.props.timerStartTime }
-                                stopAbilityTimer={ this.props.stopAbilityTimer } />
+                                cards={this.props.cards}
+                                buttons={thisPlayer.buttons}
+                                controls={thisPlayer.controls}
+                                promptText={thisPlayer.menuTitle}
+                                promptTitle={thisPlayer.promptTitle}
+                                onButtonClick={this.onCommand}
+                                onMouseOver={this.onMouseOver}
+                                onMouseOut={this.onMouseOut}
+                                user={this.props.user}
+                                phase={thisPlayer.phase}
+                                timerLimit={this.props.timerLimit}
+                                timerStartTime={this.props.timerStartTime}
+                                stopAbilityTimer={this.props.stopAbilityTimer}
+                            />
                         </div>
                     </div>
                     <div className='play-area'>
                         <PlayerBoard
-                            cardsInPlay={ otherPlayer.cardPiles.cardsInPlay }
-                            onCardClick={ this.onCardClick }
-                            onMenuItemClick={ this.onMenuItemClick }
-                            onMouseOut={ this.onMouseOut }
-                            onMouseOver={ this.onMouseOver }
+                            cardsInPlay={otherPlayer.cardPiles.cardsInPlay}
+                            onCardClick={this.onCardClick}
+                            onMenuItemClick={this.onMenuItemClick}
+                            onMouseOut={this.onMouseOut}
+                            onMouseOver={this.onMouseOver}
                             rowDirection='reverse'
-                            user={ this.props.user } />
-                        <Droppable onDragDrop={ this.onDragDrop } source='play area'>
+                            user={this.props.user}
+                        />
+                        <Droppable onDragDrop={this.onDragDrop} source='play area'>
                             <PlayerBoard
-                                cardsInPlay={ thisPlayer.cardPiles.cardsInPlay }
-                                onCardClick={ this.onCardClick }
-                                onMenuItemClick={ this.onMenuItemClick }
-                                onMouseOut={ this.onMouseOut }
-                                onMouseOver={ this.onMouseOver }
+                                cardsInPlay={thisPlayer.cardPiles.cardsInPlay}
+                                onCardClick={this.onCardClick}
+                                onMenuItemClick={this.onMenuItemClick}
+                                onMouseOut={this.onMouseOut}
+                                onMouseOver={this.onMouseOver}
                                 rowDirection='default'
-                                user={ this.props.user } />
+                                user={this.props.user}
+                            />
                         </Droppable>
                     </div>
                 </div>
                 <div className='player-home-row our-side'>
-                    <PlayerRow isMe={ !this.state.spectating }
-                        agenda={ thisPlayer.agenda }
-                        bannerCards={ thisPlayer.cardPiles.bannerCards }
-                        conclavePile={ thisPlayer.cardPiles.conclavePile }
-                        faction={ thisPlayer.faction }
-                        hand={ thisPlayer.cardPiles.hand }
-                        isMelee={ this.props.currentGame.isMelee }
-                        onCardClick={ this.onCardClick }
-                        onMouseOver={ this.onMouseOver }
-                        onMouseOut={ this.onMouseOut }
-                        numDrawCards={ thisPlayer.numDrawCards }
-                        onDrawPopupChange={ this.handleDrawPopupChange }
-                        onShuffleClick={ this.onShuffleClick }
-                        outOfGamePile={ thisPlayer.cardPiles.outOfGamePile }
-                        drawDeck={ thisPlayer.cardPiles.drawDeck }
-                        onDragDrop={ this.onDragDrop }
-                        discardPile={ thisPlayer.cardPiles.discardPile }
-                        deadPile={ thisPlayer.cardPiles.deadPile }
-                        revealTopCard={ thisPlayer.revealTopCard }
-                        shadows={ thisPlayer.cardPiles.shadows }
-                        showDeck={ thisPlayer.showDeck }
-                        spectating={ this.state.spectating }
-                        title={ thisPlayer.title }
-                        onMenuItemClick={ this.onMenuItemClick }
-                        cardSize={ this.props.user.settings.cardSize }
-                        side='bottom' />
+                    <PlayerRow
+                        isMe={!this.state.spectating}
+                        agenda={thisPlayer.agenda}
+                        bannerCards={thisPlayer.cardPiles.bannerCards}
+                        conclavePile={thisPlayer.cardPiles.conclavePile}
+                        faction={thisPlayer.faction}
+                        hand={thisPlayer.cardPiles.hand}
+                        isMelee={this.props.currentGame.isMelee}
+                        onCardClick={this.onCardClick}
+                        onMouseOver={this.onMouseOver}
+                        onMouseOut={this.onMouseOut}
+                        numDrawCards={thisPlayer.numDrawCards}
+                        onDrawPopupChange={this.handleDrawPopupChange}
+                        onShuffleClick={this.onShuffleClick}
+                        outOfGamePile={thisPlayer.cardPiles.outOfGamePile}
+                        drawDeck={thisPlayer.cardPiles.drawDeck}
+                        onDragDrop={this.onDragDrop}
+                        discardPile={thisPlayer.cardPiles.discardPile}
+                        deadPile={thisPlayer.cardPiles.deadPile}
+                        revealTopCard={thisPlayer.revealTopCard}
+                        shadows={thisPlayer.cardPiles.shadows}
+                        showDeck={thisPlayer.showDeck}
+                        spectating={this.state.spectating}
+                        title={thisPlayer.title}
+                        onMenuItemClick={this.onMenuItemClick}
+                        cardSize={this.props.user.settings.cardSize}
+                        side='bottom'
+                    />
                 </div>
             </div>
         ];
     }
 
     render() {
-        if(!this.props.currentGame || !this.props.cards || !this.props.currentGame.started) {
+        if (!this.props.currentGame || !this.props.cards || !this.props.currentGame.started) {
             return <div>Waiting for server...</div>;
         }
 
-        if(!this.props.user) {
+        if (!this.props.user) {
             this.props.navigate('/');
             return <div>You are not logged in, redirecting...</div>;
         }
 
         let thisPlayer = this.props.currentGame.players[this.props.user.username];
-        if(!thisPlayer) {
+        if (!thisPlayer) {
             thisPlayer = Object.values(this.props.currentGame.players)[0];
         }
 
-        if(!thisPlayer) {
+        if (!thisPlayer) {
             return <div>Waiting for game to have players or close...</div>;
         }
 
-        let otherPlayer = Object.values(this.props.currentGame.players).find(player => {
+        let otherPlayer = Object.values(this.props.currentGame.players).find((player) => {
             return player.name !== thisPlayer.name;
         });
 
@@ -488,46 +507,83 @@ export class GameBoard extends React.Component {
         });
 
         return (
-            <div className={ boardClass }>
+            <div className={boardClass}>
                 <GameConfigurationModal
                     id='settings-modal'
-                    keywordSettings={ thisPlayer.keywordSettings }
-                    onKeywordSettingToggle={ this.onKeywordSettingToggle.bind(this) }
-                    onPromptDupesToggle={ this.onPromptDupesToggle.bind(this) }
-                    onPromptedActionWindowToggle={ this.onPromptedActionWindowToggle.bind(this) }
-                    onTimerSettingToggle={ this.onTimerSettingToggle.bind(this) }
-                    promptDupes={ thisPlayer.promptDupes }
-                    promptedActionWindows={ thisPlayer.promptedActionWindows }
-                    timerSettings={ thisPlayer.timerSettings } />
+                    keywordSettings={thisPlayer.keywordSettings}
+                    onKeywordSettingToggle={this.onKeywordSettingToggle.bind(this)}
+                    onPromptDupesToggle={this.onPromptDupesToggle.bind(this)}
+                    onPromptedActionWindowToggle={this.onPromptedActionWindowToggle.bind(this)}
+                    onTimerSettingToggle={this.onTimerSettingToggle.bind(this)}
+                    promptDupes={thisPlayer.promptDupes}
+                    promptedActionWindows={thisPlayer.promptedActionWindows}
+                    timerSettings={thisPlayer.timerSettings}
+                />
                 <div className='player-stats-row'>
-                    <PlayerStats stats={ otherPlayer.stats }
-                        user={ otherPlayer.user } firstPlayer={ otherPlayer.firstPlayer } />
+                    <PlayerStats
+                        stats={otherPlayer.stats}
+                        user={otherPlayer.user}
+                        firstPlayer={otherPlayer.firstPlayer}
+                    />
                 </div>
                 <div className='main-window'>
-                    { this.renderBoard(thisPlayer, otherPlayer) }
-                    <CardZoom imageUrl={ this.props.cardToZoom ? '/img/cards/' + this.props.cardToZoom.code + '.png' : '' }
-                        orientation={ this.props.cardToZoom ? this.props.cardToZoom.type === 'plot' ? 'horizontal' : 'vertical' : 'vertical' }
-                        show={ !!this.props.cardToZoom } cardName={ this.props.cardToZoom ? this.props.cardToZoom.name : null }
-                        card={ this.props.cardToZoom ? this.props.cards[this.props.cardToZoom.code] : null } />
-                    { this.state.showMessages && <div className='right-side'>
-                        <div className='gamechat'>
-                            <GameChat key='gamechat'
-                                messages={ this.props.currentGame.messages }
-                                onCardMouseOut={ this.onMouseOut }
-                                onCardMouseOver={ this.onMouseOver }
-                                onSendChat={ this.sendChatMessage }
-                                muted={ this.state.spectating && this.props.currentGame.muteSpectators } />
+                    {this.renderBoard(thisPlayer, otherPlayer)}
+                    <CardZoom
+                        imageUrl={
+                            this.props.cardToZoom
+                                ? '/img/cards/' + this.props.cardToZoom.code + '.png'
+                                : ''
+                        }
+                        orientation={
+                            this.props.cardToZoom
+                                ? this.props.cardToZoom.type === 'plot'
+                                    ? 'horizontal'
+                                    : 'vertical'
+                                : 'vertical'
+                        }
+                        show={!!this.props.cardToZoom}
+                        cardName={this.props.cardToZoom ? this.props.cardToZoom.name : null}
+                        card={
+                            this.props.cardToZoom
+                                ? this.props.cards[this.props.cardToZoom.code]
+                                : null
+                        }
+                    />
+                    {this.state.showMessages && (
+                        <div className='right-side'>
+                            <div className='gamechat'>
+                                <GameChat
+                                    key='gamechat'
+                                    messages={this.props.currentGame.messages}
+                                    onCardMouseOut={this.onMouseOut}
+                                    onCardMouseOver={this.onMouseOver}
+                                    onSendChat={this.sendChatMessage}
+                                    muted={
+                                        this.state.spectating &&
+                                        this.props.currentGame.muteSpectators
+                                    }
+                                />
+                            </div>
                         </div>
-                    </div>
-                    }
+                    )}
                 </div>
                 <div className='player-stats-row'>
-                    <PlayerStats { ...boundActionCreators } stats={ thisPlayer.stats } showControls={ !this.state.spectating } user={ thisPlayer.user }
-                        firstPlayer={ thisPlayer.firstPlayer } onSettingsClick={ this.onSettingsClick } showMessages
-                        onMessagesClick={ this.onMessagesClick } numMessages={ this.state.newMessages } muteSpectators={ this.props.currentGame.muteSpectators } 
-                        onMuteClick={ this.onMuteClick }/>
+                    <PlayerStats
+                        {...boundActionCreators}
+                        stats={thisPlayer.stats}
+                        showControls={!this.state.spectating}
+                        user={thisPlayer.user}
+                        firstPlayer={thisPlayer.firstPlayer}
+                        onSettingsClick={this.onSettingsClick}
+                        showMessages
+                        onMessagesClick={this.onMessagesClick}
+                        numMessages={this.state.newMessages}
+                        muteSpectators={this.props.currentGame.muteSpectators}
+                        onMuteClick={this.onMuteClick}
+                    />
                 </div>
-            </div >);
+            </div>
+        );
     }
 }
 
@@ -578,5 +634,4 @@ function mapDispatchToProps(dispatch) {
     return boundActions;
 }
 
-export default connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(GameBoard);
-
+export default connect(mapStateToProps, mapDispatchToProps, null)(GameBoard);

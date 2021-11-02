@@ -16,3 +16,5 @@ export const ThronesIcons = [
     'targaryen',
     'greyjoy'
 ];
+
+export const PatreonClientId = '317bxGpXD7sAOlyFKp6D-LOBRX731lLK-2YYQSFfBmJCrVSiJI77eUgRoLoN2KoI';

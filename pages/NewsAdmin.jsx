@@ -1,184 +1,203 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
+import { Table, Form, Col, Button } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 
-import Form from '../Components/Form/Form';
-import TextArea from '../Components/Form/TextArea';
 import Panel from '../Components/Site/Panel';
+import { loadNews, saveNews, deleteNews, clearApiStatus, addNews } from '../redux/actions';
+import { News } from '../redux/types';
 import ApiStatus from '../Components/Site/ApiStatus';
-import * as actions from '../actions';
 
-class NewsAdmin extends React.Component {
-    constructor(props) {
-        super(props);
+const NewsAdmin = () => {
+    const news = useSelector((state) => state.news.news);
+    const [newsText, setNewsText] = useState('');
+    const [editText, setEditText] = useState('');
+    const [editId, setEditId] = useState();
+    const dispatch = useDispatch();
 
-        this.state = {
-            newsText: '',
-            currentRequest: 'REQUEST_NEWS'
-        };
+    const apiState = useSelector((state) => {
+        const retState = state.api[News.RequestNews];
 
-        this.onAddNewsClick = this.onAddNewsClick.bind(this);
-        this.onSaveClick = this.onSaveClick.bind(this);
-    }
+        return retState;
+    });
 
-    componentWillMount() {
-        this.props.loadNews({ limit: 5, forceLoad: true });
-    }
+    const addApiState = useSelector((state) => {
+        const retState = state.api[News.AddNews];
 
-    componentWillReceiveProps(props) {
-        let clearStatus = false;
-        if(props.newsAdded) {
-            clearStatus = true;
-            this.setState({ successMessage: 'News item added successfully.' });
-        }
+        if (retState && retState.success) {
+            retState.message = 'News item added successfully';
 
-        if(props.newsDeleted) {
-            clearStatus = true;
-            this.setState({ successMessage: 'News item deleted successfully.' });
-        }
-
-        if(props.newsSaved) {
-            clearStatus = true;
-            this.setState({ successMessage: 'News item saved successfully.' });
-        }
-
-        if(clearStatus) {
             setTimeout(() => {
-                this.props.clearNewsStatus();
-                this.setState({ successMessage: undefined });
+                dispatch(clearApiStatus(News.AddNews));
             }, 5000);
         }
-    }
 
-    onNewsTextChange(event) {
-        this.setState({ newsText: event.target.value });
-    }
+        return retState;
+    });
 
-    onEditTextChange(event) {
-        this.setState({ editText: event.target.value });
-    }
+    const saveApiState = useSelector((state) => {
+        const retState = state.api[News.SaveNews];
 
-    onAddNewsClick(state) {
-        this.setState({ currentRequest: 'ADD_NEWS' });
-        this.props.addNews(state.newsText);
-    }
+        if (retState && retState.success) {
+            retState.message = 'News item saved successfully';
 
-    onDeleteClick(id) {
-        this.setState({ currentRequest: 'DELETE_NEWS' });
-        this.props.deleteNews(id);
-    }
-
-    onEditClick(item) {
-        this.setState({ editItemId: item._id, editText: item.text });
-    }
-
-    onSaveClick() {
-        this.props.saveNews(this.state.editItemId, this.state.editText);
-        this.setState({ currentRequest: 'SAVE_NEWS', editItemId: undefined, editText: undefined });
-    }
-
-    render() {
-        if(this.props.apiState && this.props.apiState.loading) {
-            return 'Loading news, please wait...';
+            setTimeout(() => {
+                dispatch(clearApiStatus(News.SaveNews));
+            }, 5000);
         }
 
-        let statusBar;
+        return retState;
+    });
 
-        switch(this.state.currentRequest) {
-            case 'REQUEST_NEWS':
-                statusBar = <ApiStatus apiState={ this.props.apiState } successMessage={ this.state.successMessage } />;
-                break;
-            case 'ADD_NEWS':
-                statusBar = <ApiStatus apiState={ this.props.apiAddState } successMessage={ this.state.successMessage } />;
-                break;
-            case 'DELETE_NEWS':
-                statusBar = <ApiStatus apiState={ this.props.apiDeleteState } successMessage={ this.state.successMessage } />;
-                break;
-            case 'SAVE_NEWS':
-                statusBar = <ApiStatus apiState={ this.props.apiSaveState } successMessage={ this.state.successMessage } />;
-                break;
+    const deleteApiState = useSelector((state) => {
+        const retState = state.api[News.DeleteNews];
+
+        if (retState && retState.success) {
+            retState.message = 'News item deleted successfully';
+
+            setTimeout(() => {
+                dispatch(clearApiStatus(News.DeleteNews));
+            }, 5000);
         }
 
-        let renderedNews = this.props.news.map(newsItem => {
-            return (<tr key={ newsItem._id }>
-                <td>{ moment(newsItem.datePublished).format('YYYY-MM-DD') }</td>
-                <td>{ newsItem.poster }</td>
-                <td>
-                    { this.state.editItemId === newsItem._id ?
-                        <TextArea name='newsEditText' value={ this.state.editText } onChange={ this.onEditTextChange.bind(this) } rows='4' /> :
-                        newsItem.text }
+        return retState;
+    });
+
+    useEffect(() => {
+        dispatch(loadNews({ limit: 5, forceLoad: true }));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const renderedNews = news.map((newsItem) => {
+        return (
+            <tr key={newsItem.id} className='d-flex'>
+                <td className='col-2'>{moment(newsItem.datePublished).format('YYYY-MM-DD')}</td>
+                <td className='col-2'>{newsItem.poster}</td>
+                <td className='col'>
+                    {editId === newsItem.id ? (
+                        <Form.Control
+                            as='textarea'
+                            rows={4}
+                            name='editText'
+                            value={editText}
+                            onChange={(event) => setEditText(event.target.value)}
+                        />
+                    ) : (
+                        newsItem.text
+                    )}
                 </td>
-                <td>
+                <td className='col-3'>
                     <div className='btn-group'>
-                        { this.state.editItemId === newsItem._id ?
-                            <button type='button' className='btn btn-primary' onClick={ this.onSaveClick }>Save</button> :
-                            <button type='button' className='btn btn-primary' onClick={ this.onEditClick.bind(this, newsItem) }>Edit</button>
-                        }
-                        <button type='button' className='btn btn-danger' onClick={ this.onDeleteClick.bind(this, newsItem._id) }>Delete { this.props.apiDeleteState &&
-                            this.props.apiDeleteState.loading && <span className='spinner button-spinner' /> }</button>
+                        {editId === newsItem.id ? (
+                            <Button
+                                variant='primary'
+                                type='button'
+                                onClick={() => {
+                                    dispatch(saveNews(editId, editText));
+                                    setEditId(undefined);
+                                    setEditText(undefined);
+                                }}
+                            >
+                                Save
+                            </Button>
+                        ) : (
+                            <Button
+                                variant='primary'
+                                type='button'
+                                onClick={() => {
+                                    setEditId(newsItem.id);
+                                    setEditText(newsItem.text);
+                                }}
+                            >
+                                Edit
+                            </Button>
+                        )}
+                        <Button
+                            variant='danger'
+                            type='button'
+                            onClick={() => dispatch(deleteNews(newsItem.id))}
+                        >
+                            Delete
+                        </Button>
                     </div>
                 </td>
-            </tr>);
-        });
+            </tr>
+        );
+    });
 
-        return (
-            <div className='col-xs-12'>
-                { statusBar }
-                <Panel title='News administration'>
-                    <table className='table table-striped'>
-                        <thead>
-                            <tr>
-                                <th className='col-sm-1'>Date</th>
-                                <th className='col-sm-1'>Poster</th>
-                                <th className='col-sm-8'>Text</th>
-                                <th className='col-sm-2'>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            { renderedNews }
-                        </tbody>
-                    </table>
-                </Panel>
-                <Panel title='Add new news item'>
-                    <Form name='newsAdmin' apiLoading={ this.props.apiAddState && this.props.apiAddState.loading } buttonClass='col-sm-offset-2 col-sm-4' buttonText='Add' onSubmit={ this.onAddNewsClick } />
-                </Panel>
-            </div>);
+    return (
+        <div>
+            <Panel title='News Admin'>
+                {apiState?.loading && (
+                    <div>
+                        Please wait while the news is loaded...
+                        <FontAwesomeIcon icon={faCircleNotch} spin />
+                    </div>
+                )}
+                {!apiState?.loading && (
+                    <>
+                        {!apiState?.success && (
+                            <ApiStatus
+                                state={apiState}
+                                onClose={() => dispatch(clearApiStatus(News.RequestNews))}
+                            />
+                        )}
+                        <ApiStatus
+                            state={addApiState}
+                            onClose={() => dispatch(clearApiStatus(News.AddNews))}
+                        />
+                        <ApiStatus
+                            state={saveApiState}
+                            onClose={() => dispatch(clearApiStatus(News.SaveNews))}
+                        />
+                        <ApiStatus
+                            state={deleteApiState}
+                            onClose={() => dispatch(clearApiStatus(News.DeleteNews))}
+                        />
+                        <Table striped>
+                            <thead>
+                                <tr className='d-flex'>
+                                    <th className='col-2'>Date</th>
+                                    <th className='col-2'>Poster</th>
+                                    <th className='col'>Text</th>
+                                    <th className='col-3'>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>{renderedNews}</tbody>
+                        </Table>
 
-    }
-}
+                        <Form>
+                            <Form.Group controlId='newsText' as={Col} xs={12}>
+                                <Form.Label>Add news item</Form.Label>
+                                <Form.Control
+                                    as='textarea'
+                                    rows={4}
+                                    name='newsText'
+                                    value={newsText}
+                                    onChange={(event) => setNewsText(event.target.value)}
+                                />
+                            </Form.Group>
 
-NewsAdmin.displayName = 'NewsAdmin';
-NewsAdmin.propTypes = {
-    addNews: PropTypes.func,
-    apiAddState: PropTypes.object,
-    apiDeleteState: PropTypes.object,
-    apiSaveState: PropTypes.object,
-    apiState: PropTypes.object,
-    clearNewsStatus: PropTypes.func,
-    deleteNews: PropTypes.func,
-    loadNews: PropTypes.func,
-    news: PropTypes.array,
-    newsAdded: PropTypes.bool,
-    newsDeleted: PropTypes.bool,
-    newsSaved: PropTypes.bool,
-    saveNews: PropTypes.func,
-    successMessage: PropTypes.string
+                            <Button
+                                variant='primary'
+                                type='button'
+                                onClick={() => {
+                                    dispatch(addNews(newsText));
+                                    setNewsText('');
+                                }}
+                            >
+                                Add
+                            </Button>
+                        </Form>
+                    </>
+                )}
+            </Panel>
+        </div>
+    );
 };
 
-function mapStateToProps(state) {
-    return {
-        apiAddState: state.api.ADD_NEWS,
-        apiDeleteState: state.api.DELETE_NEWS,
-        apiSaveState: state.api.SAVE_NEWS,
-        apiState: state.api.REQUEST_NEWS,
-        loadNews: state.news.loadNews,
-        loading: state.api.loading,
-        news: state.news.news,
-        newsAdded: state.news.newsAdded,
-        newsDeleted: state.news.newsDeleted,
-        newsSaved: state.news.newsSaved
-    };
-}
+NewsAdmin.displayName = 'NewsAdmin';
 
-export default connect(mapStateToProps, actions)(NewsAdmin);
+export default NewsAdmin;

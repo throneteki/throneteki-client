@@ -1,47 +1,40 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { Trans, useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
+import { Modal } from 'react-bootstrap';
 
-import AlertPanel from '../Site/AlertPanel';
-import DeckList from '../Decks/DeckList';
-import Modal from '../Site/Modal';
+import DeckList from '../Decks/DeckList.jsx';
 
-class SelectDeckModal extends React.Component {
-    render() {
-        let decks = null;
+import './SelectDeckModal.scss';
 
-        if(this.props.loading) {
-            decks = <div>Loading decks from the server...</div>;
-        } else if(this.props.apiError) {
-            decks = <AlertPanel type='error' message={ this.props.apiError } />;
-        } else {
-            decks = (
-                <div>
-                    <DeckList className='deck-list-popup' decks={ this.props.decks } onSelectDeck={ this.props.onDeckSelected } />
-                    { this.props.standaloneDecks && this.props.standaloneDecks.length !== 0 && (
-                        <div>
-                            <h3 className='deck-list-header'>Or choose a standalone deck:</h3>
-                            <DeckList className='deck-list-popup' decks={ this.props.standaloneDecks } onSelectDeck={ this.props.onDeckSelected } />
-                        </div>)
-                    }
-                </div>
-            );
-        }
+const SelectDeckModal = ({ onClose, onDeckSelected }) => {
+    const standaloneDecks = useSelector((state) => state.cards.standaloneDecks);
+    const { t } = useTranslation();
 
-        return (
-            <Modal id={ this.props.id } className='deck-popup' title='Select Deck'>
-                { decks }
-            </Modal>);
-    }
-}
+    return (
+        <>
+            <Modal show={true} onHide={onClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>{t('Select Deck')}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <div>
+                        <DeckList onDeckSelected={onDeckSelected} />
+                        {standaloneDecks && standaloneDecks.length !== 0 && (
+                            <div>
+                                <h4 className='deck-list-header'>
+                                    <Trans>Or choose a standalone deck</Trans>:
+                                </h4>
+                                <DeckList standaloneDecks onDeckSelected={onDeckSelected} />
+                            </div>
+                        )}
+                    </div>
+                </Modal.Body>
+            </Modal>
+        </>
+    );
+};
 
 SelectDeckModal.displayName = 'SelectDeckModal';
-SelectDeckModal.propTypes = {
-    apiError: PropTypes.string,
-    decks: PropTypes.array,
-    id: PropTypes.string,
-    loading: PropTypes.bool,
-    onDeckSelected: PropTypes.func,
-    standaloneDecks: PropTypes.array
-};
 
 export default SelectDeckModal;

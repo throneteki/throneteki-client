@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import Panel from '../../Components/Site/Panel';
-import * as actions from '../../actions';
+import * as actions from '../../redux/actions';
 
 class EventsAdmin extends React.Component {
     constructor(props) {
@@ -24,7 +24,7 @@ class EventsAdmin extends React.Component {
     }
 
     render() {
-        if(this.props.apiState && this.props.apiState.loading) {
+        if (this.props.apiState && this.props.apiState.loading) {
             return 'Loading events, please wait...';
         }
 
@@ -33,7 +33,9 @@ class EventsAdmin extends React.Component {
         return (
             <div className='col-xs-12'>
                 <Panel title='Events administration'>
-                    <a className='btn btn-primary' onClick={ () => navigate('/events/add') }>Add event</a>
+                    <a className='btn btn-primary' onClick={() => navigate('/events/add')}>
+                        Add event
+                    </a>
                     <table className='table table-striped'>
                         <thead>
                             <tr>
@@ -42,19 +44,30 @@ class EventsAdmin extends React.Component {
                             </tr>
                         </thead>
                         <tbody>
-                            { events.map(event => (
+                            {events.map((event) => (
                                 <tr>
-                                    <td>{ event.name }</td>
+                                    <td>{event.name}</td>
                                     <td>
-                                        <button className='btn btn-primary' onClick={ () => navigate(`/events/${event._id}`) }>Edit</button>
-                                        <button className='btn btn-danger' onClick={ () => this.handleDeleteClick(event._id) }>Delete</button>
+                                        <button
+                                            className='btn btn-primary'
+                                            onClick={() => navigate(`/events/${event._id}`)}
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            className='btn btn-danger'
+                                            onClick={() => this.handleDeleteClick(event._id)}
+                                        >
+                                            Delete
+                                        </button>
                                     </td>
                                 </tr>
-                            )) }
+                            ))}
                         </tbody>
                     </table>
                 </Panel>
-            </div>);
+            </div>
+        );
     }
 }
 

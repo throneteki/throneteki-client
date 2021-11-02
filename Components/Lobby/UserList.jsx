@@ -1,32 +1,53 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
+import { Trans } from 'react-i18next';
 
 import Avatar from '../Site/Avatar';
 
-class UserList extends React.Component {
-    render() {
-        if(!this.props.users) {
-            return <div>Userlist loading...</div>;
-        }
+import './UserList.scss';
 
-        const userList = this.props.users.map(user => {
-            return (
-                <div className='user-row' key={ user.name }>
-                    <Avatar username={ user.name } />
-                    <span>{ user.name }</span>
-                </div>
-            );
-        });
+/**
+ * @typedef UserSummary
+ * @property {string} username The username of the user
+ * @property {string} name The username of the user again for some reason
+ * @property {string} role The role of the user
+ * @property {string} avatar The user's avatar
+ */
 
-        return (<div className='userlist'>Online Users
-            { userList }
-        </div>);
+/**
+ * @typedef UserListProps
+ * @property {UserSummary[]} users
+ */
+
+/**
+ *
+ * @param {UserListProps} props
+ */
+const UserList = ({ users }) => {
+    if (!users) {
+        return (
+            <div>
+                <Trans>Userlist loading...</Trans>
+            </div>
+        );
     }
-}
+
+    const userList = users.map((user) => {
+        return (
+            <div className='user-row' key={user.name}>
+                <Avatar imgPath={user.avatar} />
+                <span>{user.name}</span>
+            </div>
+        );
+    });
+
+    return (
+        <div className='userlist'>
+            <Trans>Online Users</Trans>
+            {userList}
+        </div>
+    );
+};
 
 UserList.displayName = 'UserList';
-UserList.propTypes = {
-    users: PropTypes.array
-};
 
 export default UserList;

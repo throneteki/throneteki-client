@@ -2,39 +2,41 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import * as actions from '../../actions';
+import * as actions from '../../redux/actions';
 import EventEditor from './EventEditor';
-
 class EditEvent extends React.Component {
     componentWillMount() {
-        const {loadEventEditor, eventId} = this.props;
+        const { loadEventEditor, eventId } = this.props;
 
         loadEventEditor(eventId);
     }
 
     componentWillReceiveProps(newProps) {
-        if(newProps.eventSaved) {
+        if (newProps.eventSaved) {
             newProps.navigate('/events');
         }
     }
 
     render() {
-        const { apiState, cards, eventId, events, navigate, packs, saveEvent, restrictedLists } = this.props;
+        const { apiState, cards, eventId, events, navigate, packs, saveEvent, restrictedLists } =
+            this.props;
 
-        if(!cards || !packs || !events || !restrictedLists) {
+        if (!cards || !packs || !events || !restrictedLists) {
             return <div>Please wait while loading from the server...</div>;
         }
 
         return (
-            <EventEditor { ...{
-                apiState,
-                cards,
-                event: events.find(event => event._id === eventId),
-                navigate,
-                packs,
-                onEventSave: saveEvent,
-                restrictedLists: restrictedLists
-            } } />
+            <EventEditor
+                {...{
+                    apiState,
+                    cards,
+                    event: events.find((event) => event._id === eventId),
+                    navigate,
+                    packs,
+                    onEventSave: saveEvent,
+                    restrictedLists: restrictedLists
+                }}
+            />
         );
     }
 }
@@ -48,7 +50,7 @@ EditEvent.propTypes = {
     loadEventEditor: PropTypes.func,
     navigate: PropTypes.func,
     packs: PropTypes.array,
-    restrictedLists : PropTypes.array,
+    restrictedLists: PropTypes.array,
     saveEvent: PropTypes.func
 };
 

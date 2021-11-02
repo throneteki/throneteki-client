@@ -1,36 +1,46 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { Alert } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 
-import AlertPanel from './AlertPanel';
+/**
+ * @typedef ApiStatusProps
+ * @property {Object} state the api response state
+ * @property {function(): void} onClose Called when the alert is dismissed
+ */
 
-class ApiStatus extends React.Component {
-    render() {
-        if(!this.props.apiState || this.props.apiState.loading) {
-            return null;
-        }
+/**
+ * @param {ApiStatusProps} props
+ */
+const ApiStatus = (props) => {
+    const { t } = useTranslation();
 
-        let error;
-        if(typeof this.props.apiState.message === 'object') {
-            error = (<ul>
-                { Object.values(this.props.apiState.message).map(message => {
-                    return <li>{ message }</li>;
-                }) }
-            </ul>);
-        } else {
-            error = this.props.apiState.message;
-        }
-
-        return (<div>
-            { this.props.apiState.success || <AlertPanel type='error' multiLine>{ error }</AlertPanel> }
-            { this.props.successMessage && <AlertPanel type='success' message={ this.props.successMessage } /> }
-        </div>);
+    if (!props.state || props.state.loading) {
+        return null;
     }
-}
 
-ApiStatus.displayName = 'ApiStatus';
-ApiStatus.propTypes = {
-    apiState: PropTypes.object,
-    successMessage: PropTypes.string
+    let error;
+    let index = 0;
+    if (typeof props.state.message === 'object') {
+        error = (
+            <ul>
+                {Object.values(props.state.message).map((message) => {
+                    return <li key={index++}>{t(message)}</li>;
+                })}
+            </ul>
+        );
+    } else {
+        error = t(props.state.message);
+    }
+
+    return (
+        <Alert
+            variant={props.state.success ? 'success' : 'danger'}
+            dismissible
+            onClose={props.onClose}
+        >
+            {error}
+        </Alert>
+    );
 };
 
 export default ApiStatus;

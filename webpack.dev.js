@@ -4,7 +4,7 @@ const common = require('./webpack.common.js');
 
 module.exports = merge(common, {
     entry: {
-        'bundle': ['react-hot-loader/patch', './index.jsx']
+        bundle: ['react-hot-loader/patch', './index.jsx']
     },
     output: {
         filename: '[name].[hash].js'
@@ -16,12 +16,12 @@ module.exports = merge(common, {
         hot: true,
         host: process.env.HOST || 'localhost',
         historyApiFallback: true,
-        proxy: [{
-            context: ['/api', '/socket.io'],
-            target: `http://${process.env.LOBBYHOST || 'localhost'}:4000`
-        }]
+        proxy: [
+            {
+                context: ['/api', '/socket.io', '/img/avatar', '/img/bgs'],
+                target: `http://${process.env.LOBBYHOST || 'localhost'}:4000`
+            }
+        ]
     },
-    plugins: [
-        new webpack.HotModuleReplacementPlugin()
-    ]
+    plugins: [new webpack.HotModuleReplacementPlugin()]
 });

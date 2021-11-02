@@ -1,113 +1,61 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { Trans, useTranslation } from 'react-i18next';
+import { Col, Row } from 'react-bootstrap';
 
-import AlertPanel from '../Components/Site/AlertPanel';
 import Panel from '../Components/Site/Panel';
-import Link from '../Components/Site/Link';
+import Link from '../Components/Navigation/Link';
 import DeckList from '../Components/Decks/DeckList';
-import RestrictedListDropdown from '../Components/Decks/RestrictedListDropdown';
 import ViewDeck from '../Components/Decks/ViewDeck';
-import * as actions from '../actions';
+import ApiStatus from '../Components/Site/ApiStatus';
+import { Decks } from '../redux/types';
+import { clearApiStatus } from '../redux/actions';
 
-class Decks extends React.Component {
-    constructor() {
-        super();
+const DecksComponent = () => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const apiState = useSelector((state) => {
+        const retState = state.api[Decks.DeleteDeck];
 
-        this.handleEditDeck = this.handleEditDeck.bind(this);
-        this.handleDeleteDeck = this.handleDeleteDeck.bind(this);
-    }
+        if (retState && retState.success) {
+            retState.message = t('Deck deleted successfully');
 
-    componentWillMount() {
-        this.props.loadDecks();
-    }
-
-    handleEditDeck(deck) {
-        this.props.navigate(`/decks/edit/${deck._id}`);
-    }
-
-    handleDeleteDeck(deck) {
-        this.props.deleteDeck(deck);
-    }
-
-    render() {
-        let content = null;
-
-        let successPanel = null;
-
-        if(this.props.deckDeleted) {
             setTimeout(() => {
-                this.props.clearDeckStatus();
-            }, 5000);
-            successPanel = (
-                <AlertPanel message='Deck deleted successfully' type={ 'success' } />
-            );
+                dispatch(clearApiStatus(Decks.DeleteDeck));
+            }, 1000);
         }
 
-        if(this.props.apiLoading || !this.props.cards || !this.props.decks || !this.props.restrictedLists) {
-            content = <div>Loading decks from the server...</div>;
-        } else if(!this.props.apiSuccess) {
-            content = <AlertPanel type='error' message={ this.props.apiMessage } />;
-        } else {
-            content = (
-                <div className='full-height'>
-                    <div className='col-xs-12'>
-                        { successPanel }
-                    </div>
-                    <div className='col-sm-5 full-height'>
-                        <Panel title='Your decks'>
-                            <div className='form-group'>
-                                <Link className='btn btn-primary' href='/decks/add'>New Deck</Link>
-                            </div>
-                            <div>
-                                <RestrictedListDropdown currentRestrictedList={ this.props.currentRestrictedList } restrictedLists={ this.props.restrictedLists } setCurrentRestrictedList={ this.props.setCurrentRestrictedList } />
-                            </div>
-                            <DeckList className='deck-list' activeDeck={ this.props.selectedDeck } decks={ this.props.decks } onSelectDeck={ this.props.selectDeck } />
-                        </Panel>
-                    </div>
-                    { !!this.props.selectedDeck &&
-                        <ViewDeck deck={ this.props.selectedDeck } cards={ this.props.cards } onEditDeck={ this.handleEditDeck } onDeleteDeck={ this.handleDeleteDeck } />
-                    }
-                </div>);
-        }
+        return retState;
+    });
+    const { selectedDeck } = useSelector((state) => ({
+        selectedDeck: state.cards.selectedDeck
+    }));
 
-        return content;
-    }
-}
-
-Decks.displayName = 'Decks';
-Decks.propTypes = {
-    apiLoading: PropTypes.bool,
-    apiMessage: PropTypes.string,
-    apiSuccess: PropTypes.bool,
-    cards: PropTypes.object,
-    clearDeckStatus: PropTypes.func,
-    currentRestrictedList: PropTypes.object,
-    deckDeleted: PropTypes.bool,
-    decks: PropTypes.array,
-    deleteDeck: PropTypes.func,
-    loadDecks: PropTypes.func,
-    loading: PropTypes.bool,
-    navigate: PropTypes.func,
-    restrictedLists: PropTypes.array,
-    selectDeck: PropTypes.func,
-    selectedDeck: PropTypes.object,
-    setCurrentRestrictedList: PropTypes.func
+    return (
+        <div className='full-height'>
+            <Col sm={12}>
+                <ApiStatus
+                    state={apiState}
+                    onClose={() => dispatch(clearApiStatus(Decks.DeleteDeck))}
+                />
+            </Col>
+            <Row>
+                <Col lg={6} className='full-height'>
+                    <Panel title={t('Your decks')}>
+                        <Col className='text-center'>
+                            <Link className='btn btn-primary' href='/decks/add'>
+                                <Trans>New Deck</Trans>
+                            </Link>
+                        </Col>
+                        <DeckList />
+                    </Panel>
+                </Col>
+                <Col lg={6}>{selectedDeck && <ViewDeck deck={selectedDeck} />}</Col>
+            </Row>
+        </div>
+    );
 };
 
-function mapStateToProps(state) {
-    return {
-        apiLoading: state.api.REQUEST_DECKS ? state.api.REQUEST_DECKS.loading : undefined,
-        apiMessage: state.api.REQUEST_DECKS ? state.api.REQUEST_DECKS.message : undefined,
-        apiSuccess: state.api.REQUEST_DECKS ? state.api.REQUEST_DECKS.success : undefined,
-        cards: state.cards.cards,
-        currentRestrictedList: state.cards.currentRestrictedList,
-        deckDeleted: state.cards.deckDeleted,
-        decks: state.cards.decks,
-        loading: state.api.loading,
-        restrictedLists: state.cards.restrictedList,
-        selectedDeck: state.cards.selectedDeck
-    };
-}
+DecksComponent.displayName = 'Decks';
 
-export default connect(mapStateToProps, actions)(Decks);
+export default DecksComponent;
