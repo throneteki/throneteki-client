@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import $ from 'jquery';
+import { toastr } from 'react-redux-toastr';
+import { bindActionCreators } from 'redux';
 
 import NewGame from './NewGame';
 import GameList from './GameList';
@@ -59,6 +60,8 @@ class GameLobby extends React.Component {
     }
 
     componentWillReceiveProps(props) {
+        const { currentGame, dispatch, gameId, games, joinPasswordGame, sendSocketMessage, setUrl } = props;
+
         if(!props.currentGame) {
             this.props.setContextMenu([]);
         }
@@ -76,6 +79,27 @@ class GameLobby extends React.Component {
         if(props.currentGame && !this.props.currentGame && !props.currentGame.started) {
             // Joining a game
             this.setState({ gameState: GameState.PendingGame });
+        } else if(!currentGame && gameId && games.length > 0) {
+            const game = games.find((x) => x.id === gameId);
+
+            if(!game) {
+                toastr.error('Error', 'The game you tried to join was not found.');
+            } else {
+                if(!game.started && !game.full) {
+                    if(game.needsPassword) {
+                        dispatch(joinPasswordGame(game, 'Join'));
+                    } else {
+                        dispatch(sendSocketMessage('joingame', gameId));
+                    }
+                } else {
+                    if(game.needsPassword) {
+                        dispatch(joinPasswordGame(game, 'Watch'));
+                    } else {
+                        dispatch(sendSocketMessage('watchgame', game.id));
+                    }
+                }
+            }
+            dispatch(setUrl('/play'));
         }
     }
 
@@ -198,10 +222,15 @@ GameLobby.displayName = 'GameLobby';
 GameLobby.propTypes = {
     bannerNotice: PropTypes.string,
     currentGame: PropTypes.object,
+    dispatch: PropTypes.func,
+    gameId: PropTypes.string,
     games: PropTypes.array,
+    joinPasswordGame: PropTypes.func,
     newGame: PropTypes.bool,
     passwordGame: PropTypes.object,
+    sendSocketMessage: PropTypes.func,
     setContextMenu: PropTypes.func,
+    setUrl: PropTypes.func,
     startNewGame: PropTypes.func,
     user: PropTypes.object
 };
@@ -218,5 +247,12 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps, actions)(GameLobby);
+function mapDispatchToProps(dispatch) {
+    let boundActions = bindActionCreators(actions, dispatch);
+    boundActions.dispatch = dispatch;
+
+    return boundActions;
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(GameLobby);
 
