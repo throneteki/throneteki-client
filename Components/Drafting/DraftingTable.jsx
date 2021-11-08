@@ -207,8 +207,8 @@ class DraftingTable extends React.Component {
                             { this.renderHand(hand) }
                         </Panel>
                     </div>
-                    <div className='prompt-area'>
-                        <div className='inset-pane'>
+                    <div className='draft-prompt-area'>
+                        <div className='draft-inset-pane'>
                             <DraftPlayerPrompt
                                 cards={ this.props.cards }
                                 buttons={ activePlayer.buttons }
