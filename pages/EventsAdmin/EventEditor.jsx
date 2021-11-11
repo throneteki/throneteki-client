@@ -56,7 +56,7 @@ class EventEditor extends React.Component {
             name: this.state.name,
             draftOptions: this.state.draftOptions,
             format: this.state.format,
-            useDefaultRestrictedList: ['draft', 'standard', 'valyrian'].includes(this.state.format),
+            useDefaultRestrictedList: ['standard', 'valyrian'].includes(this.state.format),
             defaultRestrictedList,
             useEventGameOptions: this.state.useEventGameOptions,
             eventGameOptions: this.state.eventGameOptions,
