@@ -16,7 +16,7 @@ function Game(props) {
 
         if(props.showJoinButton) {
             players.push(
-                <div key={ players[0].name } className={ classNames('game-player-row', { 'first-player': players.length % 2 === 0, 'other-player': players.length % 2 === 1 }) }>
+                <div key={ `game-${game.id}-join` } className={ classNames('game-player-row', { 'first-player': players.length % 2 === 0, 'other-player': players.length % 2 === 1 }) }>
                     <div className='game-faction-row other-player'>
                         <button className='btn btn-primary gamelist-button img-responsive' onClick={ props.onJoinGame }>Join</button>
                     </div>
@@ -25,7 +25,7 @@ function Game(props) {
         }
 
         if(players.length % 2 === 1) {
-            players.push(<div key={ players[0].name } className='game-faction-row other-player' />);
+            players.push(<div key={ `game-${game.id}-empty` } className='game-faction-row other-player' />);
         }
 
         return players;

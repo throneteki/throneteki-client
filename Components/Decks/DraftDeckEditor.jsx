@@ -86,6 +86,7 @@ class DraftDeckEditor extends React.Component {
             name: this.state.deckName,
             eventId: this.props.deck.eventId,
             faction: this.state.faction,
+            format: this.props.deck.format,
             agenda: this.state.agenda,
             bannerCards: this.state.bannerCards,
             plotCards: this.state.plotCards,
