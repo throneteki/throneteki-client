@@ -280,7 +280,9 @@ class NewGame extends React.Component {
     }
 
     getEventSelection() {
-        const { events, restrictedLists } = this.props;
+        const { events, restrictedLists, user } = this.props;
+
+        const allowedEvents = events.filter(event => user.permissions.canManageGames || !event.restrictTableCreators || event.validTableCreators && event.validTableCreators.includes(user.username));
 
         return (
             <div className='row'>
@@ -288,7 +290,7 @@ class NewGame extends React.Component {
                     <label htmlFor='gameName'>Mode</label>
                     <select className='form-control' value={ this.state.selectedMode } onChange={ this.onEventChange }>
                         { restrictedLists.filter(rl => rl.official).map(rl => (<option value={ `none:${rl._id}` }>{ `${cardSetLabel(rl.cardSet)}` }</option>)) }
-                        { events.map(event => (<option value={ event._id }>Event - { event.name }</option>)) }
+                        { allowedEvents.map(event => (<option value={ event._id }>Event - { event.name }</option>)) }
                     </select>
                 </div>
             </div>
@@ -388,7 +390,8 @@ NewGame.propTypes = {
     loadEvents: PropTypes.func,
     quickJoin: PropTypes.bool,
     restrictedLists: PropTypes.array,
-    socket: PropTypes.object
+    socket: PropTypes.object,
+    user: PropTypes.object
 };
 
 function mapStateToProps(state) {
@@ -396,7 +399,8 @@ function mapStateToProps(state) {
         allowMelee: state.account.user ? state.account.user.permissions.allowMelee : false,
         events: state.events.events,
         restrictedLists: state.cards.restrictedList,
-        socket: state.lobby.socket
+        socket: state.lobby.socket,
+        user: state.account.user
     };
 }
 

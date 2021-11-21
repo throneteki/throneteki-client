@@ -24,6 +24,8 @@ class EventEditor extends React.Component {
             restricted: [],
             banned: [],
             restrictSpectators: false,
+            restrictTableCreators: false,
+            validTableCreators: [],
             validSpectators: []
         }, props.event);
         this.state = {
@@ -38,8 +40,11 @@ class EventEditor extends React.Component {
             useEventGameOptions: event.useEventGameOptions,
             eventGameOptions: event.eventGameOptions,
             restrictSpectators: event.restrictSpectators,
+            restrictTableCreators: event.restrictTableCreators,
             validSpectators: event.validSpectators,
-            validSpectatorsText: this.formatListTextForUsers(event.validSpectators)
+            validSpectatorsText: this.formatListTextForUsers(event.validSpectators),
+            validTableCreators: event.validTableCreators,
+            validTableCreatorsText: this.formatListTextForUsers(event.validTableCreators)
         };
     }
 
@@ -63,7 +68,9 @@ class EventEditor extends React.Component {
             restricted: this.state.restricted,
             banned: this.state.banned,
             restrictSpectators: this.state.restrictSpectators,
-            validSpectators: this.state.validSpectators
+            restrictTableCreators: this.state.restrictTableCreators,
+            validSpectators: this.state.validSpectators,
+            validTableCreators: this.state.validTableCreators
         };
     }
 
@@ -283,7 +290,6 @@ class EventEditor extends React.Component {
                         options={ formats }
                         value={ this.state.format }
                         onChange={ this.onChange.bind(this, 'format') } />
-
                     <div className='form-group'>
                         <label className='col-sm-3 col-xs-2 control-label'>Event Game Options</label>
                     </div>
@@ -325,6 +331,12 @@ class EventEditor extends React.Component {
                     <div className='form-group'>
                         <label className='col-sm-3 col-xs-2 control-label'>Settings for Judges/Streamers</label>
                     </div>
+                    <Checkbox name='restrictTableCreators' label='Restrict table creators to those on the following list' labelClass='col-sm-4' fieldClass='col-sm-offset-3 col-sm-8'
+                        onChange={ this.onCheckboxChange.bind(this, 'restrictTableCreators') } checked={ this.state.restrictTableCreators } />
+                    { this.state.restrictTableCreators
+                    && <TextArea label='Valid Creators' labelClass='col-sm-3' fieldClass='col-sm-9' rows='10' value={ this.state.validTableCreatorsText }
+                        onChange={ event => this.handleUserListChange({ event, textProperty: 'validTableCreatorsText', arrayProperty: 'validTableCreators' }) } />
+                    }
                     <Checkbox name='restrictSpectators' label='Restrict spectators to those on the following list' labelClass='col-sm-4' fieldClass='col-sm-offset-3 col-sm-8'
                         onChange={ this.onCheckboxChange.bind(this, 'restrictSpectators') } checked={ this.state.restrictSpectators } />
                     { this.state.restrictSpectators
