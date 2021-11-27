@@ -76,11 +76,11 @@ class DraftCard extends React.Component {
     }
 
     get statusClass() {
-        if(!this.props.card) {
+        if(!this.props.selected) {
             return;
         }
 
-        if(this.props.card.selected) {
+        if(this.props.selected) {
             return 'selected';
         }
     }
@@ -101,14 +101,14 @@ DraftCard.displayName = 'Card';
 DraftCard.propTypes = {
     card: PropTypes.shape({
         code: PropTypes.string,
-        name: PropTypes.string,
-        selected: PropTypes.bool
+        name: PropTypes.string
     }).isRequired,
     className: PropTypes.string,
     onClick: PropTypes.func,
     onMouseOut: PropTypes.func,
     onMouseOver: PropTypes.func,
     orientation: PropTypes.oneOf(['horizontal', 'kneeled', 'vertical']),
+    selected: PropTypes.bool,
     size: PropTypes.string,
     style: PropTypes.object,
     wrapped: PropTypes.bool

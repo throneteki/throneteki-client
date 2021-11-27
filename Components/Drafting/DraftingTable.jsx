@@ -11,6 +11,7 @@ import CardTypeGroups from '../Decks/CardTypeGroups';
 import CardZoom from '../GameBoard/CardZoom';
 import DraftCard from './DraftCard';
 import Panel from '../Site/Panel';
+import DraftPlayerPrompt from './DraftPlayerPrompt';
 
 class DraftingTable extends React.Component {
     constructor() {
@@ -20,8 +21,10 @@ class DraftingTable extends React.Component {
         this.onMouseOver = this.onMouseOver.bind(this);
         this.onLeaveClick = this.onLeaveClick.bind(this);
         this.sendChatMessage = this.sendChatMessage.bind(this);
+        this.onPromptButtonClick = this.onPromptButtonClick.bind(this);
 
         this.state = {
+            selectedCard: undefined,
             selectedGroupBy: 'type'
         };
     }
@@ -29,6 +32,21 @@ class DraftingTable extends React.Component {
     componentDidMount() {
         this.updateContextMenu(this.props);
         $('.modal-backdrop').remove();
+    }
+
+    componentWillReceiveProps(props) {
+        this.updateContextMenu(props);
+
+        if(!props.currentGame) {
+            return;
+        }
+
+        let handChanged = this.props.currentGame.draftingTable.activePlayer.hand.length !== props.currentGame.draftingTable.activePlayer.hand.length;
+
+        //reset the selectedCard when hand changes
+        if(handChanged) {
+            this.setState({ selectedCard: undefined });
+        }
     }
 
     onMouseOver(card) {
@@ -45,6 +63,16 @@ class DraftingTable extends React.Component {
 
     sendChatMessage(message) {
         this.props.sendGameMessage('chat', message);
+    }
+
+    selectCard(card) {
+        if(!this.props.currentGame.draftingTable.activePlayer.hasChosen) {
+            this.setState({ selectedCard: card });
+        }        
+    }
+
+    onPromptButtonClick(button) {
+        this.props.sendGameMessage(button.command, this.state.selectedCard);
     }
 
     updateContextMenu(props) {
@@ -139,9 +167,10 @@ class DraftingTable extends React.Component {
             return hand.map(card => (
                 <DraftCard key={ card.uuid }
                     card={ this.props.cards[card] }
-                    onClick={ () => this.props.sendGameMessage('chooseCard', card) }
+                    onClick={ () => this.selectCard(card) }
                     onMouseOut={ this.onMouseOut }
                     onMouseOver={ this.onMouseOver }
+                    selected={ this.state.selectedCard === card }
                     size={ this.props.user.settings.cardSize } />)
             );
         }
@@ -177,6 +206,19 @@ class DraftingTable extends React.Component {
                         <Panel title='Current Hand'>
                             { this.renderHand(hand) }
                         </Panel>
+                    </div>
+                    <div className='draft-prompt-area'>
+                        <div className='draft-inset-pane'>
+                            <DraftPlayerPrompt
+                                cards={ this.props.cards }
+                                buttons={ activePlayer.buttons }
+                                promptText={ activePlayer.menuTitle }
+                                promptTitle={ activePlayer.promptTitle }
+                                onButtonClick={ this.onPromptButtonClick }
+                                onMouseOver={ this.onMouseOver }
+                                onMouseOut={ this.onMouseOut }
+                                user={ this.props.user } />
+                        </div>
                     </div>
                     <div className='draft-deck'>
                         <Panel title='Drafted Cards'>
