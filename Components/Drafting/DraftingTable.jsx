@@ -171,7 +171,8 @@ class DraftingTable extends React.Component {
                     onMouseOut={ this.onMouseOut }
                     onMouseOver={ this.onMouseOver }
                     selected={ this.state.selectedCard === card }
-                    size={ this.props.user.settings.cardSize } />)
+                    size={ this.props.user.settings.cardSize }
+                    orientation={ this.props.cards[card].type === 'plot' ? 'horizontal' : 'vertical' } />)
             );
         }
     }
