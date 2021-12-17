@@ -44,8 +44,10 @@ class CardTypeGroup extends React.Component {
                 </div>);
         }
 
+        let cardsClassName = this.props.displayFactionIcons ? 'cards-two-columns' : 'cards';
+
         return (
-            <div className='cards'>
+            <div className={ cardsClassName }>
                 { cardsToRender }
             </div>);
     }
