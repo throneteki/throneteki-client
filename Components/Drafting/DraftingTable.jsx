@@ -24,7 +24,6 @@ class DraftingTable extends React.Component {
         this.onPromptButtonClick = this.onPromptButtonClick.bind(this);
 
         this.state = {
-            selectedCard: undefined,
             selectedGroupBy: 'type'
         };
     }
@@ -36,17 +35,6 @@ class DraftingTable extends React.Component {
 
     componentWillReceiveProps(props) {
         this.updateContextMenu(props);
-
-        if(!props.currentGame) {
-            return;
-        }
-
-        let handChanged = this.props.currentGame.draftingTable.activePlayer.hand.length !== props.currentGame.draftingTable.activePlayer.hand.length;
-
-        //reset the selectedCard when hand changes
-        if(handChanged) {
-            this.setState({ selectedCard: undefined });
-        }
     }
 
     onMouseOver(card) {
@@ -66,13 +54,11 @@ class DraftingTable extends React.Component {
     }
 
     selectCard(card) {
-        if(!this.props.currentGame.draftingTable.activePlayer.hasChosen) {
-            this.setState({ selectedCard: card });
-        }        
+        this.props.sendGameMessage('chooseCard', card);
     }
 
     onPromptButtonClick(button) {
-        this.props.sendGameMessage(button.command, this.state.selectedCard);
+        this.props.sendGameMessage(button.command, button.arg);
     }
 
     updateContextMenu(props) {
@@ -162,15 +148,15 @@ class DraftingTable extends React.Component {
         return true;
     }
 
-    renderHand(hand) {
+    renderHand(hand, chosenCardIndex) {
         if(hand) {
-            return hand.map(card => (
+            return hand.map((card, index) => (
                 <DraftCard key={ card.uuid }
                     card={ this.props.cards[card] }
                     onClick={ () => this.selectCard(card) }
                     onMouseOut={ this.onMouseOut }
                     onMouseOver={ this.onMouseOver }
-                    selected={ this.state.selectedCard === card }
+                    selected={ index === chosenCardIndex }
                     size={ this.props.user.settings.cardSize } />)
             );
         }
@@ -187,7 +173,7 @@ class DraftingTable extends React.Component {
         }
 
         const activePlayer = this.props.currentGame.draftingTable.activePlayer;
-        const { deck, hand } = activePlayer;
+        const { chosenCardIndex, deck, hand } = activePlayer;
 
         const deckWithCards = deck.map(cardQuantity => ({
             count: cardQuantity.count,
@@ -204,7 +190,7 @@ class DraftingTable extends React.Component {
                 <div className='board-middle'>
                     <div className='draft-current-cards'>
                         <Panel title='Current Hand'>
-                            { this.renderHand(hand) }
+                            { this.renderHand(hand, chosenCardIndex) }
                         </Panel>
                     </div>
                     <div className='draft-prompt-area'>
