@@ -106,8 +106,8 @@ class DraftDeckEditor extends React.Component {
         return deck;
     }
 
-    triggerDeckUpdated(restrictedList) {
-        const deck = this.getDeckFromState(restrictedList);
+    triggerDeckUpdated() {
+        const deck = this.getDeckFromState();
 
         if(this.props.onDeckUpdated) {
             this.props.onDeckUpdated(deck);
@@ -360,7 +360,7 @@ class DraftDeckEditor extends React.Component {
                     </div>
                 </div>
                 <div className='row'>
-                    <div className='col-sm-12' style={ { 'textAlign': 'center', 'marginBottom': '1em' } }>
+                    <div className='col-sm-12' style={ { textAlign: 'center', marginBottom: '1em' } }>
                         Click cards under the "Remaining Drafted Cards" to move them into your deck and vice-versa.
                     </div>
                 </div>
