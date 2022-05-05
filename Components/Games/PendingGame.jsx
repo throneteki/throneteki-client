@@ -209,6 +209,18 @@ class PendingGame extends React.Component {
         this.props.zoomCard(card);
     }
 
+    isCurrentEventALockedDeckEvent() {
+        return this.props.currentGame.event && this.props.currentGame.event._id !== 'none'; //&& this.props.currentGame.event.lockedDecks;
+    }
+
+    filterDecksForCurrentEvent() {
+        if(this.isCurrentEventALockedDeckEvent()) {
+            let filteredDecks = this.props.decks.filter(d => d.eventId === this.props.currentGame.event._id);
+            return filteredDecks;
+        }
+        return this.props.decks;        
+    }
+
     render() {
         if(this.props.currentGame && this.props.currentGame.started) {
             return <div>Loading game in progress, please wait...</div>;
@@ -277,11 +289,11 @@ class PendingGame extends React.Component {
                 </Panel>
                 <SelectDeckModal
                     apiError={ this.props.apiError }
-                    decks={ this.props.decks }
+                    decks={ this.isCurrentEventALockedDeckEvent() ? this.filterDecksForCurrentEvent() : this.props.decks }
                     id='decks-modal'
                     loading={ this.props.loading }
                     onDeckSelected={ this.selectDeck.bind(this) }
-                    standaloneDecks={ this.props.standaloneDecks } />
+                    standaloneDecks={ this.isCurrentEventALockedDeckEvent() ? undefined : this.props.standaloneDecks } />
             </div >);
     }
 }
