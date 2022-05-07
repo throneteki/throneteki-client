@@ -290,6 +290,7 @@ class PendingGame extends React.Component {
                 <SelectDeckModal
                     apiError={ this.props.apiError }
                     decks={ this.isCurrentEventALockedDeckEvent() ? this.filterDecksForCurrentEvent() : this.props.decks }
+                    events={ this.props.events }
                     id='decks-modal'
                     loading={ this.props.loading }
                     onDeckSelected={ this.selectDeck.bind(this) }
@@ -304,6 +305,7 @@ PendingGame.propTypes = {
     connecting: PropTypes.bool,
     currentGame: PropTypes.object,
     decks: PropTypes.array,
+    events: PropTypes.array,
     gameSocketClose: PropTypes.func,
     host: PropTypes.string,
     leaveGame: PropTypes.func,
@@ -326,6 +328,7 @@ function mapStateToProps(state) {
         connecting: state.games.connecting,
         currentGame: state.lobby.currentGame,
         decks: state.cards.decks,
+        events: state.events.events,
         host: state.games.gameHost,
         loading: state.api.loading,
         socket: state.lobby.socket,
