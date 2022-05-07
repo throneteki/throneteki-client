@@ -63,7 +63,7 @@ class Decks extends React.Component {
                             <div>
                                 <RestrictedListDropdown currentRestrictedList={ this.props.currentRestrictedList } restrictedLists={ this.props.restrictedLists } setCurrentRestrictedList={ this.props.setCurrentRestrictedList } />
                             </div>
-                            <DeckList className='deck-list' activeDeck={ this.props.selectedDeck } decks={ this.props.decks } onSelectDeck={ this.props.selectDeck } />
+                            <DeckList className='deck-list' activeDeck={ this.props.selectedDeck } decks={ this.props.decks } onSelectDeck={ this.props.selectDeck } events={ this.props.events } />
                         </Panel>
                     </div>
                     { !!this.props.selectedDeck &&
