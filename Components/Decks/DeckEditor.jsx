@@ -421,7 +421,7 @@ DeckEditor.propTypes = {
     cards: PropTypes.object,
     currentRestrictedList: PropTypes.object,
     deck: PropTypes.object,
-    events: PropTypes.object,
+    events: PropTypes.array,
     factions: PropTypes.object,
     navigate: PropTypes.func,
     onDeckSave: PropTypes.func,
