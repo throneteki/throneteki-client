@@ -396,7 +396,7 @@ class DeckEditor extends React.Component {
                     <TextArea label='Cards' labelClass='col-sm-3' fieldClass='col-sm-9' rows='10' value={ this.state.cardList }
                         onChange={ this.onCardListChange.bind(this) } />
                     { this.state.eventId && 
-                        <h4>Please be aware: When you select this event and save this deck, you are locking it from further changes and you will not be able to edit this deck anymore</h4>
+                        <h4>Please be aware: Assigning this deck to an event will mean that you will be unable to modify or delete this deck for the duration of the event!</h4>
                     }
                     <Select name='event' label='Event' labelClass='col-sm-3' fieldClass='col-sm-9' options={ this.props.events }
                         onChange={ this.onEventChange.bind(this) } value={ this.state.eventId ? this.state.eventId : undefined } 

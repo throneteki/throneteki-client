@@ -272,7 +272,7 @@ class EventEditor extends React.Component {
                         value={ this.state.format }
                         onChange={ this.onChange.bind(this, 'format') } />
 
-                    <Checkbox name='lockDecks' label='Lock Decks' labelClass='col-sm-4' fieldClass='col-sm-offset-3 col-sm-8'
+                    <Checkbox name='lockDecks' label='Prevent users from making changes to their decks for the duration of the event' labelClass='col-sm-4' fieldClass='col-sm-offset-3 col-sm-8'
                         onChange={ this.onCheckboxChange.bind(this, 'lockDecks') } checked={ this.state.lockDecks } />
 
                     <div className='form-group'>

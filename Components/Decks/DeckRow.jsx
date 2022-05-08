@@ -19,7 +19,7 @@ class DeckRow extends React.Component {
     displayNameForDeck(deck) {
         if(deck.eventId) {
             let deckEvent = this.props.events.find(e => e._id === deck.eventId);
-            return '(' + deckEvent.name + ') ' + deck.name;
+            return `(${deckEvent.name}) ${deck.name}`;
         }
         return deck.name;
     }
