@@ -88,6 +88,14 @@ class Messages extends React.Component {
                             { message }
                         </div>);
                         break;
+                    case 'spectator-info':
+                        if(!this.props.hideSpectatorInfoMessages) {
+                            messages.push(<div className='alert alert-info' key={ index++ }>
+                                <span className='glyphicon glyphicon-info-sign' />&nbsp;
+                                { message }
+                            </div>);
+                        }
+                        break;
                     case 'danger':
                         messages.push(<div className='alert alert-danger' key={ index++ }>
                             <span className='glyphicon glyphicon-exclamation-sign' />&nbsp;
@@ -99,6 +107,14 @@ class Messages extends React.Component {
                             <span className='glyphicon glyphicon-warning-sign' />&nbsp;
                             { message }
                         </div>);
+                        break;
+                    case 'spectator-warning':
+                        if(!this.props.hideSpectatorInfoMessages) {
+                            messages.push(<div className='alert alert-warning' key={ index++ }>
+                                <span className='glyphicon glyphicon-warning-sign' />&nbsp;
+                                { message }
+                            </div>);
+                        }
                         break;
                     default:
                         messages.push(message);
@@ -150,6 +166,7 @@ class Messages extends React.Component {
 
 Messages.displayName = 'Messages';
 Messages.propTypes = {
+    hideSpectatorInfoMessages: PropTypes.bool,
     messages: PropTypes.array,
     onCardMouseOut: PropTypes.func,
     onCardMouseOver: PropTypes.func,

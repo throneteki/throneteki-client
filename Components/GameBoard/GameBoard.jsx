@@ -298,6 +298,10 @@ export class GameBoard extends React.Component {
         this.props.sendGameMessage('toggleDupes', value);
     }
 
+    onHideSpectatorInfoMessagesToggle(value) {
+        this.props.sendGameMessage('toggleHideSpectatorInfoMessages', value);
+    }
+
     onPromptedActionWindowToggle(option, value) {
         this.props.sendGameMessage('togglePromptedActionWindow', option, value);
     }
@@ -496,6 +500,8 @@ export class GameBoard extends React.Component {
                     onPromptDupesToggle={ this.onPromptDupesToggle.bind(this) }
                     onPromptedActionWindowToggle={ this.onPromptedActionWindowToggle.bind(this) }
                     onTimerSettingToggle={ this.onTimerSettingToggle.bind(this) }
+                    onHideSpectatorInfoMessagesToggle={ this.onHideSpectatorInfoMessagesToggle.bind(this) }
+                    hideSpectatorInfoMessages={ this.state.spectating ? this.props.user.settings.hideSpectatorInfoMessages : thisPlayer.hideSpectatorInfoMessages }
                     promptDupes={ thisPlayer.promptDupes }
                     promptedActionWindows={ thisPlayer.promptedActionWindows }
                     timerSettings={ thisPlayer.timerSettings } />
@@ -516,7 +522,8 @@ export class GameBoard extends React.Component {
                                 onCardMouseOut={ this.onMouseOut }
                                 onCardMouseOver={ this.onMouseOver }
                                 onSendChat={ this.sendChatMessage }
-                                muted={ this.state.spectating && this.props.currentGame.muteSpectators } />
+                                muted={ this.state.spectating && this.props.currentGame.muteSpectators } 
+                                hideSpectatorInfoMessages={ this.state.spectating ? this.props.user.settings.hideSpectatorInfoMessages : thisPlayer.hideSpectatorInfoMessages } />
                         </div>
                     </div>
                     }

@@ -29,7 +29,8 @@ class Profile extends React.Component {
             successMessage: '',
             promptDupes: false,
             timerSettings: {},
-            keywordSettings: {}
+            keywordSettings: {},
+            hideSpectatorInfoMessages: false
         };
 
         this.backgrounds = [
@@ -102,7 +103,8 @@ class Profile extends React.Component {
             timerSettings: props.user.settings.timerSettings,
             keywordSettings: props.user.settings.keywordSettings,
             selectedBackground: props.user.settings.background,
-            selectedCardSize: props.user.settings.cardSize
+            selectedCardSize: props.user.settings.cardSize,
+            hideSpectatorInfoMessages: props.user.settings.hideSpectatorInfoMessages
         });
     }
 
@@ -160,7 +162,8 @@ class Profile extends React.Component {
                 keywordSettings: this.state.keywordSettings,
                 timerSettings: this.state.timerSettings,
                 background: this.state.selectedBackground,
-                cardSize: this.state.selectedCardSize
+                cardSize: this.state.selectedCardSize,
+                hideSpectatorInfoMessages: this.state.hideSpectatorInfoMessages
             }
         });
     }
@@ -282,6 +285,8 @@ class Profile extends React.Component {
                                         onChange={ this.onKeywordSettingToggle.bind(this, 'chooseCards') } checked={ this.state.keywordSettings.chooseCards } />
                                     <Checkbox name='promptDupes' noGroup label={ 'Prompt before using dupes to save' } fieldClass='col-sm-6'
                                         onChange={ this.onToggle.bind(this, 'promptDupes') } checked={ this.state.promptDupes } />
+                                    <Checkbox name='hideSpectatorInfoMessages' noGroup label={ 'Hide join/disconnect messages of spectators' } fieldClass='col-sm-6'
+                                        onChange={ this.onToggle.bind(this, 'hideSpectatorInfoMessages') } checked={ this.state.hideSpectatorInfoMessages } />
                                 </div>
                             </Panel>
                         </div>

@@ -29,6 +29,10 @@ class GameConfiguration extends React.Component {
             if(this.props.onPromptDupesToggle) {
                 this.props.onPromptDupesToggle(!value);
             }
+        } else if(option === 'hideSpectatorInfoMessages') {
+            if(this.props.onHideSpectatorInfoMessagesToggle) {
+                this.props.onHideSpectatorInfoMessagesToggle(!value);
+            }
         } else if(this.props.onActionWindowToggle) {
             this.props.onActionWindowToggle(option, !value);
         }
@@ -100,6 +104,8 @@ class GameConfiguration extends React.Component {
                                 onChange={ this.onKeywordSettingToggle.bind(this, 'chooseCards') } checked={ this.props.keywordSettings.chooseCards } />
                             <Checkbox name='promptDupes' noGroup label={ 'Prompt before using dupes to save' } fieldClass='col-sm-6'
                                 onChange={ this.onToggle.bind(this, 'promptDupes', this.props.promptDupes) } checked={ this.props.promptDupes } />
+                            <Checkbox name='hideSpectatorInfoMessages' noGroup label={ 'Hide join/disconnect messages of spectators' } fieldClass='col-sm-6'
+                                onChange={ this.onToggle.bind(this, 'hideSpectatorInfoMessages', this.props.hideSpectatorInfoMessages) } checked={ this.props.hideSpectatorInfoMessages } />
                         </div>
                     </Panel>
                 </form>
@@ -111,8 +117,10 @@ class GameConfiguration extends React.Component {
 GameConfiguration.displayName = 'GameConfiguration';
 GameConfiguration.propTypes = {
     actionWindows: PropTypes.object,
+    hideSpectatorInfoMessages: PropTypes.bool,
     keywordSettings: PropTypes.object,
     onActionWindowToggle: PropTypes.func,
+    onHideSpectatorInfoMessagesToggle: PropTypes.func,
     onKeywordSettingToggle: PropTypes.func,
     onPromptDupesToggle: PropTypes.func,
     onTimerSettingToggle: PropTypes.func,

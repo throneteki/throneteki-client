@@ -70,7 +70,7 @@ class GameChat extends React.Component {
         return (
             <div className='chat'>
                 <div className='messages panel' ref='messagePanel' onScroll={ this.onScroll }>
-                    <Messages messages={ this.props.messages } onCardMouseOver={ this.props.onCardMouseOver } onCardMouseOut={ this.props.onCardMouseOut } />
+                    <Messages messages={ this.props.messages } onCardMouseOver={ this.props.onCardMouseOver } onCardMouseOut={ this.props.onCardMouseOut } hideSpectatorInfoMessages={ this.props.hideSpectatorInfoMessages } />
                 </div>
                 <form className='form chat-form'>
                     <input className='form-control' placeholder={ placeholder } onKeyPress={ this.onKeyPress } onChange={ this.onChange }
@@ -82,6 +82,7 @@ class GameChat extends React.Component {
 
 GameChat.displayName = 'GameChat';
 GameChat.propTypes = {
+    hideSpectatorInfoMessages: PropTypes.bool,
     messages: PropTypes.array,
     muted: PropTypes.bool,
     onCardMouseOut: PropTypes.func,

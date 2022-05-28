@@ -10,9 +10,11 @@ export class GameConfigurationModal extends React.Component {
             <Modal id={ this.props.id } className='settings-popup row' bodyClassName='col-xs-12' title='Game Configuration'>
                 <GameConfiguration
                     actionWindows={ this.props.promptedActionWindows }
+                    hideSpectatorInfoMessages={ this.props.hideSpectatorInfoMessages }
                     keywordSettings={ this.props.keywordSettings }
                     promptDupes={ this.props.promptDupes }
                     timerSettings={ this.props.timerSettings }
+                    onHideSpectatorInfoMessagesToggle={ this.props.onHideSpectatorInfoMessagesToggle }
                     onKeywordSettingToggle={ this.props.onKeywordSettingToggle }
                     onTimerSettingToggle={ this.props.onTimerSettingToggle }
                     onActionWindowToggle={ this.props.onPromptedActionWindowToggle }
@@ -24,8 +26,10 @@ export class GameConfigurationModal extends React.Component {
 
 GameConfigurationModal.displayName = 'GameConfigurationModal';
 GameConfigurationModal.propTypes = {
+    hideSpectatorInfoMessages: PropTypes.bool,
     id: PropTypes.string,
     keywordSettings: PropTypes.object,
+    onHideSpectatorInfoMessagesToggle: PropTypes.func,
     onKeywordSettingToggle: PropTypes.func,
     onPromptDupesToggle: PropTypes.func,
     onPromptedActionWindowToggle: PropTypes.func,
