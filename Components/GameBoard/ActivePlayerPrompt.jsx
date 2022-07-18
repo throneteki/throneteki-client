@@ -13,6 +13,13 @@ class ActivePlayerPrompt extends React.Component {
 
         this.props.stopAbilityTimer();
 
+        //do not merge this into the main repository!
+        //when the review button is clicked, link to the card review page
+        if(button.arg === 'review') {
+            window.open('https://forms.gle/GNXgosTjpPxxELYP6', '_blank', 'noopener,noreferrer');
+            return;
+        }
+
         if(this.props.onButtonClick) {
             this.props.onButtonClick(button);
         }
