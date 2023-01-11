@@ -36,7 +36,7 @@ class NewGame extends React.Component {
             restrictedListId: defaultRestrictedList && defaultRestrictedList._id,
             optionsLocked: false,
             spectators: true,
-            showHand: true,
+            showHand: false,
             selectedGameFormat: 'joust',
             selectedGameType: 'casual',
             password: '',
