@@ -13,10 +13,10 @@ class ActivePlayerPrompt extends React.Component {
 
         this.props.stopAbilityTimer();
 
-        // TODO: Find a way to keep this code, without it being used in production
-        // TODO: Maybe find a proper place for review url (as it changes per pack)
-        if(button.arg === 'review') {
-            window.open('https://forms.gle/ZHaf8RwzKoTMhH3q6', '_blank', 'noopener,noreferrer');
+        // Checks & opens google form if button is formatted as such, rather than regular button-click actions
+        let googleFormMatcher = button.arg.match(/^googleForm:(?<formId>.+)$/);
+        if(googleFormMatcher) {
+            window.open(`https://forms.gle/${googleFormMatcher.groups.formId}`, '_blank', 'noopener,noreferrer');
             return;
         }
 
