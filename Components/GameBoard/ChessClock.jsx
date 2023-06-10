@@ -47,11 +47,13 @@ class ChessClock extends React.Component {
 
     render() {
         if(this.state.mode !== 'inactive') {
-            let clockIcon = this.state.mode === 'down' && this.state.delayToStartClock <= 0 ? <img src='/img/chess-clock.png' className='game-list-icon' /> : '';
-            let delaySeconds = this.state.mode === 'down' && this.state.delayToStartClock > 0 ? ' - ' + formattedSeconds(this.state.delayToStartClock) : '';
+            let clockIcon = this.state.mode === 'down' && this.state.delayToStartClock <= 0 ? <h1 className='chessclock-item'><img src='/img/chess-clock.png' className='chessclock-icon' /></h1> : '';
+            let delaySeconds = this.state.mode === 'down' && this.state.delayToStartClock > 0 ? '-' + formattedSeconds(this.state.delayToStartClock) : '';
+            let timeLeftText = formattedSeconds(this.state.secondsLeft) + delaySeconds;
             return (
-                <div>
-                    <h1>{ formattedSeconds(this.state.secondsLeft) } { clockIcon } { delaySeconds } </h1>
+                <div className='chessclock-container'>
+                    <h1 className='chessclock-item'>{ timeLeftText } </h1>
+                    { clockIcon }
                 </div>);
         }
         return (<div/>);

@@ -316,12 +316,16 @@ class EventEditor extends React.Component {
                         type='number' onChange={ this.onEventGameOptionChange.bind(this, 'gameTimeLimit') } value={ this.state.eventGameOptions.gameTimeLimit } />
                     }
                     { this.state.useEventGameOptions
-                    && <Checkbox name='useChessClocks' label='Use chess clocks with a time limit per player (in minutes)' labelClass='col-sm-4' fieldClass='col-sm-offset-3 col-sm-8'
+                    && <Checkbox name='useChessClocks' label='Use chess clocks with a time limit per player' labelClass='col-sm-4' fieldClass='col-sm-offset-3 col-sm-8'
                         onChange={ this.onEventGameOptionCheckboxChange.bind(this, 'useChessClocks') } checked={ this.state.eventGameOptions.useChessClocks } />
                     }
                     { this.state.useEventGameOptions && this.state.eventGameOptions.useChessClocks
                     && <Input name='chessClockTimeLimit' label='Timelimit in minutes' labelClass='col-sm-3' fieldClass='col-sm-9' placeholder='Timelimit in minutes'
                         type='number' onChange={ this.onEventGameOptionChange.bind(this, 'chessClockTimeLimit') } value={ this.state.eventGameOptions.chessClockTimeLimit } />
+                    }
+                    { this.state.useEventGameOptions && this.state.eventGameOptions.useChessClocks
+                    && <Input name='delayToStartClock' label='Delay to start the clock in seconds' labelClass='col-sm-3' fieldClass='col-sm-9' placeholder='Delay to start the clock in seconds'
+                        type='number' onChange={ this.onEventGameOptionChange.bind(this, 'delayToStartClock') } value={ this.state.eventGameOptions.delayToStartClock } />
                     }
                     { this.state.useEventGameOptions
                     && <Input name='password' label='Password' labelClass='col-sm-3' fieldClass='col-sm-9' placeholder='Password'
