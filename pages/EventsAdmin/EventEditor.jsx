@@ -122,6 +122,30 @@ class EventEditor extends React.Component {
         this.setState({ state });
     }
 
+    onUseGameTimeLimitClick(event) {
+        this.onEventGameOptionChange('useGameTimeLimit', event);
+        //deactivate chessclock when timelimit is used
+        if(event.target.checked) {
+            let state = this.state;
+
+            state['eventGameOptions']['useChessClocks'] = false;
+
+            this.setState({ state });
+        }
+    }
+
+    onUseChessClocksClick(event) {
+        this.onEventGameOptionChange('useChessClocks', event);
+        //deactivate other timeLimit when chessClocks are used
+        if(event.target.checked) {
+            let state = this.state;
+
+            state['eventGameOptions']['useGameTimeLimit'] = false;
+
+            this.setState({ state });
+        }
+    }
+
     onCheckboxChange(field, event) {
         let state = this.state;
 
@@ -309,7 +333,7 @@ class EventEditor extends React.Component {
                     }
                     { this.state.useEventGameOptions
                     && <Checkbox name='useGameTimeLimit' label='Use a time limit (in minutes)' labelClass='col-sm-4' fieldClass='col-sm-offset-3 col-sm-8'
-                        onChange={ this.onEventGameOptionCheckboxChange.bind(this, 'useGameTimeLimit') } checked={ this.state.eventGameOptions.useGameTimeLimit } />
+                        onChange={ this.onUseGameTimeLimitClick.bind(this) } checked={ this.state.eventGameOptions.useGameTimeLimit } />
                     }
                     { this.state.useEventGameOptions && this.state.eventGameOptions.useGameTimeLimit
                     && <Input name='gameTimeLimit' label='Timelimit in minutes' labelClass='col-sm-3' fieldClass='col-sm-9' placeholder='Timelimit in minutes'
@@ -317,7 +341,7 @@ class EventEditor extends React.Component {
                     }
                     { this.state.useEventGameOptions
                     && <Checkbox name='useChessClocks' label='Use chess clocks with a time limit per player' labelClass='col-sm-4' fieldClass='col-sm-offset-3 col-sm-8'
-                        onChange={ this.onEventGameOptionCheckboxChange.bind(this, 'useChessClocks') } checked={ this.state.eventGameOptions.useChessClocks } />
+                        onChange={ this.onUseChessClocksClick.bind(this) } checked={ this.state.eventGameOptions.useChessClocks } />
                     }
                     { this.state.useEventGameOptions && this.state.eventGameOptions.useChessClocks
                     && <Input name='chessClockTimeLimit' label='Timelimit in minutes' labelClass='col-sm-3' fieldClass='col-sm-9' placeholder='Timelimit in minutes'
