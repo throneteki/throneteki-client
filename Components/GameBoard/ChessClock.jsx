@@ -23,7 +23,14 @@ class ChessClock extends React.Component {
     }
 
     updateProps(props) {
-        if(props.secondsLeft === 0 || this.stateId === props.stateId) {
+        if(this.stateId === props.stateId) {
+            return;
+        }
+        if(props.secondsLeft === 0) {
+            if(this.timer) {
+                clearInterval(this.timer);
+            }
+            this.setState({ secondsLeft: 0 });
             return;
         }
         this.stateId = props.stateId;
