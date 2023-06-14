@@ -50,11 +50,11 @@ class ChessClock extends React.Component {
             let timeLeftText = formattedSeconds(this.state.secondsLeft);
             let stateInfo = null;
             if(this.state.mode === 'down') {
-                stateInfo = <h1 className='chessclock-item'>{
+                stateInfo = (<h1 className='chessclock-item'>{
                     this.state.delayToStartClock <= 0
                         ? <img src='/img/chess-clock.png' className='chessclock-icon' />
                         : <span className='chessclock-delay'>+{ formattedSeconds(this.state.delayToStartClock) }</span>
-                }</h1>
+                }</h1>);
             }
             return (
                 <div className='chessclock-container'>
