@@ -54,7 +54,7 @@ const routes = [
                 return <GameBoard key='gameboard' />;
             }
 
-            return <GameLobby key='gamelobby' />;
+            return <GameLobby key='gamelobby' gameId={ context.params.gameId } />;
         }
     },
     { path: '/profile', action: () => <Profile key='profile' /> },

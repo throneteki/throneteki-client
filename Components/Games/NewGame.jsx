@@ -15,6 +15,7 @@ class NewGame extends React.Component {
         super(props);
 
         this.onCancelClick = this.onCancelClick.bind(this);
+        this.onGamePrivateClick = this.onGamePrivateClick.bind(this);
         this.onSubmitClick = this.onSubmitClick.bind(this);
         this.onNameChange = this.onNameChange.bind(this);
         this.onEventChange = this.onEventChange.bind(this);
@@ -26,6 +27,7 @@ class NewGame extends React.Component {
         this.onMuteSpectatorsClick = this.onMuteSpectatorsClick.bind(this);
         this.onUseChessClocksClick = this.onUseChessClocksClick.bind(this);
         this.onChessClockTimeLimitChange = this.onChessClockTimeLimitChange.bind(this);
+        this.onDelayToStartClockChange = this.onDelayToStartClockChange.bind(this);
 
         const defaultRestrictedList = props.restrictedLists.filter(rl => rl.official)[0];
 
@@ -39,11 +41,13 @@ class NewGame extends React.Component {
             selectedGameFormat: 'joust',
             selectedGameType: 'casual',
             password: '',
+            gamePrivate: false,
             useGameTimeLimit: false,
             gameTimeLimit: 55,
             muteSpectators: false,
             useChessClocks: false,
             chessClockTimeLimit: 30,
+            delayToStartClock: 5,
             tableType: 'game'
         };
     }
@@ -102,6 +106,9 @@ class NewGame extends React.Component {
             if(selectedEvent.eventGameOptions.chessClockTimeLimit !== undefined) {
                 this.setState({ chessClockTimeLimit: selectedEvent.eventGameOptions.chessClockTimeLimit });
             }
+            if(selectedEvent.eventGameOptions.delayToStartClock !== undefined) {
+                this.setState({ delayToStartClock: selectedEvent.eventGameOptions.delayToStartClock });
+            }
             if(selectedEvent.eventGameOptions.password !== undefined) {
                 this.setState({ password: selectedEvent.eventGameOptions.password });
             }
@@ -115,6 +122,10 @@ class NewGame extends React.Component {
 
     onSpectatorsClick(event) {
         this.setState({ spectators: event.target.checked });
+    }
+
+    onGamePrivateClick(event) {
+        this.setState({ gamePrivate: event.target.checked });
     }
 
     onShowHandClick(event) {
@@ -137,6 +148,10 @@ class NewGame extends React.Component {
         this.setState({ chessClockTimeLimit: event.target.value });
     }
 
+    onDelayToStartClockChange(event) {
+        this.setState({ delayToStartClock: event.target.value });
+    }
+
     onSubmitClick(event) {
         event.preventDefault();
 
@@ -149,12 +164,14 @@ class NewGame extends React.Component {
             gameType: this.state.selectedGameType,
             isMelee: this.state.selectedGameFormat === 'melee',
             password: this.state.password,
+            gamePrivate: this.state.gamePrivate,
             quickJoin: this.props.quickJoin,
             useGameTimeLimit: this.state.useGameTimeLimit,
             gameTimeLimit: this.state.gameTimeLimit,
             muteSpectators: this.state.muteSpectators,
             useChessClocks: this.state.useChessClocks,
             chessClockTimeLimit: this.state.chessClockTimeLimit,
+            delayToStartClock: this.state.delayToStartClock,
             tableType: this.state.tableType
         });
     }
@@ -219,11 +236,14 @@ class NewGame extends React.Component {
             <div className='checkbox col-sm-12'>
                 <label>
                     <input type='checkbox' onChange={ this.onUseChessClocksClick } checked={ this.state.useChessClocks } disabled={ this.state.optionsLocked }/>
-                    Use chess clocks with a time limit per player (in minutes)
+                    Use chess clocks
                 </label>
             </div>
-            { this.state.useChessClocks && <div className='col-sm-4'>
+            { this.state.useChessClocks && <div className='col-sm-6'>
+                <label>Time limit per player (in minutes)</label>
                 <input className='form-control' type='number' onChange={ this.onChessClockTimeLimitChange } value={ this.state.chessClockTimeLimit } disabled={ this.state.optionsLocked }/>
+                <label>Delay to start the clock (in seconds)</label>
+                <input className='form-control' type='number' onChange={ this.onDelayToStartClockChange } value={ this.state.delayToStartClock } disabled={ this.state.optionsLocked }/>
             </div> }
         </div>);
     }
@@ -353,6 +373,14 @@ class NewGame extends React.Component {
                 { this.getOptions() }
                 { this.getMeleeOptions() }
                 { this.getGameTypeOptions() }
+                <div className='row'>
+                    <div className='checkbox col-sm-8'>
+                        <label>
+                            <input type='checkbox' onChange={ this.onGamePrivateClick } checked={ this.state.gamePrivate } disabled={ this.state.optionsLocked } />
+                            Private (requires game link)
+                        </label>
+                    </div>
+                </div>
                 <div className='row game-password'>
                     <div className='col-sm-8'>
                         <label>Password</label>

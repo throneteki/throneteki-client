@@ -26,7 +26,8 @@ class EventEditor extends React.Component {
             restrictSpectators: false,
             restrictTableCreators: false,
             validTableCreators: [],
-            validSpectators: []
+            validSpectators: [],
+            lockDecks: false
         }, props.event);
         this.state = {
             eventId: event._id,
@@ -35,14 +36,17 @@ class EventEditor extends React.Component {
             format: event.format,
             restricted: event.restricted,
             banned: event.banned,
+            pods: event.pods,
             restrictedListText: this.formatListTextForCards(props.cards, event.restricted),
             bannedListText: this.formatListTextForCards(props.cards, event.banned),
+            podsText: event.pods ? JSON.stringify(event.pods) : '',
             useEventGameOptions: event.useEventGameOptions,
             eventGameOptions: event.eventGameOptions,
             restrictSpectators: event.restrictSpectators,
             restrictTableCreators: event.restrictTableCreators,
             validSpectators: event.validSpectators,
             validSpectatorsText: this.formatListTextForUsers(event.validSpectators),
+            lockDecks: event.lockDecks,
             validTableCreators: event.validTableCreators,
             validTableCreatorsText: this.formatListTextForUsers(event.validTableCreators)
         };
@@ -67,9 +71,11 @@ class EventEditor extends React.Component {
             eventGameOptions: this.state.eventGameOptions,
             restricted: this.state.restricted,
             banned: this.state.banned,
+            pods: this.state.pods,
             restrictSpectators: this.state.restrictSpectators,
             restrictTableCreators: this.state.restrictTableCreators,
             validSpectators: this.state.validSpectators,
+            lockDecks: this.state.lockDecks,
             validTableCreators: this.state.validTableCreators
         };
     }
@@ -136,6 +142,30 @@ class EventEditor extends React.Component {
         state['eventGameOptions'][field] = event.target.value;
 
         this.setState({ state });
+    }
+
+    onUseGameTimeLimitClick(event) {
+        this.onEventGameOptionChange('useGameTimeLimit', event);
+        //deactivate chessclock when timelimit is used
+        if(event.target.checked) {
+            let state = this.state;
+
+            state['eventGameOptions']['useChessClocks'] = false;
+
+            this.setState({ state });
+        }
+    }
+
+    onUseChessClocksClick(event) {
+        this.onEventGameOptionChange('useChessClocks', event);
+        //deactivate other timeLimit when chessClocks are used
+        if(event.target.checked) {
+            let state = this.state;
+
+            state['eventGameOptions']['useGameTimeLimit'] = false;
+
+            this.setState({ state });
+        }
     }
 
     onCheckboxChange(field, event) {
@@ -233,6 +263,18 @@ class EventEditor extends React.Component {
         return matchingCards[0];
     }
 
+    handlePodListChange({ event, textProperty, arrayProperty }) {
+        let parsedPodObject = undefined;
+        try {
+            parsedPodObject = JSON.parse(event.target.value);
+        } finally {
+            this.setState({
+                [textProperty]: event.target.value,
+                [arrayProperty]: parsedPodObject ? parsedPodObject : []
+            });
+        }
+    }
+
     compareCardByReleaseDate(a, b) {
         let packA = this.props.packs.find(pack => pack.code === a.packCode);
         let packB = this.props.packs.find(pack => pack.code === b.packCode);
@@ -290,6 +332,9 @@ class EventEditor extends React.Component {
                         options={ formats }
                         value={ this.state.format }
                         onChange={ this.onChange.bind(this, 'format') } />
+                    <Checkbox name='lockDecks' label='Prevent users from making changes to their decks for the duration of the event' labelClass='col-sm-4' fieldClass='col-sm-offset-3 col-sm-8'
+                        onChange={ this.onCheckboxChange.bind(this, 'lockDecks') } checked={ this.state.lockDecks } />
+
                     <div className='form-group'>
                         <label className='col-sm-3 col-xs-2 control-label'>Event Game Options</label>
                     </div>
@@ -309,19 +354,23 @@ class EventEditor extends React.Component {
                     }
                     { this.state.useEventGameOptions
                     && <Checkbox name='useGameTimeLimit' label='Use a time limit (in minutes)' labelClass='col-sm-4' fieldClass='col-sm-offset-3 col-sm-8'
-                        onChange={ this.onEventGameOptionCheckboxChange.bind(this, 'useGameTimeLimit') } checked={ this.state.eventGameOptions.useGameTimeLimit } />
+                        onChange={ this.onUseGameTimeLimitClick.bind(this) } checked={ this.state.eventGameOptions.useGameTimeLimit } />
                     }
                     { this.state.useEventGameOptions && this.state.eventGameOptions.useGameTimeLimit
                     && <Input name='gameTimeLimit' label='Timelimit in minutes' labelClass='col-sm-3' fieldClass='col-sm-9' placeholder='Timelimit in minutes'
                         type='number' onChange={ this.onEventGameOptionChange.bind(this, 'gameTimeLimit') } value={ this.state.eventGameOptions.gameTimeLimit } />
                     }
                     { this.state.useEventGameOptions
-                    && <Checkbox name='useChessClocks' label='Use chess clocks with a time limit per player (in minutes)' labelClass='col-sm-4' fieldClass='col-sm-offset-3 col-sm-8'
-                        onChange={ this.onEventGameOptionCheckboxChange.bind(this, 'useChessClocks') } checked={ this.state.eventGameOptions.useChessClocks } />
+                    && <Checkbox name='useChessClocks' label='Use chess clocks with a time limit per player' labelClass='col-sm-4' fieldClass='col-sm-offset-3 col-sm-8'
+                        onChange={ this.onUseChessClocksClick.bind(this) } checked={ this.state.eventGameOptions.useChessClocks } />
                     }
                     { this.state.useEventGameOptions && this.state.eventGameOptions.useChessClocks
                     && <Input name='chessClockTimeLimit' label='Timelimit in minutes' labelClass='col-sm-3' fieldClass='col-sm-9' placeholder='Timelimit in minutes'
                         type='number' onChange={ this.onEventGameOptionChange.bind(this, 'chessClockTimeLimit') } value={ this.state.eventGameOptions.chessClockTimeLimit } />
+                    }
+                    { this.state.useEventGameOptions && this.state.eventGameOptions.useChessClocks
+                    && <Input name='delayToStartClock' label='Delay to start the clock in seconds' labelClass='col-sm-3' fieldClass='col-sm-9' placeholder='Delay to start the clock in seconds'
+                        type='number' onChange={ this.onEventGameOptionChange.bind(this, 'delayToStartClock') } value={ this.state.eventGameOptions.delayToStartClock } />
                     }
                     { this.state.useEventGameOptions
                     && <Input name='password' label='Password' labelClass='col-sm-3' fieldClass='col-sm-9' placeholder='Password'
@@ -382,6 +431,8 @@ class EventEditor extends React.Component {
                             onChange={ event => this.handleCardListChange({ event, textProperty: 'restrictedListText', arrayProperty: 'restricted' }) } />
                         <TextArea label='Banned List' labelClass='col-sm-3' fieldClass='col-sm-9' rows='4' value={ this.state.bannedListText }
                             onChange={ event => this.handleCardListChange({ event, textProperty: 'bannedListText', arrayProperty: 'banned' }) } />
+                        <TextArea label='Banned Pods' labelClass='col-sm-3' fieldClass='col-sm-9' rows='4' value={ this.state.podsText }
+                            onChange={ event => this.handlePodListChange({ event, textProperty: 'podsText', arrayProperty: 'pods' }) } />
                     </div>) }
                     <div className='form-group'>
                         <div className='col-sm-offset-3 col-sm-8'>

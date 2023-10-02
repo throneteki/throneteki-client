@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import ReactClipboard from 'react-clipboardjs-copy';
 import $ from 'jquery';
 
 import Panel from '../Site/Panel';
@@ -218,6 +219,18 @@ class PendingGame extends React.Component {
         this.props.zoomCard(card);
     }
 
+    isCurrentEventALockedDeckEvent() {
+        return this.props.currentGame.event && this.props.currentGame.event._id !== 'none' && this.props.currentGame.event.lockDecks;
+    }
+
+    filterDecksForCurrentEvent() {
+        if(this.isCurrentEventALockedDeckEvent()) {
+            let filteredDecks = this.props.decks.filter(d => d.eventId === this.props.currentGame.event._id);
+            return filteredDecks;
+        }
+        return this.props.decks;        
+    }
+
     render() {
         if(this.props.currentGame && this.props.currentGame.started) {
             return <div>Loading game in progress, please wait...</div>;
@@ -260,6 +273,15 @@ class PendingGame extends React.Component {
                         <button className='btn btn-primary' disabled={ !this.isGameReady() || this.props.connecting || this.state.waiting } onClick={ this.onStartClick }>Start</button>
                         <button className='btn btn-primary' onClick={ this.onLeaveClick }>Leave</button>
                     </div>
+                    <div className='pull-right'>
+                        <ReactClipboard
+                            text={ `${window.location.protocol}//${window.location.host}/play?gameId=${currentGame.id}` }
+                        >
+                            <button className='btn btn-primary'>
+                                Copy Game Link
+                            </button>
+                        </ReactClipboard>
+                    </div>
                     <div className='game-status'>{ this.getGameStatus() }</div>
                 </Panel>
                 <Panel title='Players'>
@@ -288,12 +310,13 @@ class PendingGame extends React.Component {
                 <SelectDeckModal
                     allowStandaloneDecks={ allowStandaloneDecks }
                     apiError={ this.props.apiError }
-                    decks={ this.props.decks }
+                    decks={ this.isCurrentEventALockedDeckEvent() ? this.filterDecksForCurrentEvent() : this.props.decks }
+                    events={ this.props.events }
                     filterDecks={ filterDecks }
                     id='decks-modal'
                     loading={ this.props.loading }
                     onDeckSelected={ this.selectDeck.bind(this) }
-                    standaloneDecks={ this.props.standaloneDecks } />
+                    standaloneDecks={ this.isCurrentEventALockedDeckEvent() ? undefined : this.props.standaloneDecks } />
             </div >);
     }
 }
@@ -304,6 +327,7 @@ PendingGame.propTypes = {
     connecting: PropTypes.bool,
     currentGame: PropTypes.object,
     decks: PropTypes.array,
+    events: PropTypes.array,
     gameSocketClose: PropTypes.func,
     host: PropTypes.string,
     leaveGame: PropTypes.func,
@@ -326,6 +350,7 @@ function mapStateToProps(state) {
         connecting: state.games.connecting,
         currentGame: state.lobby.currentGame,
         decks: state.cards.decks,
+        events: state.events.events,
         host: state.games.gameHost,
         loading: state.api.loading,
         socket: state.lobby.socket,
