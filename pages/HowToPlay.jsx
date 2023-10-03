@@ -53,6 +53,7 @@ class HowToPlay extends React.Component {
                     </div>
                     <div className='htp-topic'>
                         <h3 className='htp-title' id='framework-timing-sheet'>Framework Timing Sheet</h3>
+                        <p>Below you will find a sheet summarizing the framework and the timings of the game in a quick reference:</p>
                         <img src='/img/AGOT-2nd-Ed-framework-timing-sheet.jpg' className='img-framework-timing-sheet'/>
                     </div>
                     <div className='htp-topic'>
