@@ -55,10 +55,11 @@ class PlayerRow extends React.Component {
         if(this.props.agenda.code === '06018') {
             cards = this.props.bannerCards;
             title = 'Banners';
-        } else if(this.props.agenda.code === '09045') {
+        //Conclave or cards under the agenda
+        } else if(this.props.agenda.code === '09045' || this.props.conclavePile.length > 0) {
             cards = this.props.conclavePile;
             source = 'conclave';
-            title = 'Conclave';
+            title = this.props.agenda.code === '09045' ? 'Conclave' : 'Agenda';
             disablePopup = !this.props.isMe;
         }
 
@@ -80,7 +81,7 @@ class PlayerRow extends React.Component {
             topCard={ this.props.agenda }
             size={ this.props.cardSize } />);
 
-        if(this.props.agenda.code === '09045') {
+        if(this.props.agenda.code === '09045' || this.props.conclavePile.length > 0) {
             return (
                 <Droppable onDragDrop={ this.props.onDragDrop } source='conclave'>
                     { pile }
