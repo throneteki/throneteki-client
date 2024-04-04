@@ -11,9 +11,6 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "env": {
-                "VERSION": "Local build"
-            },
             "url": "http://localhost:8080",
             "webRoot": "${workspaceFolder}",
             "preLaunchTask": "start server",
@@ -26,9 +23,6 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "env": {
-                "VERSION": "Local build"
-            },
             "url": "http://localhost:8080",
             "webRoot": "${workspaceFolder}",
             "preLaunchTask": "start server",
