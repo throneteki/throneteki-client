@@ -1,3 +1,5 @@
+# This repository is now archived and the client code can be found [here](https://github.com/throneteki/throneteki)
+
 # throneteki-client
 The client code for Throneteki, a Web based implementation of A Game of Thrones LCG 2nd Edition
 
